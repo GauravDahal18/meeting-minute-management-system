@@ -9,7 +9,7 @@ function Login() {
   const [error, setError] = useState(""); 
 
   const navigate = useNavigate(); 
-  const {login: authContextLogin, isAuthenticated, isAuthLoading} = useAuth(); 
+  const {login: authContextLogin, isAuthenticated, isAuthLoading, checkAuthStatus} = useAuth(); 
 
   useEffect(() => {
       if (isAuthenticated && !isAuthLoading) { 
@@ -25,7 +25,7 @@ function Login() {
     const credentials = `${username}:${password}`; 
     const encodedCredentials = btoa(credentials); // btoa() is for Base64 encoding 
 
-    const LOGIN_API_URL = `http://localhost:8080/login`; //
+    const LOGIN_API_URL = `http://localhost:8080/api/login`; 
 
     try {
       const response = await fetch(LOGIN_API_URL, {
@@ -37,11 +37,16 @@ function Login() {
         credentials: 'include'
       });
 
-      if (response.ok) { 
+      if (response.status === 200) { 
         console.log("Login request successful. Backend should set cookie");
-        await authContextLogin(); 
+        await checkAuthStatus();
+        navigate('/meeting-minutes', { replace: true });
+      } else if (response.status === 401) {
+        
+        setError("Authentication Failed: Bad credentials");
       } else {
-        let errorMsg = "Invalid username or password.";
+      
+        let errorMsg = "Login failed. Please try again.";
         try {
           const errorData = await response.json();
           errorMsg = errorData.message || errorMsg;
@@ -53,15 +58,14 @@ function Login() {
         setError(errorMsg);
       }
     } catch (err) {
-      console.error("Network error occured during login:", err); 
+      console.error("Network error occurred during login:", err); 
       setError(
-        "Could not connect to the server, Please check your internet or try again later."
+        "Could not connect to the server. Please check your internet or try again later."
       ); 
     } finally {
       setLoading(false); 
     }
   };
-
 
   if (isAuthLoading && !isAuthenticated) { 
       return <div style={{textAlign: 'center', marginTop: '50px'}}>Checking authentication status...</div>;

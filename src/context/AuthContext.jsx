@@ -12,27 +12,24 @@ export const AuthProvider = ({ children }) => {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const navigate = useNavigate();
 
-  // check authentication status with the backend
+  // check authentication status with the backend 
   const checkAuthStatus = useCallback(async () => {
     setIsAuthLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/login", {
+      const response = await fetch("http://localhost:8080/isAuthenticated", {
         method: "GET",
         credentials: "include",
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         setIsAuthenticated(true);
         console.log("Auth Status Check: Authenticated.");
+      } else if (response.status === 401) {
+        setIsAuthenticated(false);
+        console.log("Auth Status Check: Not Authenticated.");
       } else {
         setIsAuthenticated(false);
-        let errorText;
-        try {
-          errorText = await response.text();
-        } catch (e) {
-          errorText = "Unknown error";
-        }
-        console.log("Auth Status Check: Not Authenticated. Reason:", errorText);
+        console.log("Auth Status Check: Unexpected status:", response.status);
       }
     } catch (error) {
       console.error("Network error during auth status check:", error);
@@ -47,18 +44,25 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  const login = async () => {
-    await checkAuthStatus();
-  };
+ const login = async () => {
+  await checkAuthStatus();
+ };
 
   const logout = async () => {
     try {
-      await fetch("http://localhost:8080/logout", {
-        method: "POST",
+      const response = await fetch("http://localhost:8080/api/logout", {
+        method: "GET",
         credentials: "include",
       });
+      
+      if (response.status === 200) {
+        console.log("Logout successful");
+      } else if (response.status === 401) {
+        console.log("User was not logged in during logout attempt");
+      }
     } catch (e) {
-      // Ignore network errors on logout
+      console.error("Network error during logout:", e);
+      
     }
     setIsAuthenticated(false);
     navigate("/login", { replace: true });

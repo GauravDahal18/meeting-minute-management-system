@@ -1,13 +1,8 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import {BrowserRouter as Router,Routes,Route,Navigate} from "react-router-dom";
 import Login from "./Login.jsx";
 import MeetingMinutes from "./MeetingMinutes.jsx";
-import { useAuth, AuthProvider } from "./context/AuthContext.jsx";
-import React, { useEffect } from "react";
+import {useAuth,AuthProvider } from "./context/AuthContext.jsx";
+import React, {useEffect} from 'react';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isAuthLoading, checkAuthStatus } = useAuth();

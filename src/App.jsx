@@ -7,9 +7,14 @@ import {
 import Login from "./Login.jsx";
 import MeetingMinutes from "./MeetingMinutes.jsx";
 import { useAuth, AuthProvider } from "./context/AuthContext.jsx";
+import React, { useEffect } from "react";
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isAuthLoading } = useAuth();
+  const { isAuthenticated, isAuthLoading, checkAuthStatus } = useAuth();
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, [checkAuthStatus]);
 
   if (isAuthLoading) {
     return (
@@ -21,7 +26,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace:true />;
+    return <Navigate to="/login" replace />;
   }
   return children;
 };
@@ -31,7 +36,7 @@ function App() {
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/login" element={<Login/>} />
+          <Route path="/login" element={<Login />} />
           <Route
             path="/meeting-minutes"
             element={
@@ -40,7 +45,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<HomeRedirector/>} />
+          <Route path="/" element={<HomeRedirector />} />
 
           <Route
             path="*"
@@ -56,20 +61,19 @@ function App() {
   );
 }
 
-
 const HomeRedirector = () => {
-  const {isAuthenticated, isAuthLoading} = useAuth(); 
+  const { isAuthenticated, isAuthLoading } = useAuth();
 
   if (isAuthLoading) {
-    return(
+    return (
       <div style={{ textAlign: "center", marginTop: "50px" }}>
         Loading application...
       </div>
-    ); 
+    );
   }
 
-  return(
-    <Navigate to={isAuthenticated ? "/meeting-minutes" : "/login"} replace:true />
+  return (
+    <Navigate to={isAuthenticated ? "/meeting-minutes" : "/login"} replace />
   );
 };
 

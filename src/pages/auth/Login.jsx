@@ -22,7 +22,7 @@ function Login() {
 
   useEffect(() => {
     if (isAuthenticated && !isAuthLoading) {
-      navigate("/meeting-minutes", { replace: true });
+      navigate("/home", { replace: true });
     }
   }, [isAuthenticated, isAuthLoading, navigate]);
 
@@ -70,7 +70,7 @@ function Login() {
 
         // Delay navigation to let toast finish
         setTimeout(() => {
-          navigate("/meeting-minutes", { replace: true });
+          navigate("/home", { replace: true });
         }, 1500);
       } else if (response.status === 401) {
         toast.error("❌ Invalid username or password.", {

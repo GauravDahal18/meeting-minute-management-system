@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import Login from "./pages/auth/Login.jsx";
 import Signup from "./pages/auth/Signup.jsx";
-import MeetingMinutes from "./MeetingMinutes.jsx";
+import CommitteeDashboard from "./components/CommitteeDashboard.jsx";
 import { useAuth, AuthProvider } from "./context/AuthContext.jsx";
 import React, { useEffect } from "react";
 
@@ -40,10 +40,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route
-            path="/meeting-minutes"
+            path="/home"
             element={
               <ProtectedRoute>
-                <MeetingMinutes />
+                <CommitteeDashboard />
               </ProtectedRoute>
             }
           />
@@ -74,9 +74,7 @@ const HomeRedirector = () => {
     );
   }
 
-  return (
-    <Navigate to={isAuthenticated ? "/meeting-minutes" : "/login"} replace />
-  );
+  return <Navigate to={isAuthenticated ? "/home" : "/login"} replace />;
 };
 
 export default App;

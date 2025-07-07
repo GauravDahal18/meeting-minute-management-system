@@ -7,6 +7,7 @@ import {
 import Login from "./pages/auth/Login.jsx";
 import Signup from "./pages/auth/Signup.jsx";
 import CommitteeDashboard from "./components/CommitteeDashboard.jsx";
+import CreateCommitteeDialog from "./components/CreateCommittee.jsx";
 import { useAuth, AuthProvider } from "./context/AuthContext.jsx";
 import React, { useEffect } from "react";
 
@@ -44,6 +45,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <CommitteeDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/home/createCommittee"
+            element={
+              <ProtectedRoute>
+                <CreateCommitteeDialog />
               </ProtectedRoute>
             }
           />

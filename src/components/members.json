@@ -1,0 +1,32 @@
+[
+  {
+    "memberId": 1,
+    "memberName": "Nanda Bahadur Adhikari",
+    "collegeName": "Pulchowk",
+    "status": "PHD"
+  },
+  {
+    "memberId": 2,
+    "memberName": "Priya",
+    "collegeName": "Thapathali",
+    "status": "DHOD"
+  },
+  {
+    "memberId": 4,
+    "memberName": "Hari",
+    "collegeName": "Pulchowk",
+    "status": "Professor"
+  },
+  {
+    "memberId": 5,
+    "memberName": "Ram",
+    "collegeName": "Pulchowk",
+    "status": "Professor"
+  },
+  {
+    "memberId": 6,
+    "memberName": "Shyam",
+    "collegeName": "Pulchowk",
+    "status": "Professor"
+  }
+]

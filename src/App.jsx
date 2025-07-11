@@ -60,7 +60,11 @@ function App() {
           />
           <Route
             path="/committee/:committeeId"
-            element={<CommitteeDetails />}
+            element={
+              <ProtectedRoute>
+                <CommitteeDetails />
+              </ProtectedRoute>
+            }
           />
           <Route path="/" element={<HomeRedirector />} />
 

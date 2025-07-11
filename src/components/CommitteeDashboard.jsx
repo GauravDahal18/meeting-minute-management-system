@@ -4,22 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 const CommitteeDashboard = () => {
-  const [Committees, setCommittees] = useState([]);
+  const [committees, setCommittees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentRoute, setCurrentRoute] = useState("/home");
-  const [selectedCommittee, setSelectedCommittee] = useState(null);
   const [showSortOptions, setShowSortOptions] = useState(false);
 
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  // Mock API service - replace with real API when backend is ready
+  // API service to fetch committees
   const getCommittees = async () => {
     try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       const response = await fetch("http://localhost:8080/api/getCommittees", {
         method: "GET",
         credentials: "include",
@@ -70,9 +65,9 @@ const CommitteeDashboard = () => {
     fetchCommittees();
   }, []);
 
-  // Sort Committees by createdDate and Committee name
+  // Sort committees by createdDate and committee name
   const sortCommitteesByDate = () => {
-    const sorted = [...Committees].sort((a, b) => {
+    const sorted = [...committees].sort((a, b) => {
       return new Date(b.createdDate) - new Date(a.createdDate); // Newest first
     });
     setCommittees(sorted);
@@ -80,7 +75,7 @@ const CommitteeDashboard = () => {
   };
 
   const sortCommitteesByName = () => {
-    const sorted = [...Committees].sort((a, b) => {
+    const sorted = [...committees].sort((a, b) => {
       return a.committeeName.localeCompare(b.committeeName); // A-Z
     });
     setCommittees(sorted);
@@ -97,14 +92,9 @@ const CommitteeDashboard = () => {
   };
 
   // Navigate to committee detail URL
-  const handleCommitteeClick = (Committee) => {
-    const url = `/committee/${Committee.id}`;
+  const handleCommitteeClick = (committee) => {
+    const url = `/committee/${committee.id}`;
     navigate(url);
-  };
-
-  // Handle back navigation
-  const handleBackToHome = () => {
-    navigate("/home");
   };
 
   if (loading) {
@@ -153,86 +143,6 @@ const CommitteeDashboard = () => {
     );
   }
 
-  if (currentRoute === "/home/createCommittee") {
-    return (
-      <div className="min-h-screen p-6 bg-gray-50">
-        <div className="flex justify-between items-center mb-6">
-          {/* <span className="text-sm text-gray-600">{currentRoute}</span>  */}
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <LogOut size={16} />
-            Logout
-          </button>
-        </div>
-
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl font-bold mb-6">Create Committee</h2>
-
-          <button
-            onClick={handleBackToHome}
-            className="px-6 py-2 border rounded-md hover:shadow-lg"
-          >
-            Back to Home
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (selectedCommittee) {
-    return (
-      <div className="min-h-screen p-6 bg-gray-50">
-        <div className="flex justify-between items-center mb-6">
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            <LogOut size={16} />
-            Logout
-          </button>
-        </div>
-
-        <div className="max-w-2xl mx-auto">
-          <button onClick={handleBackToHome} className="mb-4 hover:underline">
-            ← Back to Committees
-          </button>
-
-          <div className="rounded-lg p-6 border bg-white">
-            <h2 className="text-2xl font-bold mb-4">
-              {selectedCommittee.committeeName}
-            </h2>
-            <p className="mb-4">{selectedCommittee.committeeDescription}</p>
-
-            <div className="space-y-3">
-              <div>
-                <span className="font-medium">Members:</span>
-                <div className="ml-4">
-                  {selectedCommittee.committeeMembers.map((member, index) => (
-                    <div key={index}>• {member}</div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <span className="font-medium">Created Date:</span>
-                <span className="ml-2">
-                  {selectedCommittee.createdDate.toLocaleDateString()}
-                </span>
-              </div>
-
-              <div>
-                <span className="font-medium">Created By:</span>
-                <span className="ml-2">{selectedCommittee.createdBy}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen p-6 bg-gray-50">
       <div className="flex justify-between items-center mb-6">
@@ -252,16 +162,20 @@ const CommitteeDashboard = () => {
 
         <div className="border-2 rounded-lg p-6 mb-6 bg-white">
           <div className="flex justify-between items-center mb-4">
-            <div className="flex gap-4">
-              {Committees.map((Committee) => (
+            <div className="flex gap-4 flex-wrap">
+              {committees.map((committee) => (
                 <div
-                  key={Committee.id}
-                  onClick={() => handleCommitteeClick(Committee)}
-                  className="border-2 rounded-lg p-4 w-32 h-24 flex items-center justify-center cursor-pointer hover:shadow-lg transition-shadow bg-blue-50 hover:bg-blue-100"
+                  key={committee.id}
+                  onClick={() => handleCommitteeClick(committee)}
+                  className="border-2 rounded-lg p-4 w-64 h-32 cursor-pointer hover:shadow-lg transition-shadow bg-blue-50 hover:bg-blue-100 flex flex-col"
                 >
-                  <span className="text-center text-sm font-medium">
-                    {Committee.committeeName}
-                  </span>
+                  <h3 className="text-sm font-semibold text-gray-800 mb-2 line-clamp-1">
+                    {committee.committeeName}
+                  </h3>
+                  <p className="text-xs text-gray-600 line-clamp-3 flex-1">
+                    {committee.committeeDescription ||
+                      "No description available"}
+                  </p>
                 </div>
               ))}
             </div>

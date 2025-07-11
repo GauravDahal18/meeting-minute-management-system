@@ -8,6 +8,7 @@ import Login from "./pages/auth/Login.jsx";
 import Signup from "./pages/auth/Signup.jsx";
 import CommitteeDashboard from "./components/CommitteeDashboard.jsx";
 import CreateCommitteeDialog from "./components/CreateCommittee.jsx";
+import CommitteeDetails from "./components/CommitteeDetails.jsx";
 import { useAuth, AuthProvider } from "./context/AuthContext.jsx";
 import React, { useEffect } from "react";
 
@@ -56,6 +57,10 @@ function App() {
                 <CreateCommitteeDialog />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/committee/:committeeId"
+            element={<CommitteeDetails />}
           />
           <Route path="/" element={<HomeRedirector />} />
 

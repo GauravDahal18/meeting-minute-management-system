@@ -71,8 +71,9 @@ const CommitteeDetails = () => {
   };
 
   const handleViewMeeting = (meetingId) => {
-    // Navigate to meeting details/preview
-    console.log("View meeting:", meetingId);
+    // opening meeting preview in new tab where the server serves html directly
+    const previewUrl = `http://localhost:8080/api/previewMeetingMinute?committeeId=${committeeId}&meetingId=${meetingId}&lang=en`;
+    window.open(previewUrl, "_blank");
   };
 
   const handleEditMeeting = (meetingId) => {

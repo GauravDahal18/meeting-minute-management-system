@@ -39,9 +39,14 @@ const CreateCommitteeDialog = () => {
 
   const handleSubmit = async () => {
     const payload = {
-      committeeName,
-      committeeDescription,
-      commiteeMembership: committeeMembership,
+      name: committeeName,
+      description: committeeDescription,
+      memberships: committeeMembership.map(membership => ({
+        member: {
+          id: membership.memberId
+        },
+        role: membership.role.toUpperCase()
+      })),
     };
     console.log("Sending JSON:", JSON.stringify(payload, null, 2));
     // const reponse = await fetch(

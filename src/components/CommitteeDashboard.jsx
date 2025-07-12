@@ -42,9 +42,9 @@ const CommitteeDashboard = () => {
         const data = await getCommittees();
         // Transform API data to match component structure
         const transformedData = data.map((committee) => ({
-          id: committee.committeeId,
-          committeeName: committee.committeeName,
-          committeeDescription: committee.committeeDescription,
+          id: committee.id,
+          committeeName: committee.name,
+          committeeDescription: committee.description,
           committeeMembers: committee.committeeMembers || [], // Handle missing members
           createdDate: new Date(
             committee.createdDate[0],

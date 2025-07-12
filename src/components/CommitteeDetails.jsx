@@ -167,11 +167,9 @@ const CommitteeDetails = () => {
             {/* Committee Header */}
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {committee.committeeName}
+                {committee.name}
               </h1>
-              <p className="text-gray-600 mb-4">
-                {committee.committeeDescription}
-              </p>
+              <p className="text-gray-600 mb-4">{committee.description}</p>
               <div className="text-sm text-gray-500">
                 Created:{" "}
                 {new Date(
@@ -272,31 +270,31 @@ const CommitteeDetails = () => {
                   {committee.meetings && committee.meetings.length > 0 ? (
                     committee.meetings.map((meeting, index) => (
                       <div
-                        key={meeting.meetingId}
+                        key={meeting.id}
                         className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow"
                       >
                         <h3 className="font-medium text-gray-800 mb-2">
                           Meeting {index + 1}
                         </h3>
                         <p className="text-sm text-gray-600 mb-2">
-                          {meeting.meetingTitle}
+                          {meeting.title}
                         </p>
                         <div className="text-xs text-gray-500 mb-3">
                           {new Date(
-                            meeting.meetingHeldDate[0],
-                            meeting.meetingHeldDate[1] - 1,
-                            meeting.meetingHeldDate[2]
+                            meeting.heldDate[0],
+                            meeting.heldDate[1] - 1,
+                            meeting.heldDate[2]
                           ).toLocaleDateString()}
                         </div>
                         <div className="flex gap-2">
                           <button
-                            onClick={() => handleViewMeeting(meeting.meetingId)}
+                            onClick={() => handleViewMeeting(meeting.id)}
                             className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs hover:bg-blue-200 transition-colors"
                           >
                             Preview
                           </button>
                           <button
-                            onClick={() => handleEditMeeting(meeting.meetingId)}
+                            onClick={() => handleEditMeeting(meeting.id)}
                             className="px-2 py-1 bg-green-100 text-green-600 rounded text-xs hover:bg-green-200 transition-colors"
                           >
                             Edit

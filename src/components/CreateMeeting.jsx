@@ -106,12 +106,15 @@ const CreateMeetingDialog = () => {
     console.log("Meeting payload:", payload);
 
     try {
-      const response = await fetch("http://localhost:8080/api/createMeeting", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/committee/createMeeting?committeeId=${committeeId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

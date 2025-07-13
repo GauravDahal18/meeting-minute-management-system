@@ -11,6 +11,7 @@ import CreateCommitteeDialog from "./components/CreateCommittee.jsx";
 import CommitteeDetails from "./components/CommitteeDetails.jsx";
 import CreateMeetingDialog from "./components/CreateMeeting.jsx";
 import { useAuth, AuthProvider } from "./context/AuthContext.jsx";
+import CreateMemberDialog from "./components/CreateMember.jsx";
 
 import CommitteeLayout from "./Layouts/CommitteeLayout.jsx";
 import React, { useEffect } from "react";
@@ -75,6 +76,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <CreateMeetingDialog />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="createMember"
+              element={
+                <ProtectedRoute>
+                  <CreateMemberDialog />
                 </ProtectedRoute>
               }
             />

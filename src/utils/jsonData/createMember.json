@@ -1,0 +1,19 @@
+{
+  "roles": [
+    { "value": "SECRETARY", "label": "Secretary" },
+    { "value": "COORDINATOR", "label": "Coordinator" },
+    { "value": "MEMBER", "label": "Member" }
+  ],
+  "posts": [
+    "Professor",
+    "Assistant Professor",
+    "Lecturer",
+    "Researcher"
+  ],
+  "institutions": [
+    "Tribhuvan University",
+    "Kathmandu University",
+    "Pokhara University",
+    "Patan Academy of Health Sciences"
+  ]
+}

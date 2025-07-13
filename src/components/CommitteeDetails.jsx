@@ -63,6 +63,7 @@ const CommitteeDetails = () => {
 
   const handleAddMember = () => {
     // Navigate to add member page or open modal
+    navigate(`/committee/${committeeId}/createMember`);
     console.log("Add member to committee:", committeeId);
   };
 

@@ -1,7 +1,8 @@
-// CreateCommitteeDialog.jsx
 import React, { useState, useEffect } from "react";
-import membersData from "./members.json";
+import membersData from "../utils/jsonData/members.json";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const roles = ["Coordinator", "Secretary", "Member"];
 
@@ -49,47 +50,56 @@ const CreateCommitteeDialog = () => {
       })),
     };
     console.log("Sending JSON:", JSON.stringify(payload, null, 2));
-    const response = await fetch(
-      "http://localhost:8080/api/createCommittee",
-
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-        credentials: "include",
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/createCommittee",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      console.log(response);
+      if (response.status === 200 || response.status === 201) {
+        navigate("/home");
+        toast.success("Committee created successfully!");
       }
-    );
-    console.log(response);
-    if (true) {
-      // response.ok
-      navigate("/home");
+    } catch (error) {
+      console.error("Submit error:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to create committee. Please try again."
+      );
     }
-    // onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-[600px] max-h-[90vh] overflow-y-auto shadow-lg">
-        <h2 className="text-xl font-semibold mb-4">Create Committee</h2>
+    <div className="fixed inset-0  flex items-center justify-center z-50">
+      {/* Outer border box with white background */}
+      <div className="bg-white text-black border-4 border-gray-800 rounded-lg p-6 w-[600px] max-h-[90vh] overflow-y-auto shadow-lg">
+        {/* Heading inside the border */}
+        <h2 className="text-2xl font-bold mb-6 text-center border-b border-gray-300 pb-3">
+          Create Committee
+        </h2>
 
         <input
-          className="w-full border p-2 mb-2"
+          className="w-full border border-gray-400 p-2 mb-2 rounded text-black"
           placeholder="Community Name"
           value={committeeName}
           onChange={(e) => setCommitteeName(e.target.value)}
         />
 
         <textarea
-          className="w-full border p-2 mb-2"
+          className="w-full border border-gray-400 p-2 mb-2 rounded text-black"
           placeholder="Community Description"
           value={committeeDescription}
           onChange={(e) => setCommitteeDescription(e.target.value)}
         ></textarea>
 
         <button
-          className="mb-2 px-3 py-1 bg-gray-200 rounded"
+          className="mb-2 px-3 py-1 bg-gray-200 rounded text-black"
           onClick={() => setShowSearchInput(!showSearchInput)}
         >
           {showSearchInput ? "Close Search" : "Search Member"}
@@ -97,7 +107,7 @@ const CreateCommitteeDialog = () => {
 
         {showSearchInput && (
           <input
-            className="w-full border p-2 mb-2"
+            className="w-full border border-gray-400 p-2 mb-2 rounded text-black"
             placeholder="Search Members"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -105,7 +115,7 @@ const CreateCommitteeDialog = () => {
         )}
 
         {searchTerm && (
-          <ul className="max-h-40 overflow-y-auto border rounded p-2 mb-2">
+          <ul className="max-h-40 overflow-y-auto border border-gray-400 rounded p-2 mb-2 text-black">
             {filteredMembers.map((member) => (
               <li
                 key={member.memberId}
@@ -127,7 +137,7 @@ const CreateCommitteeDialog = () => {
 
         <div className="flex gap-2 mb-2">
           <select
-            className="flex-1 border p-2"
+            className="flex-1 border border-gray-400 p-2 rounded text-black"
             value={selectedMemberId}
             onChange={(e) => setSelectedMemberId(e.target.value)}
           >
@@ -140,7 +150,7 @@ const CreateCommitteeDialog = () => {
           </select>
 
           <select
-            className="w-1/3 border p-2"
+            className="w-1/3 border border-gray-400 p-2 rounded text-black"
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
           >
@@ -157,13 +167,13 @@ const CreateCommitteeDialog = () => {
           </button>
         </div>
 
-        <ul className="mb-4">
+        <ul className="mb-4 text-black">
           {committeeMembership.map((m) => {
             const user = membersData.find((x) => x.memberId === m.memberId);
             return (
               <li
                 key={m.memberId}
-                className="border-b py-1 flex justify-between items-center"
+                className="border-b border-gray-300 py-1 flex justify-between items-center"
               >
                 <span>
                   {user.memberName} - {m.role}
@@ -181,13 +191,13 @@ const CreateCommitteeDialog = () => {
 
         <div className="flex justify-end gap-2">
           <button
-            className="bg-gray-300 px-4 py-2 rounded"
+            className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
             onClick={() => navigate("/home")}
           >
             Cancel
           </button>
           <button
-            className="bg-green-500 text-white px-4 py-2 rounded cursor-pointer"
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer"
             onClick={handleSubmit}
           >
             Submit

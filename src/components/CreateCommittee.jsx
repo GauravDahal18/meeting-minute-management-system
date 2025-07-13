@@ -41,25 +41,27 @@ const CreateCommitteeDialog = () => {
     const payload = {
       name: committeeName,
       description: committeeDescription,
-      memberships: committeeMembership.map(membership => ({
+      memberships: committeeMembership.map((membership) => ({
         member: {
-          id: membership.memberId
+          id: membership.memberId,
         },
-        role: membership.role.toUpperCase()
+        role: membership.role.toUpperCase(),
       })),
     };
     console.log("Sending JSON:", JSON.stringify(payload, null, 2));
-    // const reponse = await fetch(
-    //   "url-to-create-committee-endpoint", // Replace with actual endpoint
+    const response = await fetch(
+      "http://localhost:8080/api/createCommittee",
 
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(payload),
-    //   }
-    //);
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        credentials: "include",
+      }
+    );
+    console.log(response);
     if (true) {
       // response.ok
       navigate("/home");

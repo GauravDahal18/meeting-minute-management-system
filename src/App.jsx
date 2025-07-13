@@ -9,7 +9,10 @@ import Signup from "./pages/auth/Signup.jsx";
 import CommitteeDashboard from "./components/CommitteeDashboard.jsx";
 import CreateCommitteeDialog from "./components/CreateCommittee.jsx";
 import CommitteeDetails from "./components/CommitteeDetails.jsx";
+import CreateMeetingDialog from "./components/CreateMeeting.jsx";
 import { useAuth, AuthProvider } from "./context/AuthContext.jsx";
+
+import CommitteeLayout from "./Layouts/CommitteeLayout.jsx";
 import React, { useEffect } from "react";
 
 const ProtectedRoute = ({ children }) => {
@@ -44,28 +47,38 @@ function App() {
           <Route
             path="/home"
             element={
-              <ProtectedRoute>
-                <CommitteeDashboard />
-              </ProtectedRoute>
+              // <ProtectedRoute>
+              <CommitteeDashboard />
+              //</ProtectedRoute>
             }
           />
 
           <Route
             path="/home/createCommittee"
             element={
-              <ProtectedRoute>
-                <CreateCommitteeDialog />
-              </ProtectedRoute>
+              // <ProtectedRoute>
+              <CreateCommitteeDialog />
+              // </ProtectedRoute>
             }
           />
           <Route
             path="/committee/:committeeId"
             element={
               <ProtectedRoute>
-                <CommitteeDetails />
+                <CommitteeLayout />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<CommitteeDetails />} />
+            <Route
+              path="createMeeting"
+              element={
+                <ProtectedRoute>
+                  <CreateMeetingDialog />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
           <Route path="/" element={<HomeRedirector />} />
 
           <Route

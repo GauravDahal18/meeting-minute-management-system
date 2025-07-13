@@ -57,6 +57,7 @@ const CommitteeDetails = () => {
 
   const handleCreateMeeting = () => {
     // Navigate to create meeting page or open modal
+    navigate(`/committee/${committeeId}/createMeeting`);
     console.log("Create meeting for committee:", committeeId);
   };
 

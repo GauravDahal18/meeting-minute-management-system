@@ -6,8 +6,8 @@ import axios from "axios";
 
 const CreateMemberDialog = () => {
   const navigate = useNavigate();
-  const { communityId } = useParams();
-  console.log("Community ID:", communityId);
+  const { committeeId } = useParams();
+  console.log("Community ID", committeeId);
 
   const { roles, posts, institutions } = dropdownData;
 
@@ -51,7 +51,7 @@ const CreateMemberDialog = () => {
 
     try {
       const response = await axios.post(
-        `http://locahost:8080/api/createMember?committeeId=${communityId}`,
+        `http://locahost:8080/api/createMember?committeeId=${committeeId}`,
         payload,
         {
           headers: { "Content-Type": "application/json" },

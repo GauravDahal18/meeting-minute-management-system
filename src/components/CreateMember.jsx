@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import dropdownData from "../utils/jsonData/createMember.json";
+import axios from "axios";
 
 const CreateMemberDialog = () => {
   const navigate = useNavigate();
   const { communityId } = useParams();
+  console.log("Community ID:", communityId);
 
   const { roles, posts, institutions } = dropdownData;
 
@@ -48,12 +50,12 @@ const CreateMemberDialog = () => {
     };
 
     try {
-      const response = await fetch(
-        `/home/community/createMember?communitId=${communityId}`,
+      const response = await axios.post(
+        `http://locahost:8080/api/createMember?committeeId=${communityId}`,
+        payload,
         {
-          method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          withCredentials: true,
         }
       );
 
@@ -67,6 +69,7 @@ const CreateMemberDialog = () => {
         );
       }
     } catch (error) {
+      console.log(error);
       toast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);

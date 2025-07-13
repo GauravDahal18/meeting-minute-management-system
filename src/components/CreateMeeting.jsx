@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { getCommittees } from "../utils/GetAllCommittes";
 import { getCommitteeDetails } from "../utils/GetCommitteeMembers";
+import axios from "axios";
 
 const CreateMeetingDialog = () => {
   const navigate = useNavigate();
@@ -27,10 +28,6 @@ const CreateMeetingDialog = () => {
 
   const [loading, setLoading] = useState(true);
 
-  console.log("meeting attendees", attendees);
-  console.log("coordinatorId", coordinatorId);
-  console.log("decisions", decisions);
-
   useEffect(() => {
     (async () => {
       try {
@@ -48,7 +45,6 @@ const CreateMeetingDialog = () => {
       try {
         const data = await getCommitteeDetails(committeeId);
         const members = data?.mainBody?.members || [];
-        console.log("Committee members:", members);
         setAvailableMembers(
           members.map((m) => ({
             id: m.id ?? m.memberId ?? m.userId ?? Math.random(),
@@ -97,29 +93,24 @@ const CreateMeetingDialog = () => {
       heldPlace: meetingPlace.trim(),
       heldTime,
       coordinator: { id: Number(coordinatorId) },
-      attendees: attendees.map((a) => a.id),
+      attendees: attendees.map((a) => ({ id: a.id })),
       decisions: decisions
         .filter((d) => d.trim())
         .map((d) => ({ decision: d.trim() })),
     };
-
-    console.log("Meeting payload:", payload);
-
+    console.log("Creating meeting with payload:", payload);
     try {
-      const response = await fetch(
+      const response = await axios.post(
         `http://localhost:8080/api/committee/createMeeting?committeeId=${committeeId}`,
+        payload,
         {
-          method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify(payload),
+          withCredentials: true,
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const msg = errorData.message || "Failed to create meeting.";
-        throw new Error(msg);
+      if (response.status !== 200 && response.status !== 201) {
+        throw new Error("Failed to create meeting.");
       }
 
       toast.success("Meeting created successfully!");
@@ -137,16 +128,16 @@ const CreateMeetingDialog = () => {
   if (loading) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 text-white">
-      <div className="w-full max-w-5xl rounded-2xl bg-white p-6 shadow-lg dark:bg-neutral-900">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-white">
+      <div className="w-full max-w-5xl rounded-2xl border-4 border-gray-800 bg-white p-6 shadow-lg text-black">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">Create Meeting</h2>
+          <h2 className="text-2xl font-bold text-black">Create Meeting</h2>
           <button
             onClick={handleCancel}
             aria-label="Close"
-            className="rounded-full p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="rounded-full p-1 hover:bg-gray-200"
           >
-            <X size={20} />
+            <X size={20} className="text-black" />
           </button>
         </div>
 
@@ -155,24 +146,24 @@ const CreateMeetingDialog = () => {
           onSubmit={handleSubmit}
         >
           {/* Left: Members */}
-          <div className="border p-4 rounded-md dark:border-neutral-700 max-h-[32rem] overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-2 text-white">Members</h3>
+          <div className="border border-gray-400 p-4 rounded-md max-h-[32rem] overflow-y-auto text-black">
+            <h3 className="text-lg font-semibold mb-2 text-black">Members</h3>
             <ul className="space-y-2">
               {availableMembers.map((member) => {
                 const isAttendee = attendees.some((a) => a.id === member.id);
                 return (
                   <li
                     key={member.id}
-                    className="flex justify-between items-center text-white"
+                    className="flex justify-between items-center text-black"
                   >
                     <span>{member.name}</span>
                     {isAttendee ? (
                       <>
-                        <p className="text-green-500  ">Added</p>
+                        <p className="text-green-600">Added</p>
                         <button
                           type="button"
                           onClick={() => removeAttendee(member.id)}
-                          className="px-2 py-1  text-sm rounded hover:bg-red-600 "
+                          className="px-2 py-1 text-sm rounded hover:bg-red-600 text-black"
                         >
                           ❌
                         </button>
@@ -181,7 +172,7 @@ const CreateMeetingDialog = () => {
                       <button
                         type="button"
                         onClick={() => addAttendee(member.id)}
-                        className="px-2 py-1 bg-blue-500 text-sm rounded hover:bg-blue-600"
+                        className="px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
                       >
                         ADD
                       </button>
@@ -197,7 +188,7 @@ const CreateMeetingDialog = () => {
               required
               value={committeeId}
               onChange={() => {}}
-              className="w-full rounded-md border border-[#E5E7EB] px-3 py-2 dark:bg-neutral-800"
+              className="w-full rounded-md border border-gray-400 px-3 py-2 text-black"
               disabled
             >
               <option value="">-- Select committee --</option>
@@ -213,7 +204,7 @@ const CreateMeetingDialog = () => {
               placeholder="Meeting Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-md border border-[#E5E7EB] px-3 py-2 dark:bg-neutral-800"
+              className="w-full rounded-md border border-gray-400 px-3 py-2 text-black"
               required
             />
 
@@ -221,7 +212,7 @@ const CreateMeetingDialog = () => {
               placeholder="Meeting Description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-md border border-[#E5E7EB] px-3 py-2 dark:bg-neutral-800"
+              className="w-full rounded-md border border-gray-400 px-3 py-2 text-black"
               required
             />
 
@@ -230,14 +221,14 @@ const CreateMeetingDialog = () => {
               required
               value={meetingDate}
               onChange={(e) => setMeetingDate(e.target.value)}
-              className="w-full rounded-md border border-[#E5E7EB] px-3 py-2 dark:bg-neutral-800"
+              className="w-full rounded-md border border-gray-400 px-3 py-2 text-black"
             />
 
             <input
               type="time"
               value={heldTime}
               onChange={(e) => setHeldTime(e.target.value)}
-              className="w-full rounded-md border border-[#E5E7EB] px-3 py-2 dark:bg-neutral-800"
+              className="w-full rounded-md border border-gray-400 px-3 py-2 text-black"
               required
             />
 
@@ -246,7 +237,7 @@ const CreateMeetingDialog = () => {
               placeholder="Meeting Place"
               value={meetingPlace}
               onChange={(e) => setMeetingPlace(e.target.value)}
-              className="w-full rounded-md border border-[#E5E7EB] px-3 py-2 dark:bg-neutral-800"
+              className="w-full rounded-md border border-gray-400 px-3 py-2 text-black"
               required
             />
 
@@ -254,7 +245,7 @@ const CreateMeetingDialog = () => {
               required
               value={coordinatorId}
               onChange={(e) => setCoordinatorId(e.target.value)}
-              className="w-full rounded-md border border-[#E5E7EB] px-3 py-2 dark:bg-neutral-800"
+              className="w-full rounded-md border border-gray-400 px-3 py-2 text-black"
             >
               <option value="">-- Select coordinator --</option>
               {availableMembers.map((m) => (
@@ -266,7 +257,7 @@ const CreateMeetingDialog = () => {
 
             {/* Decisions */}
             <div>
-              <span className="mb-1 block text-sm font-medium text-white">
+              <span className="mb-1 block text-sm font-medium text-black">
                 Decisions
               </span>
               <div className="max-h-48 overflow-y-auto mb-2">
@@ -276,14 +267,14 @@ const CreateMeetingDialog = () => {
                     placeholder={`Decision ${idx + 1}`}
                     value={d}
                     onChange={(e) => updateDecision(idx, e.target.value)}
-                    className="mb-2 w-full rounded-md border border-[#E5E7EB] px-3 py-2 dark:bg-neutral-800"
+                    className="mb-2 w-full rounded-md border border-gray-400 px-3 py-2 text-black"
                   />
                 ))}
               </div>
               <button
                 type="button"
                 onClick={addDecisionRow}
-                className="flex items-center gap-1 text-sm font-medium text-[#0066FF] hover:underline"
+                className="flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline"
               >
                 <Plus size={16} /> Add another decision
               </button>
@@ -293,13 +284,13 @@ const CreateMeetingDialog = () => {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="rounded-md px-4 py-2 text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                className="rounded-md px-4 py-2 text-sm hover:bg-gray-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="rounded-md bg-[#0066FF] px-4 py-2 text-sm text-white hover:bg-[#0055d4]"
+                className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
               >
                 Save meeting
               </button>

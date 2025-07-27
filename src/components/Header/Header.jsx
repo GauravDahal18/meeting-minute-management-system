@@ -6,9 +6,9 @@ const Header = () => {
       <img
         src={ioeLogo}
         alt="IOE Pulchowk Campus Logo"
-        className="w-auto h-auto max-h-32 object-contain md:mr-6"
+        className="w-auto h-auto max-h-32 object-contain md:mr-12"
       />
-      <div className="text-center mt-4 md:mt-0">
+      <div className="text-center mt-6 md:mt-0">
         <h1 className="text-2xl font-bold text-gray-800">
           IOE Pulchowk Campus
         </h1>

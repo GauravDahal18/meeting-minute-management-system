@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import Header from "../../components/Header/Header.jsx";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -106,90 +107,97 @@ function Login() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-200">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">
-          Login
-        </h2>
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div>
-            <label
-              htmlFor="usernameInput"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Username
-            </label>
-            <input
-              type="text"
-              id="usernameInput"
-              placeholder="Enter username"
-              value={username}
-              onChange={(e) => {
-                setUsername(e.target.value);
-                setFormErrors((prev) => ({ ...prev, username: "" }));
-              }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {formErrors.username && (
-              <p className="text-red-500 text-sm mt-1">{formErrors.username}</p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="passwordInput"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Password
-            </label>
-            <div className="relative">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-200">
+      <Header />
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+          <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">
+            Login
+          </h2>
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label
+                htmlFor="usernameInput"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Username
+              </label>
               <input
-                type={showPassword ? "text" : "password"}
-                id="passwordInput"
-                placeholder="Enter password"
-                value={password}
+                type="text"
+                id="usernameInput"
+                placeholder="Enter username"
+                value={username}
                 onChange={(e) => {
-                  setPassword(e.target.value);
-                  setFormErrors((prev) => ({ ...prev, password: "" }));
+                  setUsername(e.target.value);
+                  setFormErrors((prev) => ({ ...prev, username: "" }));
                 }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {formErrors.username && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formErrors.username}
+                </p>
+              )}
+            </div>
+            <div>
+              <label
+                htmlFor="passwordInput"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="passwordInput"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setFormErrors((prev) => ({ ...prev, password: "" }));
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+              {formErrors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formErrors.password}
+                </p>
+              )}
+            </div>
+            {error && (
+              <p className="text-red-600 text-sm font-medium text-center">
+                {error}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200 disabled:opacity-50"
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+            <div className="text-sm text-center text-gray-600 mt-4">
+              Don't have an account?{" "}
               <button
                 type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                tabIndex={-1}
+                onClick={() => navigate("/signup")}
+                className="text-blue-600 hover:underline font-medium"
               >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                Sign up
               </button>
             </div>
-            {formErrors.password && (
-              <p className="text-red-500 text-sm mt-1">{formErrors.password}</p>
-            )}
-          </div>
-          {error && (
-            <p className="text-red-600 text-sm font-medium text-center">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200 disabled:opacity-50"
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-          <div className="text-sm text-center text-gray-600 mt-4">
-            Don't have an account?{" "}
-            <button
-              type="button"
-              onClick={() => navigate("/signup")}
-              className="text-blue-600 hover:underline font-medium"
-            >
-              Sign up
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

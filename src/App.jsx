@@ -15,6 +15,7 @@ import CreateMemberDialog from "./components/CreateMember.jsx";
 
 import CommitteeLayout from "./Layouts/CommitteeLayout.jsx";
 import React, { useEffect } from "react";
+import MemberDetails from "./components/MemberDetails.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isAuthLoading, checkAuthStatus } = useAuth();
@@ -89,6 +90,16 @@ function App() {
               }
             />
           </Route>
+
+          <Route
+            path="/member/:memberId"
+            element={
+              <ProtectedRoute>
+                <MemberDetails />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/" element={<HomeRedirector />} />
 
           <Route

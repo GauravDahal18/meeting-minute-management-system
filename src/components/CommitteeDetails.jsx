@@ -84,6 +84,10 @@ const CommitteeDetails = () => {
     console.log("Edit meeting:", meetingId);
   };
 
+  const handleViewMember = (memberId) => {
+    navigate(`/member/${memberId}`);
+  };
+
   const filteredMembers = members.filter(
     (member) =>
       `${member.firstName} ${member.lastName}`
@@ -200,7 +204,10 @@ const CommitteeDetails = () => {
                         key={member.memberId}
                         className="flex justify-between items-center p-2 hover:bg-gray-50 rounded"
                       >
-                        <div className="flex-1">
+                        <div
+                          className="flex-1 cursor-pointer"
+                          onClick={() => handleViewMember(member.memberId)}
+                        >
                           <div className="text-sm">
                             <span className="font-medium">
                               {index + 1}. {member.firstName} {member.lastName}

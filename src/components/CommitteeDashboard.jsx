@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, ArrowUpDown, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import  Header  from "../components/Header/Header.jsx";
 
 const CommitteeDashboard = () => {
   const [committees, setCommittees] = useState([]);
@@ -145,17 +146,9 @@ const CommitteeDashboard = () => {
 
   return (
     <div className="min-h-screen p-6 bg-gray-50">
-      <div className="flex justify-between items-center mb-6">
-        <button
-          onClick={logout}
-          className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-        >
-          <LogOut size={16} />
-          Logout
-        </button>
-      </div>
+     <Header showLogout={true} />
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">
           Committee Manager Dashboard
         </h1>

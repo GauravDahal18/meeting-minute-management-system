@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, ArrowUpDown, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import  Header  from "../components/Header/Header.jsx";
+import Header from "../components/Header/Header.jsx";
 
 const CommitteeDashboard = () => {
   const [committees, setCommittees] = useState([]);
@@ -146,34 +146,14 @@ const CommitteeDashboard = () => {
 
   return (
     <div className="min-h-screen p-6 bg-gray-50">
-     <Header showLogout={true} />
-
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">
           Committee Manager Dashboard
         </h1>
 
         <div className="border-2 rounded-lg p-6 mb-6 bg-white">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex gap-4 flex-wrap">
-              {committees.map((committee) => (
-                <div
-                  key={committee.id}
-                  onClick={() => handleCommitteeClick(committee)}
-                  className="border-2 rounded-lg p-4 w-64 h-32 cursor-pointer hover:shadow-lg transition-shadow bg-blue-50 hover:bg-blue-100 flex flex-col"
-                >
-                  <h3 className="text-sm font-semibold text-gray-800 mb-2 line-clamp-1">
-                    {committee.committeeName}
-                  </h3>
-                  <p className="text-xs text-gray-600 line-clamp-3 flex-1">
-                    {committee.committeeDescription ||
-                      "No description available"}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex flex-col gap-2">
+          <div className="flex justify-end items-center mb-4">
+            <div className="flex gap-2">
               <button
                 onClick={handleCreateCommittee}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -185,7 +165,7 @@ const CommitteeDashboard = () => {
               <div className="relative">
                 <button
                   onClick={toggleSortOptions}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors w-full"
+                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <ArrowUpDown size={16} />
                   Sort Committee
@@ -209,6 +189,23 @@ const CommitteeDashboard = () => {
                 )}
               </div>
             </div>
+          </div>
+
+          <div className="flex gap-4 flex-wrap">
+            {committees.map((committee) => (
+              <div
+                key={committee.id}
+                onClick={() => handleCommitteeClick(committee)}
+                className="border-2 rounded-lg p-4 w-64 h-32 cursor-pointer hover:shadow-lg transition-shadow bg-blue-50 hover:bg-blue-100 flex flex-col"
+              >
+                <h3 className="text-sm font-semibold text-gray-800 mb-2 line-clamp-1">
+                  {committee.committeeName}
+                </h3>
+                <p className="text-xs text-gray-600 line-clamp-3 flex-1">
+                  {committee.committeeDescription || "No description available"}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

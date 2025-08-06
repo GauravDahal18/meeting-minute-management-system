@@ -78,6 +78,11 @@ const CommitteeDetails = () => {
     const previewUrl = `http://localhost:8080/api/previewMeetingMinute?committeeId=${committeeId}&meetingId=${meetingId}&lang=en`;
     window.open(previewUrl, "_blank");
   };
+  const handleDownloadMeeting = (meetingId) => {
+    // opening meeting preview in new tab where the server serves html directly
+    const downloadUrl = `http://localhost:8080/api/previewMeetingMinute?committeeId=${committeeId}&meetingId=${meetingId}&lang=nepali&download=docx`;
+    window.open(downloadUrl, "_blank");
+  };
 
   const handleEditMeeting = (meetingId) => {
     // Navigate to edit meeting
@@ -100,7 +105,6 @@ const CommitteeDetails = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Header showLogout={true} />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">Loading committee details...</div>
         </div>
@@ -111,7 +115,6 @@ const CommitteeDetails = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
-        <Header showLogout={true} />
         <div className="flex-1 flex items-center justify-center p-6">
           <div className="max-w-4xl mx-auto">
             <div className="text-center">
@@ -137,7 +140,6 @@ const CommitteeDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header showLogout={true} />
 
       <div className="flex-1 p-6">
         <div className="max-w-6xl mx-auto">
@@ -290,6 +292,12 @@ const CommitteeDetails = () => {
                               className="px-2 py-1 bg-green-100 text-green-600 rounded text-xs hover:bg-green-200 transition-colors"
                             >
                               Edit
+                            </button>
+                             <button
+                              onClick={() => handleDownloadMeeting(meeting.id)}
+                              className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs hover:bg-blue-200 transition-colors"
+                            >
+                              Download Pdf
                             </button>
                           </div>
                         </div>

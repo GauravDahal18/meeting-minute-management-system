@@ -16,6 +16,8 @@ import CreateMemberDialog from "./components/CreateMember.jsx";
 import CommitteeLayout from "./Layouts/CommitteeLayout.jsx";
 import React, { useEffect } from "react";
 import MemberDetails from "./components/MemberDetails.jsx";
+import MainLayout from "./Layouts/mainLayout.jsx";
+
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isAuthLoading, checkAuthStatus } = useAuth();
@@ -44,72 +46,74 @@ function App() {
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/home"
-            element={
-              // <ProtectedRoute>
-              <CommitteeDashboard />
-              //</ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/home/createCommittee"
-            element={
-              // <ProtectedRoute>
-              <CreateCommitteeDialog />
-              // </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/committee/:committeeId"
-            element={
-              <ProtectedRoute>
-                <CommitteeLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<CommitteeDetails />} />
+          <Route path="/" element={<MainLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route
-              path="createMeeting"
+              path="/home"
               element={
-                <ProtectedRoute>
-                  <CreateMeetingDialog />
-                </ProtectedRoute>
+                // <ProtectedRoute>
+                <CommitteeDashboard />
+                //</ProtectedRoute>
               }
             />
 
             <Route
-              path="createMember"
+              path="/home/createCommittee"
+              element={
+                // <ProtectedRoute>
+                <CreateCommitteeDialog />
+                // </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/committee/:committeeId"
               element={
                 <ProtectedRoute>
-                  <CreateMemberDialog />
+                  <CommitteeLayout />
                 </ProtectedRoute>
+              }
+            >
+              <Route index element={<CommitteeDetails />} />
+              <Route
+                path="createMeeting"
+                element={
+                  <ProtectedRoute>
+                    <CreateMeetingDialog />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="createMember"
+                element={
+                  <ProtectedRoute>
+                    <CreateMemberDialog />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+
+            <Route
+              path="/member/:memberId"
+              element={
+                <ProtectedRoute>
+                  <MemberDetails />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="/" element={<HomeRedirector />} />
+
+            <Route
+              path="*"
+              element={
+                <h1 style={{ textAlign: "center", marginTop: "50px" }}>
+                  404 - Page Not Found
+                </h1>
               }
             />
           </Route>
-
-          <Route
-            path="/member/:memberId"
-            element={
-              <ProtectedRoute>
-                <MemberDetails />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route path="/" element={<HomeRedirector />} />
-
-          <Route
-            path="*"
-            element={
-              <h1 style={{ textAlign: "center", marginTop: "50px" }}>
-                404 - Page Not Found
-              </h1>
-            }
-          />
         </Routes>
       </AuthProvider>
     </Router>

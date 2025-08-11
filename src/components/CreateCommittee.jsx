@@ -3,12 +3,17 @@ import membersData from "../utils/jsonData/members.json";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 
 const roles = ["Coordinator", "Secretary", "Member"];
+const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const CreateCommitteeDialog = () => {
   const [committeeName, setCommitteeName] = useState("");
   const [committeeDescription, setCommitteeDescription] = useState("");
+  const [status, setStatus] = useState(statusOptions[0]);
+  const [maximumNumberOfMeetings, setMaximumNumberOfMeetings] = useState("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [selectedMemberId, setSelectedMemberId] = useState("");
@@ -39,16 +44,41 @@ const CreateCommitteeDialog = () => {
   };
 
   const handleSubmit = async () => {
+    // Basic validations
+    if (!committeeName.trim()) {
+      toast.error("Please enter a committee name");
+      return;
+    }
+    if (!committeeDescription.trim()) {
+      toast.error("Please enter a committee description");
+      return;
+    }
+    const maxMeetNum = Number(maximumNumberOfMeetings);
+    if (!Number.isInteger(maxMeetNum) || maxMeetNum <= 0) {
+      toast.error("Maximum number of meetings must be a positive integer");
+      return;
+    }
+    if (!statusOptions.includes(status)) {
+      toast.error("Invalid status selected");
+      return;
+    }
+
+    // Transform memberships to required map schema: { "memberId": "ROLE" }
+    const membersMap = {};
+    committeeMembership.forEach((m) => {
+      if (m.memberId) {
+        membersMap[String(m.memberId)] = m.role; // send as provided, backend expects strings like Chairperson/Member
+      }
+    });
+
     const payload = {
-      name: committeeName,
-      description: committeeDescription,
-      memberships: committeeMembership.map((membership) => ({
-        member: {
-          id: membership.memberId,
-        },
-        role: membership.role.toUpperCase(),
-      })),
+      name: committeeName.trim(),
+      description: committeeDescription.trim(),
+      status,
+      maximumNumberOfMeetings: maxMeetNum,
+      members: membersMap,
     };
+
     console.log("Sending JSON:", JSON.stringify(payload, null, 2));
     try {
       const response = await axios.post(
@@ -75,133 +105,214 @@ const CreateCommitteeDialog = () => {
     }
   };
 
+  const handleBackToCommittees = () => {
+    navigate("/home");
+  };
+
   return (
-    <div className="fixed inset-0  flex items-center justify-center z-50">
-      {/* Outer border box with white background */}
-      <div className="bg-white text-black border-4 border-gray-800 rounded-lg p-6 w-[600px] max-h-[90vh] overflow-y-auto shadow-lg">
-        {/* Heading inside the border */}
-        <h2 className="text-2xl font-bold mb-6 text-center border-b border-gray-300 pb-3">
-          Create Committee
-        </h2>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="flex-1 p-6">
+        <div className="max-w-2xl mx-auto">
+          <button
+            onClick={handleBackToCommittees}
+            className="flex items-center gap-2 mb-6 text-blue-600 hover:text-blue-800 transition-colors"
+          >
+            <ArrowLeft size={16} />
+            Back to Committees
+          </button>
 
-        <input
-          className="w-full border border-gray-400 p-2 mb-2 rounded text-black"
-          placeholder="Community Name"
-          value={committeeName}
-          onChange={(e) => setCommitteeName(e.target.value)}
-        />
+          <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 space-y-6">
+            <div className="border-b pb-3">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Create Committee
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Fill in the committee details and add members with roles.
+              </p>
+            </div>
 
-        <textarea
-          className="w-full border border-gray-400 p-2 mb-2 rounded text-black"
-          placeholder="Community Description"
-          value={committeeDescription}
-          onChange={(e) => setCommitteeDescription(e.target.value)}
-        ></textarea>
+            {/* Committee Details */}
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">
+                  Committee Name
+                </label>
+                <input
+                  className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., Technical Committee"
+                  value={committeeName}
+                  onChange={(e) => setCommitteeName(e.target.value)}
+                />
+              </div>
 
-        <button
-          className="mb-2 px-3 py-1 bg-gray-200 rounded text-black"
-          onClick={() => setShowSearchInput(!showSearchInput)}
-        >
-          {showSearchInput ? "Close Search" : "Search Member"}
-        </button>
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">
+                  Description
+                </label>
+                <textarea
+                  className="w-full border border-gray-300 p-2 rounded min-h-[90px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Handles all technical decisions and reviews"
+                  value={committeeDescription}
+                  onChange={(e) => setCommitteeDescription(e.target.value)}
+                />
+              </div>
 
-        {showSearchInput && (
-          <input
-            className="w-full border border-gray-400 p-2 mb-2 rounded text-black"
-            placeholder="Search Members"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-1 font-semibold text-gray-700">
+                    Status
+                  </label>
+                  <select
+                    className="w-full border border-gray-300 p-2 rounded bg-white"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    {statusOptions.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-        {searchTerm && (
-          <ul className="max-h-40 overflow-y-auto border border-gray-400 rounded p-2 mb-2 text-black">
-            {filteredMembers.map((member) => (
-              <li
-                key={member.memberId}
-                className="flex justify-between items-center py-1 hover:bg-gray-100 px-2"
+                <div>
+                  <label className="block mb-1 font-semibold text-gray-700">
+                    Maximum No. of Meetings
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="e.g., 12"
+                    value={maximumNumberOfMeetings}
+                    onChange={(e) => setMaximumNumberOfMeetings(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Member Search */}
+            <div className="space-y-3">
+              <button
+                className="px-3 py-2 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 text-sm"
+                onClick={() => setShowSearchInput(!showSearchInput)}
               >
-                <span>
-                  {member.memberName} ({member.collegeName})
-                </span>
-                <button
-                  className="bg-blue-500 text-white px-2 py-1 rounded text-sm"
-                  onClick={() => addMember(member.memberId)}
-                >
-                  Add
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+                {showSearchInput ? "Close Search" : "Search Member"}
+              </button>
 
-        <div className="flex gap-2 mb-2">
-          <select
-            className="flex-1 border border-gray-400 p-2 rounded text-black"
-            value={selectedMemberId}
-            onChange={(e) => setSelectedMemberId(e.target.value)}
-          >
-            <option value="">Select Member</option>
-            {membersData.map((member) => (
-              <option key={member.memberId} value={member.memberId}>
-                {member.memberName} ({member.collegeName})
-              </option>
-            ))}
-          </select>
+              {showSearchInput && (
+                <input
+                  className="w-full border border-gray-300 p-2 rounded"
+                  placeholder="Search members by name"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              )}
 
-          <select
-            className="w-1/3 border border-gray-400 p-2 rounded text-black"
-            value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value)}
-          >
-            {roles.map((role) => (
-              <option key={role}>{role}</option>
-            ))}
-          </select>
+              {searchTerm && (
+                <ul className="max-h-40 overflow-y-auto border border-gray-200 rounded p-2 text-sm">
+                  {filteredMembers.map((member) => (
+                    <li
+                      key={member.memberId}
+                      className="flex justify-between items-center py-1 px-2 hover:bg-gray-50 rounded"
+                    >
+                      <span>
+                        {member.memberName} ({member.collegeName})
+                      </span>
+                      <button
+                        className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
+                        onClick={() => addMember(member.memberId)}
+                      >
+                        Add
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
-          <button
-            className="bg-blue-500 text-white px-3 py-1 rounded"
-            onClick={() => addMember(Number(selectedMemberId))}
-          >
-            Add
-          </button>
-        </div>
-
-        <ul className="mb-4 text-black">
-          {committeeMembership.map((m) => {
-            const user = membersData.find((x) => x.memberId === m.memberId);
-            return (
-              <li
-                key={m.memberId}
-                className="border-b border-gray-300 py-1 flex justify-between items-center"
+            {/* Manual add and role */}
+            <div className="flex gap-2 items-center">
+              <select
+                className="flex-1 border border-gray-300 p-2 rounded"
+                value={selectedMemberId}
+                onChange={(e) => setSelectedMemberId(e.target.value)}
               >
-                <span>
-                  {user.memberName} - {m.role}
-                </span>
-                <button
-                  className="bg-red-500 text-white px-2 py-1 rounded text-sm"
-                  onClick={() => removeMember(m.memberId)}
-                >
-                  Remove
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                <option value="">Select Member</option>
+                {membersData.map((member) => (
+                  <option key={member.memberId} value={member.memberId}>
+                    {member.memberName} ({member.collegeName})
+                  </option>
+                ))}
+              </select>
 
-        <div className="flex justify-end gap-2">
-          <button
-            className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
-            onClick={() => navigate("/home")}
-          >
-            Cancel
-          </button>
-          <button
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 cursor-pointer"
-            onClick={handleSubmit}
-          >
-            Submit
-          </button>
+              <select
+                className="w-1/3 border border-gray-300 p-2 rounded"
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+              >
+                {roles.map((role) => (
+                  <option key={role}>{role}</option>
+                ))}
+              </select>
+
+              <button
+                className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700"
+                onClick={() => addMember(Number(selectedMemberId))}
+              >
+                Add
+              </button>
+            </div>
+
+            {/* Members list */}
+            <div>
+              <h3 className="font-semibold text-gray-700 mb-2">Members</h3>
+              <ul className="mb-2 divide-y divide-gray-200 border border-gray-200 rounded">
+                {committeeMembership.map((m) => {
+                  const user = membersData.find(
+                    (x) => x.memberId === m.memberId
+                  );
+                  return (
+                    <li
+                      key={m.memberId}
+                      className="py-2 px-3 flex justify-between items-center"
+                    >
+                      <span>
+                        {user?.memberName || m.memberId} - {m.role}
+                      </span>
+                      <button
+                        className="text-red-600 hover:text-red-700 text-sm"
+                        onClick={() => removeMember(m.memberId)}
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  );
+                })}
+                {committeeMembership.length === 0 && (
+                  <li className="py-3 px-3 text-sm text-gray-500">
+                    No members added yet
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                className="bg-gray-100 border border-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-200"
+                onClick={() => navigate("/home")}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                onClick={handleSubmit}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

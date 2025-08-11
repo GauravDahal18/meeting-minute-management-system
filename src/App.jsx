@@ -12,19 +12,30 @@ import CommitteeDetails from "./components/CommitteeDetails.jsx";
 import CreateMeetingDialog from "./components/CreateMeeting.jsx";
 import { useAuth, AuthProvider } from "./context/AuthContext.jsx";
 import CreateMemberDialog from "./components/CreateMember.jsx";
+import UpdateCommittee from "./components/UpdateCommittee.jsx";
 
 import CommitteeLayout from "./Layouts/CommitteeLayout.jsx";
 import React, { useEffect } from "react";
 import MemberDetails from "./components/MemberDetails.jsx";
-import MainLayout from "./Layouts/mainLayout.jsx";
-
+import MainLayout from "./Layouts/MainLayout.jsx";
+import UpdateMember from "./components/UpdateMember.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isAuthLoading, checkAuthStatus } = useAuth();
 
   useEffect(() => {
-    checkAuthStatus();
-  }, [checkAuthStatus]);
+    console.log("ProtectedRoute: useEffect triggered", {
+      isAuthenticated,
+      isAuthLoading,
+    });
+    // Only check auth status if we don't already know the user is authenticated
+    if (!isAuthenticated && !isAuthLoading) {
+      console.log("ProtectedRoute: Checking auth status");
+      checkAuthStatus();
+    }
+  }, [isAuthenticated, isAuthLoading, checkAuthStatus]);
+
+  console.log("ProtectedRoute: render", { isAuthenticated, isAuthLoading });
 
   if (isAuthLoading) {
     return (
@@ -77,20 +88,18 @@ function App() {
               <Route index element={<CommitteeDetails />} />
               <Route
                 path="createMeeting"
-                element={
-                  <ProtectedRoute>
-                    <CreateMeetingDialog />
-                  </ProtectedRoute>
-                }
+                element={<CreateMeetingDialog />}
+                key="createMeeting"
               />
-
               <Route
                 path="createMember"
-                element={
-                  <ProtectedRoute>
-                    <CreateMemberDialog />
-                  </ProtectedRoute>
-                }
+                element={<CreateMemberDialog />}
+                key="createMember"
+              />
+              <Route
+                path="edit"
+                element={<UpdateCommittee />}
+                key="editCommittee"
               />
             </Route>
 
@@ -99,6 +108,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MemberDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/member/:memberId/edit"
+              element={
+                <ProtectedRoute>
+                  <UpdateMember />
                 </ProtectedRoute>
               }
             />

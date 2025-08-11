@@ -1,34 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 import dropdownData from "../utils/jsonData/createMember.json";
 import axios from "axios";
 
 const CreateMemberDialog = () => {
   const navigate = useNavigate();
   const { committeeId } = useParams();
-  console.log("Community ID", committeeId);
 
-  const { roles, posts, institutions } = dropdownData;
+  const { posts } = dropdownData;
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [firstNameNepali, setFirstNameNepali] = useState("");
+  const [lastNameNepali, setLastNameNepali] = useState("");
   const [email, setEmail] = useState("");
-  const [qualification, setQualification] = useState("");
-  const [role, setRole] = useState(roles[0].value);
+  const [role, setRole] = useState("");
   const [post, setPost] = useState(posts[0]);
-  const [institution, setInstitution] = useState(institutions[0]);
+  const [institution, setInstitution] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showErrors, setShowErrors] = useState(false);
+
+  useEffect(() => {
+    console.log("CreateMember: Component mounted", { committeeId });
+    if (!committeeId) {
+      console.error("CreateMember: No committeeId provided");
+      navigate("/home");
+      return;
+    }
+    return () => {
+      console.log("CreateMember: Component unmounted");
+    };
+  }, [committeeId, navigate]);
+
+  console.log("CreateMember: Component rendering", { committeeId });
+
+  // Don't render if no committeeId
+  if (!committeeId) {
+    return null;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
+    const isMissing =
       !firstName.trim() ||
       !lastName.trim() ||
+      !firstNameNepali.trim() ||
+      !lastNameNepali.trim() ||
       !email.trim() ||
-      !qualification.trim()
-    ) {
+      !role.trim() ||
+      !institution.trim() ||
+      !post.trim();
+
+    if (isMissing) {
+      setShowErrors(true);
       toast.error("Please fill all required fields");
       return;
     }
@@ -38,20 +65,17 @@ const CreateMemberDialog = () => {
     const payload = {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
-      institution,
-      post,
-      qualification: qualification.trim(),
+      firstNameNepali: firstNameNepali.trim(),
+      lastNameNepali: lastNameNepali.trim(),
+      institution: institution.trim(),
+      post: post.trim(),
       email: email.trim(),
-      memberships: [
-        {
-          role,
-        },
-      ],
+      role: role.trim(),
     };
 
     try {
       const response = await axios.post(
-        `http://locahost:8080/api/createMember?committeeId=${committeeId}`,
+        `http://localhost:8080/api/createMember?committeeId=${committeeId}`,
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -59,14 +83,11 @@ const CreateMemberDialog = () => {
         }
       );
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         toast.success("Member created successfully! Redirecting...");
         navigate(-1);
       } else {
-        const errorData = await response.json();
-        toast.error(
-          errorData.message || "Failed to create member. Please try again."
-        );
+        toast.error("Failed to create member. Please try again.");
       }
     } catch (error) {
       console.log(error);
@@ -80,130 +101,182 @@ const CreateMemberDialog = () => {
     navigate(-1);
   };
 
+  const handleBackToCommittees = () => {
+    navigate("/home");
+  };
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white p-6">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md text-black border border-gray-700 rounded-lg p-6 shadow-lg"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">Create Member</h2>
-
-        {/* First Name & Last Name side by side */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="block mb-1 font-semibold">First Name</label>
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="w-full border border-gray-400 px-3 py-2 rounded"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block mb-1 font-semibold">Last Name</label>
-            <input
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="w-full border border-gray-400 px-3 py-2 rounded"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Email */}
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-400 px-3 py-2 rounded"
-            required
-          />
-        </div>
-
-        {/* Qualification */}
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold">Qualification</label>
-          <input
-            type="text"
-            value={qualification}
-            onChange={(e) => setQualification(e.target.value)}
-            className="w-full border border-gray-400 px-3 py-2 rounded"
-            required
-          />
-        </div>
-
-        {/* Institution Dropdown */}
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold">Institution</label>
-          <select
-            value={institution}
-            onChange={(e) => setInstitution(e.target.value)}
-            className="w-full border border-gray-400 px-3 py-2 rounded"
-          >
-            {institutions.map((inst) => (
-              <option key={inst} value={inst}>
-                {inst}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Post Dropdown */}
-        <div className="mb-4">
-          <label className="block mb-1 font-semibold">Post</label>
-          <select
-            value={post}
-            onChange={(e) => setPost(e.target.value)}
-            className="w-full border border-gray-400 px-3 py-2 rounded"
-          >
-            {posts.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Role Dropdown */}
-        <div className="mb-6">
-          <label className="block mb-1 font-semibold">Role</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="w-full border border-gray-400 px-3 py-2 rounded"
-          >
-            {roles.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Buttons */}
-        <div className="flex justify-between">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="flex-1 p-6">
+        <div className="max-w-2xl mx-auto">
           <button
-            type="button"
-            onClick={handleCancel}
-            className="px-4 py-2 border border-gray-600 rounded hover:bg-gray-200"
-            disabled={isLoading}
+            onClick={handleBackToCommittees}
+            className="flex items-center gap-2 mb-6 text-blue-600 hover:text-blue-800 transition-colors"
           >
-            Cancel
+            <ArrowLeft size={16} />
+            Back to Committees
           </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50"
-            disabled={isLoading}
-          >
-            {isLoading ? "Creating..." : "Create"}
-          </button>
+
+          <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+            <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+              Create Member
+            </h2>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* First Name & Last Name side by side */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-1 font-semibold text-gray-700">
+                    First Name (English)
+                  </label>
+                  <input
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="w-full border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter first name in English"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-1 font-semibold text-gray-700">
+                    Last Name (English)
+                  </label>
+                  <input
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="w-full border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter last name in English"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* First Name (Nepali) & Last Name (Nepali) side by side */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-1 font-semibold text-gray-700">
+                    First Name (Nepali) *
+                  </label>
+                  <input
+                    type="text"
+                    value={firstNameNepali}
+                    onChange={(e) => setFirstNameNepali(e.target.value)}
+                    className="w-full border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="राम"
+                    required
+                  />
+                  {showErrors && !firstNameNepali.trim() && (
+                    <p className="text-xs text-red-600 mt-1">
+                      Required for minute generation
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block mb-1 font-semibold text-gray-700">
+                    Last Name (Nepali) *
+                  </label>
+                  <input
+                    type="text"
+                    value={lastNameNepali}
+                    onChange={(e) => setLastNameNepali(e.target.value)}
+                    className="w-full border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="श्रेष्ठ"
+                    required
+                  />
+                  {showErrors && !lastNameNepali.trim() && (
+                    <p className="text-xs text-red-600 mt-1">
+                      Required for minute generation
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="ram.shrestha@example.com"
+                  required
+                />
+              </div>
+
+              {/* Institution - Typeable */}
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">
+                  Institution
+                </label>
+                <input
+                  type="text"
+                  value={institution}
+                  onChange={(e) => setInstitution(e.target.value)}
+                  className="w-full border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Pulchowk Campus, IOE"
+                  required
+                />
+              </div>
+
+              {/* Post - Typeable in Nepali */}
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">
+                  Post (Nepali)
+                </label>
+                <input
+                  type="text"
+                  value={post}
+                  onChange={(e) => setPost(e.target.value)}
+                  className="w-full border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="प्रोफेसर, डाक्टर"
+                  required
+                />
+              </div>
+
+              {/* Role - Typeable */}
+              <div>
+                <label className="block mb-1 font-semibold text-gray-700">
+                  Role
+                </label>
+                <input
+                  type="text"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Unique, Member, etc."
+                  required
+                />
+              </div>
+
+              {/* Buttons */}
+              <div className="flex justify-between pt-4">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="px-4 py-2 border border-gray-600 rounded hover:bg-gray-200 transition-colors"
+                  disabled={isLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50 transition-colors"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Creating..." : "Create"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

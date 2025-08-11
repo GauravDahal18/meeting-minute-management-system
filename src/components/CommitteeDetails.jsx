@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
-  LogOut,
   Plus,
   Search,
   Trash2,
@@ -10,13 +9,12 @@ import {
   Edit,
   UserPlus,
 } from "lucide-react";
-import { useAuth } from "../context/AuthContext.jsx";
-import Header from "./Header/Header.jsx";
+import { BASE_URL } from "../utils/constants.js";
+import { toast } from "react-toastify";
 
 const CommitteeDetails = () => {
   const { committeeId } = useParams();
   const navigate = useNavigate();
-  const { logout } = useAuth();
   const [committee, setCommittee] = useState(null);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +28,7 @@ const CommitteeDetails = () => {
     const fetchCommitteeDetails = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/getCommitteeDetails?committeeId=${committeeId}`,
+          `${BASE_URL}/api/getCommitteeDetails?committeeId=${committeeId}`,
           {
             method: "GET",
             credentials: "include",
@@ -39,7 +37,6 @@ const CommitteeDetails = () => {
 
         if (response.ok) {
           const data = await response.json();
-          // Extract committee and members from the nested structure
           setCommittee(data.mainBody);
           setMembers(data.mainBody.members || []);
         } else {
@@ -56,7 +53,6 @@ const CommitteeDetails = () => {
     fetchCommitteeDetails();
   }, [committeeId]);
 
-  // Debounced search function
   const debouncedSearch = useCallback(
     (() => {
       let timeoutId;
@@ -69,20 +65,17 @@ const CommitteeDetails = () => {
             setSearchResults([]);
             setShowSearchResults(false);
           }
-        }, 300); // 300ms delay
+        }, 300);
       };
     })(),
     []
   );
 
-  // Search members by name API call
   const searchMembersByName = async (name) => {
     setSearchLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:8080/api/searchMembersByName?name=${encodeURIComponent(
-          name
-        )}`,
+        `${BASE_URL}/api/searchMembersByName?name=${encodeURIComponent(name)}`,
         {
           method: "GET",
           credentials: "include",
@@ -91,17 +84,12 @@ const CommitteeDetails = () => {
 
       if (response.ok) {
         const data = await response.json();
-        // Filter out members that are already in the committee
-        console.log("Existing members structure:", members);
         const existingMemberIds = members.map(
           (member) => member.memberId || member.id
         );
-        console.log("Existing member IDs:", existingMemberIds);
-        console.log("Search results before filtering:", data.mainBody);
         const filteredResults = data.mainBody.filter(
           (member) => !existingMemberIds.includes(member.id)
         );
-        console.log("Filtered results:", filteredResults);
         setSearchResults(filteredResults);
         setShowSearchResults(true);
       } else {
@@ -116,7 +104,6 @@ const CommitteeDetails = () => {
     }
   };
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -128,14 +115,12 @@ const CommitteeDetails = () => {
     }
   };
 
-  // Clear search results
   const clearSearch = () => {
     setSearchTerm("");
     setSearchResults([]);
     setShowSearchResults(false);
   };
 
-  // Handle add member with selected role
   const handleAddMemberClick = (member, dropdownId) => {
     const dropdown = document.getElementById(dropdownId);
     const selectedRole = dropdown ? dropdown.value : "member";
@@ -147,35 +132,75 @@ const CommitteeDetails = () => {
   };
 
   const handleCreateMeeting = () => {
-    // Navigate to create meeting page or open modal
     navigate(`/committee/${committeeId}/createMeeting`);
-    console.log("Create meeting for committee:", committeeId);
   };
 
   const handleAddMember = () => {
-    // Navigate to add member page or open modal
     navigate(`/committee/${committeeId}/createMember`);
-    console.log("Add member to committee:", committeeId);
   };
 
   const handleDeleteMember = (memberId) => {
-    // Delete member logic
     console.log("Delete member:", memberId);
   };
 
-  const handleViewMeeting = (meetingId) => {
-    // opening meeting preview in new tab where the server serves html directly
-    const previewUrl = `http://localhost:8080/api/previewMeetingMinute?committeeId=${committeeId}&meetingId=${meetingId}&lang=en`;
-    window.open(previewUrl, "_blank");
+  const handleViewMeeting = async (meetingId) => {
+    const previewUrl = `${BASE_URL}/api/previewMeetingMinute?committeeId=${committeeId}&meetingId=${meetingId}`;
+    try {
+      const response = await fetch(previewUrl, {
+        method: "GET",
+        credentials: "include",
+        headers: { Accept: "text/html" },
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        toast.error(data?.message || "Failed to open preview");
+        return;
+      }
+      const html = await response.text();
+      const win = window.open("", "_blank");
+      if (win) {
+        win.document.open();
+        win.document.write(html);
+        win.document.close();
+      } else {
+        const blob = new Blob([html], { type: "text/html" });
+        const blobUrl = URL.createObjectURL(blob);
+        window.location.href = blobUrl;
+      }
+    } catch (e) {
+      console.error("Preview error:", e);
+      toast.error("Unable to open preview");
+    }
   };
-  const handleDownloadMeeting = (meetingId) => {
-    // opening meeting preview in new tab where the server serves html directly
-    const downloadUrl = `http://localhost:8080/api/previewMeetingMinute?committeeId=${committeeId}&meetingId=${meetingId}&lang=nepali&download=docx`;
-    window.open(downloadUrl, "_blank");
+
+  const handleDownloadMeeting = async (meetingId) => {
+    const downloadUrl = `${BASE_URL}/api/previewMeetingMinute?committeeId=${committeeId}&meetingId=${meetingId}&lang=nepali&download=docx`;
+    try {
+      const response = await fetch(downloadUrl, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        toast.error(data?.message || "Failed to download file");
+        return;
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `meeting_${meetingId}.docx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Download error:", e);
+      toast.error("Unable to download file");
+    }
   };
 
   const handleEditMeeting = (meetingId) => {
-    // Navigate to edit meeting
     console.log("Edit meeting:", meetingId);
   };
 
@@ -183,11 +208,10 @@ const CommitteeDetails = () => {
     navigate(`/member/${memberId}`);
   };
 
-  // Add member to committee
   const handleAddMemberToCommittee = async (member, role) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/addMembersToCommittee?committeeId=${committeeId}`,
+        `${BASE_URL}/api/addMembersToCommittee?committeeId=${committeeId}`,
         {
           method: "POST",
           headers: {
@@ -204,9 +228,8 @@ const CommitteeDetails = () => {
       );
 
       if (response.ok) {
-        // Refresh committee details to get updated member list
         const committeeResponse = await fetch(
-          `http://localhost:8080/api/getCommitteeDetails?committeeId=${committeeId}`,
+          `${BASE_URL}/api/getCommitteeDetails?committeeId=${committeeId}`,
           {
             method: "GET",
             credentials: "include",
@@ -219,10 +242,8 @@ const CommitteeDetails = () => {
           setMembers(data.mainBody.members || []);
         }
 
-        // Remove the added member from search results
         setSearchResults((prev) => prev.filter((m) => m.id !== member.id));
 
-        // Clear search if no more results
         if (searchResults.length === 1) {
           setShowSearchResults(false);
           setSearchTerm("");
@@ -282,7 +303,6 @@ const CommitteeDetails = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-
       <div className="flex-1 p-6">
         <div className="max-w-6xl mx-auto">
           <button
@@ -301,13 +321,21 @@ const CommitteeDetails = () => {
                   {committee.name}
                 </h1>
                 <p className="text-gray-600 mb-4">{committee.description}</p>
-                <div className="text-sm text-gray-500">
-                  Created:{" "}
-                  {new Date(
-                    committee.createdDate[0],
-                    committee.createdDate[1] - 1,
-                    committee.createdDate[2]
-                  ).toLocaleDateString()}
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  <div>
+                    Created:{" "}
+                    {new Date(
+                      committee.createdDate[0],
+                      committee.createdDate[1] - 1,
+                      committee.createdDate[2]
+                    ).toLocaleDateString()}
+                  </div>
+                  <button
+                    onClick={() => navigate(`/committee/${committeeId}/edit`)}
+                    className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors text-sm"
+                  >
+                    Edit Committee
+                  </button>
                 </div>
               </div>
 
@@ -549,7 +577,7 @@ const CommitteeDetails = () => {
                             >
                               Edit
                             </button>
-                             <button
+                            <button
                               onClick={() => handleDownloadMeeting(meeting.id)}
                               className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs hover:bg-blue-200 transition-colors"
                             >

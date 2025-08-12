@@ -14,15 +14,36 @@ const CreateMeetingDialog = () => {
   const { committeeId } = useParams();
   const { isAuthenticated, isAuthLoading } = useAuth();
 
+  // const [meetingDate, setMeetingDate] = useState(
+  //   format(new Date(), "yyyy-MM-dd")
+  // );
+  // const [heldTime, setHeldTime] = useState("14:30:00");
+  // const [meetingPlace, setMeetingPlace] = useState("");
+  // const [title, setTitle] = useState("");
+  // const [description, setDescription] = useState("");
+  // const [decisions, setDecisions] = useState([""]);
+  // const [agenda, setAgenda] = useState([""]);
+
   const [meetingDate, setMeetingDate] = useState(
     format(new Date(), "yyyy-MM-dd")
   );
   const [heldTime, setHeldTime] = useState("14:30:00");
-  const [meetingPlace, setMeetingPlace] = useState("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [decisions, setDecisions] = useState([""]);
-  const [agenda, setAgenda] = useState([""]);
+  const [meetingPlace, setMeetingPlace] = useState(
+    "काठमाडौं विश्वविद्यालय, धुलिखेल"
+  );
+  const [title, setTitle] = useState("वार्षिक योजना बैठक");
+  const [description, setDescription] = useState(
+    "यो बैठकमा आगामी वर्षको कार्यक्रम र बजेट योजना बारे छलफल गरिनेछ।"
+  );
+  const [decisions, setDecisions] = useState([
+    "आगामी वर्षको बजेट स्वीकृत गर्ने",
+    "नयाँ सदस्य भर्ती प्रक्रिया सुरु गर्ने",
+  ]);
+  const [agenda, setAgenda] = useState([
+    "वार्षिक कार्ययोजना प्रस्तुत गर्नु",
+    "बजेट र स्रोतको समीक्षा",
+    "नयाँ कार्यक्रम प्रस्ताव",
+  ]);
 
   const [allCommittees, setAllCommittees] = useState([]);
   const [availableMembers, setAvailableMembers] = useState([]);

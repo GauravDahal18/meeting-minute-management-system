@@ -30,17 +30,28 @@ const CreateMemberDialog = () => {
     "Event Manager",
   ];
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [firstNameNepali, setFirstNameNepali] = useState("");
-  const [lastNameNepali, setLastNameNepali] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
-  const [customRole, setCustomRole] = useState("");
-  const [post, setPost] = useState(posts[0]);
-  const [institution, setInstitution] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showErrors, setShowErrors] = useState(false);
+  // const [firstName, setFirstName] = useState("");
+  // const [lastName, setLastName] = useState("");
+  // const [firstNameNepali, setFirstNameNepali] = useState("");
+  // const [lastNameNepali, setLastNameNepali] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [role, setRole] = useState("");
+  // const [customRole, setCustomRole] = useState("");
+  // const [post, setPost] = useState(posts[0]);
+  // const [institution, setInstitution] = useState("");
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [showErrors, setShowErrors] = useState(false);
+const [firstName, setFirstName] = useState("Gaurav");
+const [lastName, setLastName] = useState("Dahal");
+const [firstNameNepali, setFirstNameNepali] = useState("गौरव");
+const [lastNameNepali, setLastNameNepali] = useState("दाहाल");
+const [email, setEmail] = useState("gaurav.dahal@example.com");
+const [role, setRole] = useState("Member");
+const [customRole, setCustomRole] = useState("");
+const [post, setPost] = useState(posts[0]);
+const [institution, setInstitution] = useState("Kathmandu University");
+const [isLoading, setIsLoading] = useState(false);
+const [showErrors, setShowErrors] = useState(false); 
 
   useEffect(() => {
     console.log("CreateMember: Component mounted", { committeeId });

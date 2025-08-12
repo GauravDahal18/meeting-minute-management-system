@@ -25,11 +25,15 @@ const roles = [
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const CreateCommitteeDialog = () => {
-  const [committeeName, setCommitteeName] = useState("");
-  const [committeeDescription, setCommitteeDescription] = useState("");
-  const [status, setStatus] = useState(statusOptions[0]);
-  const [maximumNumberOfMeetings, setMaximumNumberOfMeetings] = useState("");
+  // const [committeeName, setCommitteeName] = useState("");
+  // const [committeeDescription, setCommitteeDescription] = useState("");
+  // const [status, setStatus] = useState(statusOptions[0]);
+  // const [maximumNumberOfMeetings, setMaximumNumberOfMeetings] = useState("");
 
+  const [committeeName, setCommitteeName] = useState("Central Planning Committee");
+const [committeeDescription, setCommitteeDescription] = useState("Responsible for overseeing strategic development and coordination of all subcommittees.");
+const [status, setStatus] = useState(statusOptions[0]); // e.g., "Active"
+const [maximumNumberOfMeetings, setMaximumNumberOfMeetings] = useState("12");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const [selectedRole, setSelectedRole] = useState(roles[0]);
@@ -37,6 +41,8 @@ const CreateCommitteeDialog = () => {
   const [roleError, setRoleError] = useState("");
 
   const [membersData, setMembersData] = useState([]);
+
+  
 
   const navigate = useNavigate();
 

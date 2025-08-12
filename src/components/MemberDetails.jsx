@@ -8,8 +8,6 @@ import {
   Building,
   User,
   Eye,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 
 const MemberDetails = () => {
@@ -18,7 +16,7 @@ const MemberDetails = () => {
   const [member, setMember] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [expandedCommittees, setExpandedCommittees] = useState(new Set());
+  const [selectedCommittee, setSelectedCommittee] = useState(null);
 
   useEffect(() => {
     const fetchMemberDetails = async () => {
@@ -56,14 +54,8 @@ const MemberDetails = () => {
     navigate("/home");
   };
 
-  const toggleCommitteeExpansion = (committeeId) => {
-    const newExpanded = new Set(expandedCommittees);
-    if (newExpanded.has(committeeId)) {
-      newExpanded.delete(committeeId);
-    } else {
-      newExpanded.add(committeeId);
-    }
-    setExpandedCommittees(newExpanded);
+  const handleCommitteeSelect = (committeeData) => {
+    setSelectedCommittee(committeeData);
   };
 
   const handleViewMeeting = (committeeId, meetingId) => {
@@ -159,14 +151,14 @@ const MemberDetails = () => {
                   <div className="flex items-center gap-3">
                     <Award size={20} className="text-gray-500" />
                     <div>
-                      <p className="text-sm text-gray-500">Qualification</p>
-                      <p className="font-medium">{member.qualification}</p>
+                      <p className="text-sm text-gray-500">Post</p>
+                      <p className="font-medium">{member.post}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Committees and Meetings Section */}
+              
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <Users size={24} className="text-blue-600" />
@@ -177,116 +169,145 @@ const MemberDetails = () => {
 
                 {member.committeeWithMeetings &&
                 member.committeeWithMeetings.length > 0 ? (
-                  <div className="space-y-4">
-                    {member.committeeWithMeetings.map((committeeData) => (
-                      <div
-                        key={committeeData.committeeInfo.id}
-                        className="border border-gray-200 rounded-lg overflow-hidden"
-                      >
-                        {/* Committee Header */}
-                        <div
-                          className="bg-gray-50 p-4 cursor-pointer hover:bg-gray-100 transition-colors"
-                          onClick={() =>
-                            toggleCommitteeExpansion(
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                   
+                    <div className="border border-gray-200 rounded-lg">
+                      <div className="bg-gray-50 p-4 border-b border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          Committees ({member.committeeWithMeetings.length})
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          
+                        </p>
+                      </div>
+                      <div className="p-2 space-y-2 max-h-96 overflow-y-auto">
+                        {member.committeeWithMeetings.map((committeeData) => (
+                          <div
+                            key={committeeData.committeeInfo.id}
+                            className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                              selectedCommittee?.committeeInfo.id ===
                               committeeData.committeeInfo.id
-                            )
-                          }
-                        >
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <h3 className="text-lg font-semibold text-gray-800">
-                                {committeeData.committeeInfo.committeeName}
-                              </h3>
-                              <p className="text-sm text-gray-600 mt-1">
-                                {
-                                  committeeData.committeeInfo
-                                    .committeeDescription
-                                }
-                              </p>
-                              <div className="flex items-center gap-4 mt-2">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                  {committeeData.committeeInfo.role}
-                                </span>
-                                <span className="text-sm text-gray-500">
-                                  {committeeData.meetingInfos.length} meeting(s)
-                                </span>
+                                ? "bg-blue-50 border-blue-200 shadow-sm"
+                                : "bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                            }`}
+                            onClick={() => handleCommitteeSelect(committeeData)}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-gray-800 mb-1">
+                                  {committeeData.committeeInfo.committeeName}
+                                </h4>
+                                <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                                  {
+                                    committeeData.committeeInfo
+                                      .committeeDescription
+                                  }
+                                </p>
+                                <div className="flex items-center gap-2">
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {committeeData.committeeInfo.role}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    {committeeData.meetingInfos.length}{" "}
+                                    meeting(s)
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {expandedCommittees.has(
-                                committeeData.committeeInfo.id
-                              ) ? (
-                                <ChevronUp
-                                  size={20}
-                                  className="text-gray-500"
-                                />
-                              ) : (
-                                <ChevronDown
-                                  size={20}
-                                  className="text-gray-500"
-                                />
+                              {selectedCommittee?.committeeInfo.id ===
+                                committeeData.committeeInfo.id && (
+                                <div className="ml-2 w-2 h-2 bg-blue-500 rounded-full"></div>
                               )}
                             </div>
                           </div>
-                        </div>
+                        ))}
+                      </div>
+                    </div>
 
-                        {/* Meetings List */}
-                        {expandedCommittees.has(
-                          committeeData.committeeInfo.id
-                        ) && (
-                          <div className="p-4 bg-white">
-                            <h4 className="text-md font-medium text-gray-800 mb-3">
-                              Attended Meetings
-                            </h4>
-                            <div className="space-y-3">
-                              {committeeData.meetingInfos.map((meeting) => (
+                    
+                    <div className="border border-gray-200 rounded-lg">
+                      <div className="bg-gray-50 p-4 border-b border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          Meeting(s)
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {selectedCommittee
+                            ? `${selectedCommittee.meetingInfos.length} meeting(s) attended`
+                            : ""}
+                        </p>
+                      </div>
+                      <div className="p-4">
+                        {selectedCommittee ? (
+                          selectedCommittee.meetingInfos.length > 0 ? (
+                            <div className="space-y-4 max-h-96 overflow-y-auto">
+                              {selectedCommittee.meetingInfos.map((meeting) => (
                                 <div
                                   key={meeting.id}
-                                  className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow"
+                                  className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow bg-white"
                                 >
                                   <div className="flex justify-between items-start">
                                     <div className="flex-1">
                                       <h5 className="font-medium text-gray-800 mb-1">
                                         {meeting.meetingTitle}
                                       </h5>
-                                      <p className="text-sm text-gray-600 mb-2">
+                                      <p className="text-sm text-gray-600 mb-3">
                                         {meeting.meetingDescription}
                                       </p>
-                                      <div className="flex items-center gap-2">
-                                        <Calendar
-                                          size={14}
-                                          className="text-gray-400"
-                                        />
-                                        <span className="text-xs text-gray-500">
-                                          Meeting ID: {meeting.id}
-                                        </span>
+                                      <div className="flex items-center gap-3">
+                                        <div className="flex items-center gap-1">
+                                          <Calendar
+                                            size={14}
+                                            className="text-gray-400"
+                                          />
+                                          <span className="text-xs text-gray-500">
+                                            ID: {meeting.id}
+                                          </span>
+                                        </div>
+                                       
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        Attended
-                                      </span>
-                                      <button
-                                        onClick={() =>
-                                          handleViewMeeting(
-                                            committeeData.committeeInfo.id,
-                                            meeting.id
-                                          )
-                                        }
-                                        className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-600 rounded text-sm hover:bg-blue-200 transition-colors"
-                                      >
-                                        <Eye size={14} />
-                                        View
-                                      </button>
-                                    </div>
+                                    <button
+                                      onClick={() =>
+                                        handleViewMeeting(
+                                          selectedCommittee.committeeInfo.id,
+                                          meeting.id
+                                        )
+                                      }
+                                      className="flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-600 rounded-lg text-sm hover:bg-blue-200 transition-colors ml-3"
+                                    >
+                                      <Eye size={14} />
+                                      View
+                                    </button>
                                   </div>
                                 </div>
                               ))}
                             </div>
+                          ) : (
+                            <div className="text-center py-8">
+                              <Calendar
+                                size={48}
+                                className="text-gray-300 mx-auto mb-4"
+                              />
+                              <p className="text-gray-500">No meetings found</p>
+                              <p className="text-gray-400 text-sm">
+                                No meetings attended in this committee yet.
+                              </p>
+                            </div>
+                          )
+                        ) : (
+                          <div className="text-center py-12">
+                            <Users
+                              size={48}
+                              className="text-gray-300 mx-auto mb-4"
+                            />
+                            <p className="text-gray-500">Select a Committee</p>
+                            <p className="text-gray-400 text-sm">
+                              Click on a committee from the left panel to view
+                              attended meetings.
+                            </p>
                           </div>
                         )}
                       </div>
-                    ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-8">

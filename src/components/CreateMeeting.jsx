@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { X, Plus, ArrowLeft } from "lucide-react";
+import { X, Plus, ArrowLeft, Search } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -26,9 +26,21 @@ const CreateMeetingDialog = () => {
 
   const [allCommittees, setAllCommittees] = useState([]);
   const [availableMembers, setAvailableMembers] = useState([]);
+  // newly added
+  const [allMembers, setAllMembers] = useState([]);
+  const [invitees, setInvitees] = useState([]);
   const [attendees, setAttendees] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedInviteeId, setSelectedInviteeId] = useState("");
 
   const [loading, setLoading] = useState(true);
+
+  console.log(
+    "inviteee ids:",
+    invitees.map((i) => i.id)
+  );
+
+  console.log("invitees are:", invitees);
 
   useEffect(() => {
     console.log("CreateMeeting: Component mounted", { committeeId });
@@ -46,8 +58,18 @@ const CreateMeetingDialog = () => {
     (async () => {
       try {
         setAllCommittees(await getCommittees());
+
+        // Fetch all members for invitees
+        const response = await axios.get(
+          "http://localhost:8080/api/getAllMembers",
+          { withCredentials: true }
+        );
+        if (response.status === 200) {
+          console.log("All members fetched:", response.data.mainBody);
+          setAllMembers(response.data.mainBody);
+        }
       } catch (err) {
-        console.error("Failed to load committees:", err);
+        console.error("Failed to load committees or members:", err);
       }
     })();
   }, []);
@@ -63,6 +85,7 @@ const CreateMeetingDialog = () => {
           members.map((m) => ({
             id: m.id ?? m.memberId ?? m.userId ?? Math.random(),
             name: `${m.firstName} ${m.lastName}`,
+            role: m.role || "",
           }))
         );
       } catch (err) {
@@ -72,6 +95,36 @@ const CreateMeetingDialog = () => {
       }
     })();
   }, [committeeId]);
+
+  // Calculate invitees (all members minus committee members)
+  useEffect(() => {
+    if (allMembers.length > 0 && availableMembers.length > 0) {
+      const committeeMemberIds = availableMembers.map((m) => m.id);
+      const availableInvitees = allMembers
+        .filter((member) => {
+          const memberId = member.id ?? member.memberId ?? member.userId;
+          return !committeeMemberIds.includes(memberId);
+        })
+        .map((m) => ({
+          id: m.id ?? m.memberId ?? m.userId ?? Math.random(),
+          name: `${m.firstName} ${m.lastName}`,
+          role: m.role || "",
+        }));
+      setInvitees(availableInvitees);
+    }
+  }, [allMembers, availableMembers]);
+
+  // Filter invitees based on search term
+  const filteredInvitees = invitees.filter((member) =>
+    member.name.toLowerCase().startsWith(searchTerm.toLowerCase())
+  );
+
+  // Auto-select first invitee when searching
+  useEffect(() => {
+    if (searchTerm && filteredInvitees.length > 0) {
+      setSelectedInviteeId(filteredInvitees[0].id);
+    }
+  }, [searchTerm, filteredInvitees]);
 
   console.log("CreateMeeting: Component rendering", { committeeId });
 
@@ -99,6 +152,12 @@ const CreateMeetingDialog = () => {
 
   const removeAttendee = (id) =>
     setAttendees((prev) => prev.filter((a) => a.id !== id));
+
+  const addInvitee = (id) => {
+    addAttendee(id);
+    setSearchTerm("");
+    setSelectedInviteeId("");
+  };
 
   // Test authentication status
   const testAuth = async () => {
@@ -260,24 +319,40 @@ const CreateMeetingDialog = () => {
               className="grid grid-cols-1 lg:grid-cols-2 gap-8"
               onSubmit={handleSubmit}
             >
-              {/* Left: Members Selection */}
+              {/* Left: Invitees Selection */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                  Select Attendees
+                  Select Invitees
                 </h3>
-                <div className="border border-gray-200 rounded-lg p-4 max-h-[32rem] overflow-y-auto">
+
+                {/* Search Box */}
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search invitees..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Invitees List */}
+                <div className="border border-gray-200 rounded-lg p-4 max-h-64 overflow-y-auto">
                   <ul className="space-y-3">
-                    {availableMembers.map((member) => {
+                    {filteredInvitees.map((invitee) => {
                       const isAttendee = attendees.some(
-                        (a) => a.id === member.id
+                        (a) => a.id === invitee.id
                       );
                       return (
                         <li
-                          key={member.id}
+                          key={invitee.id}
                           className="flex justify-between items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                         >
                           <span className="text-gray-700 font-medium">
-                            {member.name}
+                            {invitee.name}
                           </span>
                           {isAttendee ? (
                             <div className="flex items-center gap-2">
@@ -286,16 +361,16 @@ const CreateMeetingDialog = () => {
                               </span>
                               <button
                                 type="button"
-                                onClick={() => removeAttendee(member.id)}
+                                onClick={() => removeAttendee(invitee.id)}
                                 className="px-2 py-1 text-sm rounded hover:bg-red-100 text-red-600 transition-colors"
                               >
-                                ❌
+                                Remove
                               </button>
                             </div>
                           ) : (
                             <button
                               type="button"
-                              onClick={() => addAttendee(member.id)}
+                              onClick={() => addInvitee(invitee.id)}
                               className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
                             >
                               ADD
@@ -304,7 +379,112 @@ const CreateMeetingDialog = () => {
                         </li>
                       );
                     })}
+                    {filteredInvitees.length === 0 && searchTerm && (
+                      <li className="text-gray-500 text-center py-4">
+                        No invitees found matching "{searchTerm}"
+                      </li>
+                    )}
+                    {filteredInvitees.length === 0 && !searchTerm && (
+                      <li className="text-gray-500 text-center py-4">
+                        All external members are already committee members
+                      </li>
+                    )}
                   </ul>
+                </div>
+
+                {/* Added Attendees Display */}
+                {attendees.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-md font-medium text-gray-600 border-b pb-2 mb-3">
+                      Added Invitees
+                    </h4>
+                    <div className="border border-gray-100 rounded-lg p-3 max-h-32 overflow-y-auto">
+                      <ul className="space-y-1">
+                        {attendees.map((attendee) => {
+                          // Find the attendee's name from either committee members or invitees
+                          const committeeMember = availableMembers.find(
+                            (m) => m.id === attendee.id
+                          );
+                          const inviteeMember = invitees.find(
+                            (m) => m.id === attendee.id
+                          );
+                          const attendeeName =
+                            committeeMember?.name ||
+                            inviteeMember?.name ||
+                            "Unknown";
+
+                          return (
+                            <li
+                              key={attendee.id}
+                              className="flex justify-between items-center py-1 px-2"
+                            >
+                              <span className="text-gray-700 font-normal text-sm">
+                                {attendeeName}
+                              </span>
+                              <span
+                                onClick={() => removeAttendee(attendee.id)}
+                                className="cursor-pointer text-red-600 hover:text-red-800 transition-colors"
+                              >
+                                Remove
+                              </span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
+                {/* Committee Members Display */}
+                <div className="mt-6">
+                  <h4 className="text-md font-medium text-gray-600 border-b pb-2 mb-3">
+                    Committee Members
+                  </h4>
+                  <div className="border border-gray-100 rounded-lg p-3 max-h-48 overflow-y-auto bg-gray-50">
+                    <ul className="space-y-1">
+                      {availableMembers.map((member) => {
+                        const isAttendee = attendees.some(
+                          (a) => a.id === member.id
+                        );
+                        return (
+                          <li
+                            key={member.id}
+                            className="flex justify-between items-center py-1 px-2"
+                          >
+                            <div className="flex justify-between items-center flex-1">
+                              <span className="text-gray-500 font-normal text-sm">
+                                {member.name}
+                              </span>
+                              {member.role && (
+                                <span className="text-gray-400 font-normal text-xs">
+                                  {member.role}
+                                </span>
+                              )}
+                            </div>
+                            {isAttendee && (
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-600 text-xs font-medium">
+                                  Added
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeAttendee(member.id)}
+                                  className="px-1 py-0.5 text-xs rounded hover:bg-red-100 text-red-600 transition-colors"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            )}
+                          </li>
+                        );
+                      })}
+                      {availableMembers.length === 0 && (
+                        <li className="text-gray-400 text-center py-4 text-sm">
+                          No committee members found
+                        </li>
+                      )}
+                    </ul>
+                  </div>
                 </div>
               </div>
 

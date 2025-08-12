@@ -6,14 +6,14 @@ import { toast } from "react-toastify";
 import { ArrowLeft, Search } from "lucide-react";
 
 const roles = [
-  "Chairperson",
-  "Vice Chairperson",
   "Coordinator",
   "Vice Coordinator",
   "Secretary",
   "Joint Secretary",
-  "Treasurer",
   "Member",
+  "Chairperson",
+  "Vice Chairperson",
+  "Treasurer",
   "Invitee Member",
   "Advisor",
   "Observer",
@@ -34,10 +34,14 @@ const CreateCommitteeDialog = () => {
   const [selectedMemberId, setSelectedMemberId] = useState("");
   const [selectedRole, setSelectedRole] = useState(roles[0]);
   const [committeeMembership, setCommitteeMembership] = useState([]);
+  const [roleError, setRoleError] = useState("");
 
   const [membersData, setMembersData] = useState([]);
 
   const navigate = useNavigate();
+
+  // Special roles that can only have one person
+  const specialRoles = ["Coordinator", "Secretary", "Treasurer", "Chairperson"];
 
   // Helper function to capitalize first letter
   const capitalizeFirstLetter = (str) => {
@@ -79,20 +83,63 @@ const CreateCommitteeDialog = () => {
   }, [searchTerm, filteredMembers]);
 
   const addMember = (memberId) => {
+    // Clear any previous role error
+    setRoleError("");
+
+    // Check if member already exists
     const exists = committeeMembership.find((m) => m.memberId === memberId);
-    if (!exists) {
-      setCommitteeMembership((prev) => [
-        ...prev,
-        { memberId, role: selectedRole },
-      ]);
+    if (exists) {
+      setRoleError("This member is already added to the committee");
+      return;
     }
+
+    // Check if the role is a special role and already assigned
+    const isSpecialRole = specialRoles.includes(selectedRole);
+    if (isSpecialRole) {
+      const roleAlreadyAssigned = committeeMembership.find(
+        (m) => m.role.toLowerCase() === selectedRole.toLowerCase()
+      );
+      if (roleAlreadyAssigned) {
+        setRoleError(
+          `${selectedRole} role is already assigned to another member`
+        );
+        return;
+      }
+    }
+
+    // Check if member ID is selected
+    if (!memberId || memberId === "") {
+      setRoleError("Please select a member");
+      return;
+    }
+
+    // Check if role is selected
+    if (!selectedRole || selectedRole.trim() === "") {
+      setRoleError("Please enter or select a role");
+      return;
+    }
+
+    // Add member if all validations pass
+    setCommitteeMembership((prev) => [
+      ...prev,
+      { memberId, role: selectedRole },
+    ]);
     setSearchTerm("");
+    setSelectedMemberId("");
+    setSelectedRole(roles[0]); // Reset to first role
   };
 
   const removeMember = (memberId) => {
     setCommitteeMembership((prev) =>
       prev.filter((m) => m.memberId !== memberId)
     );
+    setRoleError(""); // Clear error when removing member
+  };
+
+  // Handle role input change and clear errors
+  const handleRoleChange = (value) => {
+    setSelectedRole(value);
+    setRoleError(""); // Clear error when role changes
   };
 
   const handleSubmit = async () => {
@@ -105,13 +152,27 @@ const CreateCommitteeDialog = () => {
       toast.error("Please enter a committee description");
       return;
     }
-    const maxMeetNum = Number(maximumNumberOfMeetings);
-    if (!Number.isInteger(maxMeetNum) || maxMeetNum <= 0) {
-      toast.error("Maximum number of meetings must be a positive integer");
-      return;
+
+    // Handle maximum number of meetings - optional field with default 0
+    let maxMeetNum = 0; // Default value
+    if (maximumNumberOfMeetings && maximumNumberOfMeetings.trim() !== "") {
+      maxMeetNum = Number(maximumNumberOfMeetings);
+      if (!Number.isInteger(maxMeetNum) || maxMeetNum < 0) {
+        toast.error(
+          "Maximum number of meetings must be a non-negative integer"
+        );
+        return;
+      }
     }
+
     if (!statusOptions.includes(status)) {
       toast.error("Invalid status selected");
+      return;
+    }
+
+    // Check if at least one member is added
+    if (committeeMembership.length === 0) {
+      toast.error("Please add at least one member to the committee");
       return;
     }
 
@@ -143,16 +204,20 @@ const CreateCommitteeDialog = () => {
           withCredentials: true,
         }
       );
-      console.log(response);
+      console.log("Success response:", response);
       if (response.status === 200 || response.status === 201) {
         navigate("/home");
         toast.success("Committee created successfully!");
       }
     } catch (error) {
       console.error("Submit error:", error);
+      console.error("Error response:", error.response);
+      console.error("Error response data:", error.response?.data);
+      console.error("Error response status:", error.response?.status);
+      console.error("Error response headers:", error.response?.headers);
       toast.error(
         error.response?.data?.message ||
-          "Failed to create committee. Please try again."
+          `Failed to create committee: ${error.message || "Unknown error"}`
       );
     }
   };
@@ -237,8 +302,7 @@ const CreateCommitteeDialog = () => {
                       {(searchTerm ? filteredMembers : membersData).map(
                         (member) => (
                           <option key={member.memberId} value={member.memberId}>
-                            {member.firstName} {member.lastName} (
-                            {member.institution})
+                            {member.firstName} {member.lastName} ({member.post})
                           </option>
                         )
                       )}
@@ -250,12 +314,12 @@ const CreateCommitteeDialog = () => {
                         className="flex-1 border border-gray-300 p-2 rounded text-sm"
                         placeholder="Enter role"
                         value={selectedRole}
-                        onChange={(e) => setSelectedRole(e.target.value)}
+                        onChange={(e) => handleRoleChange(e.target.value)}
                       />
                       <select
                         className="w-32 border border-gray-300 p-2 rounded text-sm"
                         value={selectedRole}
-                        onChange={(e) => setSelectedRole(e.target.value)}
+                        onChange={(e) => handleRoleChange(e.target.value)}
                       >
                         <option value="">Select Role</option>
                         {roles.map((role) => (
@@ -272,6 +336,13 @@ const CreateCommitteeDialog = () => {
                         Add
                       </button>
                     </div>
+
+                    {/* Role error message */}
+                    {roleError && (
+                      <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2 mt-1">
+                        {roleError}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -375,14 +446,17 @@ const CreateCommitteeDialog = () => {
 
                   <div>
                     <label className="block mb-1 font-semibold text-gray-700">
-                      Maximum No. of Meetings
+                      Maximum No. of Meetings{" "}
+                      <span className="text-gray-400 font-normal">
+                        (Optional)
+                      </span>
                     </label>
                     <input
                       type="number"
-                      min="1"
+                      min="0"
                       step="1"
                       className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="e.g., 12"
+                      placeholder="0"
                       value={maximumNumberOfMeetings}
                       onChange={(e) =>
                         setMaximumNumberOfMeetings(e.target.value)

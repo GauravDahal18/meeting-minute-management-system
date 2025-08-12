@@ -373,13 +373,13 @@ const CommitteeDetails = () => {
                   <div className="flex flex-col gap-2">
                     <button
                       onClick={() => navigate(`/committee/${committeeId}/edit`)}
-                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors text-sm"
                     >
                       Edit Committee
                     </button>
                     <button
                       onClick={handleDeleteCommittee}
-                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm"
+                      className="px-3 py-1 bg-red-400 text-white rounded hover:bg-red-700 transition-colors text-sm"
                     >
                       Delete Committee
                     </button>
@@ -396,9 +396,9 @@ const CommitteeDetails = () => {
                     </h2>
                     <button
                       onClick={handleAddMember}
-                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors text-sm"
                     >
-                      Add
+                      Create Member
                     </button>
                   </div>
 
@@ -580,7 +580,7 @@ const CommitteeDetails = () => {
                     </h2>
                     <button
                       onClick={handleCreateMeeting}
-                      className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm"
+                      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
                     >
                       Create Meeting
                     </button>
@@ -592,7 +592,8 @@ const CommitteeDetails = () => {
                       committee.meetings.map((meeting, index) => (
                         <div
                           key={meeting.id}
-                          className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow hover:bg-gray-100"
+                          onClick={() => handleViewMeeting(meeting.id)}
+                          className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow hover:bg-gray-100 cursor-pointer"
                         >
                           <h3 className="font-medium text-gray-800 mb-2">
                             Meeting {index + 1}
@@ -624,7 +625,7 @@ const CommitteeDetails = () => {
                               onClick={() => handleDownloadMeeting(meeting.id)}
                               className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs hover:bg-blue-200 transition-colors"
                             >
-                              Download Pdf
+                              Download Docx
                             </button>
                           </div>
                         </div>
@@ -654,10 +655,8 @@ const CommitteeDetails = () => {
 
       {showDeleteConfirmation && (
         <React.Fragment>
-          
           <div className="fixed inset-0 backdrop-blur-sm bg-black/20 z-40"></div>
 
-          
           <div className="fixed inset-0 flex items-center justify-center z-50">
             <div className="bg-white border-2 border-red-200 rounded-lg p-6 shadow-lg max-w-lg w-full">
               <div className="flex items-start gap-4">

@@ -46,12 +46,8 @@ const MemberDetails = () => {
     fetchMemberDetails();
   }, [memberId]);
 
-  const handleBackToCommittee = () => {
-    navigate(-1); // Go back to previous page
-  };
-
   const handleBackToCommittees = () => {
-    navigate("/home");
+    navigate(-1);
   };
 
   const handleCommitteeSelect = (committeeData) => {
@@ -86,7 +82,7 @@ const MemberDetails = () => {
                 onClick={handleBackToCommittees}
                 className="px-4 py-2 border rounded-md hover:shadow-lg mr-2"
               >
-                Back to Committees
+                Back
               </button>
               <button
                 onClick={() => window.location.reload()}
@@ -111,7 +107,7 @@ const MemberDetails = () => {
               className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
             >
               <ArrowLeft size={16} />
-              Back to Committees
+              Back
             </button>
           </div>
 
@@ -158,7 +154,6 @@ const MemberDetails = () => {
                 </div>
               </div>
 
-              
               <div className="bg-white rounded-lg shadow-sm border p-6">
                 <div className="flex items-center gap-3 mb-6">
                   <Users size={24} className="text-blue-600" />
@@ -170,15 +165,12 @@ const MemberDetails = () => {
                 {member.committeeWithMeetings &&
                 member.committeeWithMeetings.length > 0 ? (
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                   
                     <div className="border border-gray-200 rounded-lg">
                       <div className="bg-gray-50 p-4 border-b border-gray-200">
                         <h3 className="text-lg font-semibold text-gray-800">
                           Committees ({member.committeeWithMeetings.length})
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">
-                          
-                        </p>
+                        <p className="text-sm text-gray-600 mt-1"></p>
                       </div>
                       <div className="p-2 space-y-2 max-h-96 overflow-y-auto">
                         {member.committeeWithMeetings.map((committeeData) => (
@@ -223,7 +215,6 @@ const MemberDetails = () => {
                       </div>
                     </div>
 
-                    
                     <div className="border border-gray-200 rounded-lg">
                       <div className="bg-gray-50 p-4 border-b border-gray-200">
                         <h3 className="text-lg font-semibold text-gray-800">
@@ -262,7 +253,6 @@ const MemberDetails = () => {
                                             ID: {meeting.id}
                                           </span>
                                         </div>
-                                       
                                       </div>
                                     </div>
                                     <button

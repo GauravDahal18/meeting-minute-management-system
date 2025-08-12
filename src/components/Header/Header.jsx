@@ -1,11 +1,17 @@
 import ioeLogo from "./ioeLogo.png";
 import LogoutButton from "../LogoutButton.jsx";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ showLogout = false }) => {
+  const navigate = useNavigate();
+
   return (
     <header className="relative flex items-center justify-between bg-gradient-to-r from-blue-50 via-blue-100 to-indigo-100 p-4 md:p-5 shadow-lg border-b-2 border-blue-200">
       {/* Left Side - IOE Logo and Text */}
-      <div className="flex items-center gap-4 min-w-0 flex-shrink-0">
+      <div
+        className="flex items-center gap-4 min-w-0 flex-shrink-0 cursor-pointer"
+        onClick={() => navigate("/home")}
+      >
         <div className="relative group">
           <img
             src={ioeLogo}

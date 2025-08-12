@@ -190,16 +190,18 @@ const CommitteeDashboard = () => {
             <div className="flex items-center gap-3">
               <Calendar className="text-orange-600" size={20} />
               <div>
-                <div className="text-xs text-gray-500">Total Meetings</div>
-                <div className="text-xl font-semibold text-gray-800">
+                <div className="text-xs text-gray-500">
+                  Meetings
+                </div>
+                <div className="text-2xl font-semibold text-gray-800">
                   {committees.reduce((sum, c) => sum + c.numberOfMeetings, 0)}
                 </div>
+  
               </div>
             </div>
           </div>
         </div>
 
-        {/* Committees List */}
         <div className="bg-white border rounded-lg shadow p-5">
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-gray-800">Committees</h2>
@@ -233,13 +235,27 @@ const CommitteeDashboard = () => {
                 </div>
                 <div className="flex items-center gap-4 text-sm text-gray-500">
                   <span className="inline-flex items-center gap-1">
-                    <Users size={14} /> {committee.numberOfMembers}
+                    <Users size={14} />{" "}
+                    <span className="text-xs text-gray-600">Members:</span>{" "}
+                    <span className="font-semibold">
+                      {committee.numberOfMembers}
+                    </span>
                   </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Calendar size={14} /> {committee.numberOfMeetings}
-                    {committee.maxNoOfMeetings > 0
-                      ? `/${committee.maxNoOfMeetings}`
-                      : ""}
+                  <span className="inline-flex items-center gap-1 bg-orange-50 px-2 py-1 rounded border border-orange-200">
+                    <Calendar size={14} className="text-orange-600" />
+                    <span className="text-xs font-semibold text-orange-700">
+                      Meetings:
+                    </span>
+                    <span className="font-bold text-orange-800">
+                      {committee.numberOfMeetings}
+                    </span>
+                    {committee.maxNoOfMeetings > 0 ? (
+                      <span className="text-orange-600">
+                        /{committee.maxNoOfMeetings}
+                      </span>
+                    ) : (
+                      ""
+                    )}
                   </span>
                 </div>
               </button>

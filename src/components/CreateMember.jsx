@@ -11,12 +11,32 @@ const CreateMemberDialog = () => {
 
   const { posts } = dropdownData;
 
+  // Role options for dropdown
+  const roleOptions = [
+    "Coordinator",
+    "Vice Coordinator",
+    "Secretary",
+    "Joint Secretary",
+    "Member",
+    "Chairperson",
+    "Vice Chairperson",
+    "Treasurer",
+    "Invitee Member",
+    "Advisor",
+    "Observer",
+    "Spokesperson",
+    "Program Coordinator",
+    "Technical Coordinator",
+    "Event Manager",
+  ];
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [firstNameNepali, setFirstNameNepali] = useState("");
   const [lastNameNepali, setLastNameNepali] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [customRole, setCustomRole] = useState("");
   const [post, setPost] = useState(posts[0]);
   const [institution, setInstitution] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -49,8 +69,7 @@ const CreateMemberDialog = () => {
       !lastName.trim() ||
       !firstNameNepali.trim() ||
       !lastNameNepali.trim() ||
-      !email.trim() ||
-      !role.trim() ||
+      (!role.trim() && !customRole.trim()) ||
       !institution.trim() ||
       !post.trim();
 
@@ -62,6 +81,9 @@ const CreateMemberDialog = () => {
 
     setIsLoading(true);
 
+    // Use custom role if provided, otherwise use selected role
+    const finalRole = customRole.trim() || role.trim();
+
     const payload = {
       firstName: firstName.trim(),
       lastName: lastName.trim(),
@@ -69,9 +91,13 @@ const CreateMemberDialog = () => {
       lastNameNepali: lastNameNepali.trim(),
       institution: institution.trim(),
       post: post.trim(),
-      email: email.trim(),
-      role: role.trim(),
+      role: finalRole,
     };
+
+    // Only include email if it's provided
+    if (email.trim()) {
+      payload.email = email.trim();
+    }
 
     try {
       const response = await axios.post(
@@ -198,7 +224,7 @@ const CreateMemberDialog = () => {
               {/* Email */}
               <div>
                 <label className="block mb-1 font-semibold text-gray-700">
-                  Email
+                  Email (Optional)
                 </label>
                 <input
                   type="email"
@@ -206,7 +232,6 @@ const CreateMemberDialog = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="ram.shrestha@example.com"
-                  required
                 />
               </div>
 
@@ -240,19 +265,45 @@ const CreateMemberDialog = () => {
                 />
               </div>
 
-              {/* Role - Typeable */}
+              {/* Role - Text input and dropdown on same line */}
               <div>
                 <label className="block mb-1 font-semibold text-gray-700">
                   Role
                 </label>
-                <input
-                  type="text"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="w-full border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Unique, Member, etc."
-                  required
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={customRole || role}
+                    onChange={(e) => {
+                      setCustomRole(e.target.value);
+                      if (e.target.value.trim() !== "") {
+                        setRole(""); // Clear dropdown selection when typing custom role
+                      }
+                    }}
+                    className="flex-[2] border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter custom role"
+                  />
+                  <select
+                    value={role}
+                    onChange={(e) => {
+                      setRole(e.target.value);
+                      setCustomRole(e.target.value); // Update text input when selecting from dropdown
+                    }}
+                    className="flex-1 border border-gray-400 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">-- Select a role --</option>
+                    {roleOptions.map((roleOption) => (
+                      <option key={roleOption} value={roleOption}>
+                        {roleOption}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {showErrors && !role.trim() && !customRole.trim() && (
+                  <p className="text-xs text-red-600 mt-1">
+                    Please select or enter a role
+                  </p>
+                )}
               </div>
 
               {/* Buttons */}

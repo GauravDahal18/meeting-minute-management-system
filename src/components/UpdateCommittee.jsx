@@ -100,7 +100,7 @@ const UpdateCommittee = () => {
     }
 
     try {
-      const response = await axios.put(
+      const response = await axios.post(
         "http://localhost:8080/api/updateCommitteeDetails",
         payload,
         {
@@ -140,9 +140,6 @@ const UpdateCommittee = () => {
               <h2 className="text-2xl font-bold text-gray-800">
                 Update Committee
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Only changed fields will be sent to the server
-              </p>
             </div>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -151,7 +148,7 @@ const UpdateCommittee = () => {
                   Name
                 </label>
                 <input
-                  className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full border upborder-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Committee name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}

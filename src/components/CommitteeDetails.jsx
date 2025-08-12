@@ -592,7 +592,7 @@ const CommitteeDetails = () => {
                       committee.meetings.map((meeting, index) => (
                         <div
                           key={meeting.id}
-                          className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow"
+                          className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow hover:bg-gray-100"
                         >
                           <h3 className="font-medium text-gray-800 mb-2">
                             Meeting {index + 1}

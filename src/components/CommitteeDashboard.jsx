@@ -205,18 +205,15 @@ const CommitteeDashboard = () => {
         <div className="bg-white border rounded-lg shadow p-5">
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-gray-800">Committees</h2>
-            <p className="text-sm text-gray-500">
-              Click a card to view details
-            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
             {committees.map((committee) => (
               <button
                 key={committee.id}
                 onClick={() => handleCommitteeClick(committee)}
-                className="text-left bg-white border rounded-lg shadow-sm hover:shadow-md transition p-4"
+                className="text-left bg-white border rounded-lg shadow-sm hover:shadow-md transition p-4 hover:bg-gray-100"
               >
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-2 ">
                   <div className="font-semibold text-gray-800 truncate mr-2">
                     {committee.committeeName}
                   </div>

@@ -151,8 +151,8 @@ const MemberDetails = () => {
                   <div className="flex items-center gap-3">
                     <Award size={20} className="text-gray-500" />
                     <div>
-                      <p className="text-sm text-gray-500">Qualification</p>
-                      <p className="font-medium">{member.qualification}</p>
+                      <p className="text-sm text-gray-500">Post</p>
+                      <p className="font-medium">{member.post}</p>
                     </div>
                   </div>
                 </div>

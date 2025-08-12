@@ -41,6 +41,7 @@ const CreateMeetingDialog = () => {
   );
 
   console.log("invitees are:", invitees);
+  console.log("all members of the committee :", allMembers);
 
   useEffect(() => {
     console.log("CreateMeeting: Component mounted", { committeeId });
@@ -322,7 +323,7 @@ const CreateMeetingDialog = () => {
               {/* Left: Invitees Selection */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                  Select Invitees
+                  Select Invitees ({filteredInvitees.length})
                 </h3>
 
                 {/* Search Box */}
@@ -438,7 +439,7 @@ const CreateMeetingDialog = () => {
                 {/* Committee Members Display */}
                 <div className="mt-6">
                   <h4 className="text-md font-medium text-gray-600 border-b pb-2 mb-3">
-                    Committee Members
+                    Committee Members ({availableMembers.length})
                   </h4>
                   <div className="border border-gray-100 rounded-lg p-3 max-h-48 overflow-y-auto bg-gray-50">
                     <ul className="space-y-1">

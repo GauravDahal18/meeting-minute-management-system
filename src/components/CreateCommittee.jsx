@@ -312,7 +312,7 @@ const CreateCommitteeDialog = () => {
                       <input
                         type="text"
                         className="flex-1 border border-gray-300 p-2 rounded text-sm"
-                        placeholder="Enter role"
+                        placeholder="Enter custom role (nepali)"
                         value={selectedRole}
                         onChange={(e) => handleRoleChange(e.target.value)}
                       />

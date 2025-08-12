@@ -5,7 +5,23 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { ArrowLeft, Search } from "lucide-react";
 
-const roles = ["Coordinator", "Secretary", "Member"];
+const roles = [
+  "Chairperson",
+  "Vice Chairperson",
+  "Coordinator",
+  "Vice Coordinator",
+  "Secretary",
+  "Joint Secretary",
+  "Treasurer",
+  "Member",
+  "Invitee Member",
+  "Advisor",
+  "Observer",
+  "Spokesperson",
+  "Program Coordinator",
+  "Technical Coordinator",
+  "Event Manager",
+];
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const CreateCommitteeDialog = () => {
@@ -22,6 +38,12 @@ const CreateCommitteeDialog = () => {
   const [membersData, setMembersData] = useState([]);
 
   const navigate = useNavigate();
+
+  // Helper function to capitalize first letter
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
 
   useEffect(() => {
     const fetchMembers = async () => {
@@ -45,8 +67,16 @@ const CreateCommitteeDialog = () => {
   }, []);
 
   const filteredMembers = membersData.filter((member) =>
-    member.firstName.toLowerCase().includes(searchTerm.toLowerCase())
+    member.firstName.toLowerCase().startsWith(searchTerm.toLowerCase())
   );
+
+  // Auto-select first member when searching
+  useEffect(() => {
+    if (searchTerm && filteredMembers.length > 0) {
+      setSelectedMemberId(filteredMembers[0].memberId);
+    }
+    // Don't clear selection when search is cleared - preserve manual selections
+  }, [searchTerm, filteredMembers]);
 
   const addMember = (memberId) => {
     const exists = committeeMembership.find((m) => m.memberId === memberId);
@@ -176,26 +206,15 @@ const CreateCommitteeDialog = () => {
                     />
                   </div>
 
+                  {/* Search results indicator */}
                   {searchTerm && (
-                    <ul className="max-h-40 overflow-y-auto border border-gray-200 rounded p-2 text-sm">
-                      {filteredMembers.map((member) => (
-                        <li
-                          key={member.memberId}
-                          className="flex justify-between items-center py-1 px-2 hover:bg-gray-50 rounded"
-                        >
-                          <span>
-                            {member.firstName} {member.lastName} (
-                            {member.institution})
-                          </span>
-                          <button
-                            className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
-                            onClick={() => addMember(member.memberId)}
-                          >
-                            Add
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="text-xs text-green-600 bg-green-50 border border-green-200 rounded p-2">
+                      {filteredMembers.length === 0
+                        ? `No results found for "${searchTerm}"`
+                        : filteredMembers.length === 1
+                        ? `1 result found for "${searchTerm}"`
+                        : `${filteredMembers.length} results found for "${searchTerm}" - first one selected`}
+                    </div>
                   )}
                 </div>
 
@@ -210,22 +229,39 @@ const CreateCommitteeDialog = () => {
                       value={selectedMemberId}
                       onChange={(e) => setSelectedMemberId(e.target.value)}
                     >
-                      <option value="">Select Member</option>
-                      {membersData.map((member) => (
-                        <option key={member.memberId} value={member.memberId}>
-                          {member.firstName} {member.lastName}
-                        </option>
-                      ))}
+                      <option value="">
+                        {searchTerm
+                          ? `Search results for "${searchTerm}" (${filteredMembers.length} found)`
+                          : "Select Member"}
+                      </option>
+                      {(searchTerm ? filteredMembers : membersData).map(
+                        (member) => (
+                          <option key={member.memberId} value={member.memberId}>
+                            {member.firstName} {member.lastName} (
+                            {member.institution})
+                          </option>
+                        )
+                      )}
                     </select>
 
                     <div className="flex gap-2">
-                      <select
+                      <input
+                        type="text"
                         className="flex-1 border border-gray-300 p-2 rounded text-sm"
+                        placeholder="Enter role"
+                        value={selectedRole}
+                        onChange={(e) => setSelectedRole(e.target.value)}
+                      />
+                      <select
+                        className="w-32 border border-gray-300 p-2 rounded text-sm"
                         value={selectedRole}
                         onChange={(e) => setSelectedRole(e.target.value)}
                       >
+                        <option value="">Select Role</option>
                         {roles.map((role) => (
-                          <option key={role}>{role}</option>
+                          <option key={role} value={role}>
+                            {role}
+                          </option>
                         ))}
                       </select>
 
@@ -262,7 +298,7 @@ const CreateCommitteeDialog = () => {
                                   : m.memberId}
                               </span>
                               <span className="text-xs text-gray-500">
-                                {m.role}
+                                {capitalizeFirstLetter(m.role)}
                               </span>
                             </div>
                             <button
@@ -313,7 +349,7 @@ const CreateCommitteeDialog = () => {
                   </label>
                   <textarea
                     className="w-full border border-gray-300 p-2 rounded min-h-[90px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Handles all technical decisions and reviews"
+                    placeholder="Committee Description"
                     value={committeeDescription}
                     onChange={(e) => setCommitteeDescription(e.target.value)}
                   />

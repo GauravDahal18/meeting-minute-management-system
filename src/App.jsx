@@ -10,6 +10,7 @@ import CommitteeDashboard from "./components/CommitteeDashboard.jsx";
 import CreateCommitteeDialog from "./components/CreateCommittee.jsx";
 import CommitteeDetails from "./components/CommitteeDetails.jsx";
 import CreateMeetingDialog from "./components/CreateMeeting.jsx";
+import EditMeeting from "./components/EditMeeting.jsx";
 import { useAuth, AuthProvider } from "./context/AuthContext.jsx";
 import CreateMemberDialog from "./components/CreateMember.jsx";
 import UpdateCommittee from "./components/UpdateCommittee.jsx";
@@ -102,6 +103,15 @@ function App() {
                 key="editCommittee"
               />
             </Route>
+
+            <Route
+              path="/committees/:committeeId/meetings/:meetingId/edit"
+              element={
+                <ProtectedRoute>
+                  <EditMeeting />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/member/:memberId"

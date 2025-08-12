@@ -240,8 +240,35 @@ const CommitteeDetails = () => {
     }
   };
 
-  const handleEditMeeting = (meetingId) => {
-    console.log("Edit meeting:", meetingId);
+  const handleEditMeeting = async (meetingId) => {
+    try {
+      // Get current meeting data
+      const response = await fetch(
+        `${BASE_URL}/api/getMeetingDetails?committeeId=${committeeId}&meetingId=${meetingId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        const meetingData = await response.json();
+        // Navigate to edit meeting page with meeting data
+        navigate(`/committees/${committeeId}/meetings/${meetingId}/edit`, {
+          state: {
+            meeting: meetingData.mainBody,
+            meetingId: meetingId,
+            committee: { id: committeeId, name: committee.name },
+          },
+        });
+      } else {
+        const errorData = await response.json().catch(() => null);
+        toast.error(errorData?.message || "Meeting not found or access denied");
+      }
+    } catch (error) {
+      console.error("Error fetching meeting for edit:", error);
+      toast.error("Unable to access meeting for editing");
+    }
   };
 
   const handleViewMember = (memberId) => {
@@ -595,10 +622,13 @@ const CommitteeDetails = () => {
                           className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow hover:bg-gray-100"
                         >
                           <h3 className="font-medium text-gray-800 mb-2">
-                            Meeting {index + 1}
-                          </h3>
-                          <p className="text-sm text-gray-600 mb-2">
                             {meeting.title}
+                          </h3>
+                          <p
+                            className="text-xs text-gray-600 line-clamp-2 mb-3
+ "
+                          >
+                            {meeting.description}
                           </p>
                           <div className="text-xs text-gray-500 mb-3">
                             {new Date(
@@ -654,10 +684,8 @@ const CommitteeDetails = () => {
 
       {showDeleteConfirmation && (
         <React.Fragment>
-          
           <div className="fixed inset-0 backdrop-blur-sm bg-black/20 z-40"></div>
 
-          
           <div className="fixed inset-0 flex items-center justify-center z-50">
             <div className="bg-white border-2 border-red-200 rounded-lg p-6 shadow-lg max-w-lg w-full">
               <div className="flex items-start gap-4">

@@ -6,8 +6,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Header from "../../components/Header/Header.jsx";
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("username");
+  const [password, setPassword] = useState("password");
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({ username: "", password: "" });
   const [error, setError] = useState("");

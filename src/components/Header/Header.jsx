@@ -18,7 +18,7 @@ const Header = ({ showLogout = false }) => {
             INSTITUTE OF ENGINEERING
           </div>
           <div className="text-blue-700 text-sm md:text-base font-medium font-sans">
-            Pulchowk, Lalitpur
+            Pulchowk Campus
           </div>
         </div>
       </div>

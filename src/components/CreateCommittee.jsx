@@ -171,17 +171,17 @@ const CreateCommitteeDialog = () => {
          toast.error("Please add at least one member to the committee");
          return;
       }
-      
+
       // Check if there is exactly one Coordinator
       const coordinatorCount = committeeMembership.filter(
-         m => m.role.toLowerCase() === "coordinator"
+         (m) => m.role.toLowerCase() === "coordinator"
       ).length;
-      
+
       if (coordinatorCount === 0) {
          toast.error("Please add at least one Coordinator to the committee");
          return;
       }
-      
+
       if (coordinatorCount > 1) {
          toast.error("A committee can have only one Coordinator");
          return;
@@ -256,7 +256,8 @@ const CreateCommitteeDialog = () => {
                      </h2>
                      <p className="text-sm text-gray-500 mt-1">
                         Fill in the committee details and add members with
-                        roles. <span className="text-red-500">*</span> indicates required fields.
+                        roles. <span className="text-red-500">*</span> indicates
+                        required fields.
                      </p>
                   </div>
 
@@ -269,155 +270,161 @@ const CreateCommitteeDialog = () => {
                               Manage Members
                            </h3>
 
-                        {/* Member Search with Icon */}
-                        <div className="space-y-4 mb-5 flex-shrink-0">
-                           <div className="relative">
-                              <input
-                                 className="w-full border border-gray-300 p-2 pl-10 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                 placeholder="Search members by name..."
-                                 value={searchTerm}
-                                 onChange={(e) => setSearchTerm(e.target.value)}
-                              />
-                              <Search
-                                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                                 size={16}
-                              />
-                           </div>
-
-                           {/* Search results indicator */}
-                           {searchTerm && (
-                              <div className="text-xs text-green-600 bg-green-50 border border-green-200 rounded p-2">
-                                 {filteredMembers.length === 0
-                                    ? `No results found for "${searchTerm}"`
-                                    : filteredMembers.length === 1
-                                    ? `1 result found for "${searchTerm}"`
-                                    : `${filteredMembers.length} results found for "${searchTerm}" - first one selected`}
-                              </div>
-                           )}
-                        </div>
-
-                        {/* Manual add and role */}
-                        <div className="space-y-2 mb-5 flex-shrink-0">
-                           <label className="block mb-2 font-semibold text-gray-700">
-                              Add Member with Role <span className="text-red-500">*</span>
-                           </label>
-                           <div className="flex flex-col gap-1">
-                              <select
-                                 className="w-full border border-gray-300 p-2 rounded text-sm"
-                                 value={selectedMemberId}
-                                 onChange={(e) =>
-                                    setSelectedMemberId(e.target.value)
-                                 }
-                              >
-                                 <option value="">
-                                    {searchTerm
-                                       ? `Search results for "${searchTerm}" (${filteredMembers.length} found)`
-                                       : "Select Member"}
-                                 </option>
-                                 {(searchTerm
-                                    ? filteredMembers
-                                    : membersData
-                                 ).map((member) => (
-                                    <option
-                                       key={member.memberId}
-                                       value={member.memberId}
-                                    >
-                                       {member.firstName} {member.lastName} (
-                                       {member.post})
-                                    </option>
-                                 ))}
-                              </select>
-
-                              <div className="flex gap-3 mt-1">
+                           {/* Member Search with Icon */}
+                           <div className="space-y-4 mb-5 flex-shrink-0">
+                              <div className="relative">
                                  <input
-                                    type="text"
-                                    className="flex-1 border border-gray-300 p-2 rounded text-sm"
-                                    placeholder="Enter custom role (nepali)"
-                                    value={selectedRole}
+                                    className="w-full border border-gray-300 p-2 pl-10 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Search members by name..."
+                                    value={searchTerm}
                                     onChange={(e) =>
-                                       handleRoleChange(e.target.value)
+                                       setSearchTerm(e.target.value)
                                     }
                                  />
+                                 <Search
+                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                    size={16}
+                                 />
+                              </div>
+
+                              {/* Search results indicator */}
+                              {searchTerm && (
+                                 <div className="text-xs text-green-600 bg-green-50 border border-green-200 rounded p-2">
+                                    {filteredMembers.length === 0
+                                       ? `No results found for "${searchTerm}"`
+                                       : filteredMembers.length === 1
+                                       ? `1 result found for "${searchTerm}"`
+                                       : `${filteredMembers.length} results found for "${searchTerm}" - first one selected`}
+                                 </div>
+                              )}
+                           </div>
+
+                           {/* Manual add and role */}
+                           <div className="space-y-2 mb-5 flex-shrink-0">
+                              <label className="block mb-2 font-semibold text-gray-700">
+                                 Add Member with Role{" "}
+                                 <span className="text-red-500">*</span>
+                              </label>
+                              <div className="flex flex-col gap-1">
                                  <select
-                                    className="w-32 border border-gray-300 p-2 rounded text-sm"
-                                    value={selectedRole}
+                                    className="w-full border border-gray-300 p-2 rounded text-sm"
+                                    value={selectedMemberId}
                                     onChange={(e) =>
-                                       handleRoleChange(e.target.value)
+                                       setSelectedMemberId(e.target.value)
                                     }
                                  >
-                                    <option value="">Select Role</option>
-                                    {roles.map((role) => (
-                                       <option key={role} value={role}>
-                                          {role}
+                                    <option value="">
+                                       {searchTerm
+                                          ? `Search results for "${searchTerm}" (${filteredMembers.length} found)`
+                                          : "Select Member"}
+                                    </option>
+                                    {(searchTerm
+                                       ? filteredMembers
+                                       : membersData
+                                    ).map((member) => (
+                                       <option
+                                          key={member.memberId}
+                                          value={member.memberId}
+                                       >
+                                          {member.firstName} {member.lastName} (
+                                          {member.post})
                                        </option>
                                     ))}
                                  </select>
 
-                                 <button
-                                    className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 text-sm"
-                                    onClick={() =>
-                                       addMember(Number(selectedMemberId))
-                                    }
-                                 >
-                                    Add
-                                 </button>
-                              </div>
+                                 <div className="flex gap-3 mt-1">
+                                    <input
+                                       type="text"
+                                       className="flex-1 border border-gray-300 p-2 rounded text-sm"
+                                       placeholder="Enter custom role (nepali)"
+                                       value={selectedRole}
+                                       onChange={(e) =>
+                                          handleRoleChange(e.target.value)
+                                       }
+                                    />
+                                    <select
+                                       className="w-32 border border-gray-300 p-2 rounded text-sm"
+                                       value={selectedRole}
+                                       onChange={(e) =>
+                                          handleRoleChange(e.target.value)
+                                       }
+                                    >
+                                       <option value="">Select Role</option>
+                                       {roles.map((role) => (
+                                          <option key={role} value={role}>
+                                             {role}
+                                          </option>
+                                       ))}
+                                    </select>
 
-                              {/* Role error message */}
-                              {roleError && (
-                                 <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2 mt-1">
-                                    {roleError}
+                                    <button
+                                       className="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 text-sm"
+                                       onClick={() =>
+                                          addMember(Number(selectedMemberId))
+                                       }
+                                    >
+                                       Add
+                                    </button>
                                  </div>
-                              )}
-                           </div>
-                        </div>
 
-                        {/* Members list */}
-                        <div className="flex-1 flex flex-col min-h-0">
-                           <h4 className="font-semibold text-gray-700 mb-2">
-                              Committee Members <span className="text-red-500">*</span>
-                           </h4>
-                           <div className="flex-1 overflow-y-auto">
-                              <ul className="mb-2 divide-y divide-gray-200 border border-gray-200 rounded">
-                                 {committeeMembership.map((m) => {
-                                    const user = membersData.find(
-                                       (x) => x.memberId === m.memberId
-                                    );
-                                    return (
-                                       <li
-                                          key={m.memberId}
-                                          className="py-2 px-3 flex justify-between items-center"
-                                       >
-                                          <div className="flex flex-col">
-                                             <span className="text-sm font-medium">
-                                                {user
-                                                   ? `${user.firstName} ${user.lastName}`
-                                                   : m.memberId}
-                                             </span>
-                                             <span className="text-xs text-gray-500">
-                                                {capitalizeFirstLetter(m.role)}
-                                             </span>
-                                          </div>
-                                          <button
-                                             className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors"
-                                             onClick={() =>
-                                                removeMember(m.memberId)
-                                             }
-                                             title="Remove member"
-                                          >
-                                             <Minus className="h-4 w-4" />
-                                          </button>
-                                       </li>
-                                    );
-                                 })}
-                                 {committeeMembership.length === 0 && (
-                                    <li className="py-3 px-3 text-sm text-gray-500">
-                                       No members added yet
-                                    </li>
+                                 {/* Role error message */}
+                                 {roleError && (
+                                    <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2 mt-1">
+                                       {roleError}
+                                    </div>
                                  )}
-                              </ul>
+                              </div>
                            </div>
-                        </div>
+
+                           {/* Members list */}
+                           <div className="flex-1 flex flex-col min-h-0">
+                              <h4 className="font-semibold text-gray-700 mb-2">
+                                 Committee Members{" "}
+                                 <span className="text-red-500">*</span>
+                              </h4>
+                              <div className="flex-1 overflow-y-auto">
+                                 <ul className="mb-2 divide-y divide-gray-200 border border-gray-200 rounded">
+                                    {committeeMembership.map((m) => {
+                                       const user = membersData.find(
+                                          (x) => x.memberId === m.memberId
+                                       );
+                                       return (
+                                          <li
+                                             key={m.memberId}
+                                             className="py-2 px-3 flex justify-between items-center"
+                                          >
+                                             <div className="flex flex-col">
+                                                <span className="text-sm font-medium">
+                                                   {user
+                                                      ? `${user.firstName} ${user.lastName}`
+                                                      : m.memberId}
+                                                </span>
+                                                <span className="text-xs text-gray-500">
+                                                   {capitalizeFirstLetter(
+                                                      m.role
+                                                   )}
+                                                </span>
+                                             </div>
+                                             <button
+                                                className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors"
+                                                onClick={() =>
+                                                   removeMember(m.memberId)
+                                                }
+                                                title="Remove member"
+                                             >
+                                                <Minus className="h-4 w-4" />
+                                             </button>
+                                          </li>
+                                       );
+                                    })}
+                                    {committeeMembership.length === 0 && (
+                                       <li className="py-3 px-3 text-sm text-gray-500">
+                                          No members added yet
+                                       </li>
+                                    )}
+                                 </ul>
+                              </div>
+                           </div>
                         </div>
                      </div>
 
@@ -428,73 +435,79 @@ const CreateCommitteeDialog = () => {
                               Committee Details
                            </h3>
 
-                        <div className="mb-4">
-                           <label className="block mb-2 font-semibold text-gray-700">
-                              Committee Name <span className="text-red-500">*</span>
-                           </label>
-                           <input
-                              className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="e.g., Technical Committee"
-                              value={committeeName}
-                              onChange={(e) => setCommitteeName(e.target.value)}
-                           />
-                        </div>
-
-                        <div className="mb-4">
-                           <label className="block mb-2 font-semibold text-gray-700">
-                              Description
-                           </label>
-                           <textarea
-                              className="w-full border border-gray-300 p-2 rounded min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="Committee Description"
-                              value={committeeDescription}
-                              onChange={(e) =>
-                                 setCommitteeDescription(e.target.value)
-                              }
-                           />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                           <div>
+                           <div className="mb-4">
                               <label className="block mb-2 font-semibold text-gray-700">
-                                 Status <span className="text-red-500">*</span>
-                              </label>
-                              <select
-                                 className="w-full border border-gray-300 p-2 rounded bg-white"
-                                 value={status}
-                                 onChange={(e) => setStatus(e.target.value)}
-                              >
-                                 {statusOptions.map((s) => (
-                                    <option key={s} value={s}>
-                                       {s}
-                                    </option>
-                                 ))}
-                              </select>
-                           </div>
-
-                           <div>
-                              <label className="block mb-2 font-semibold text-gray-700">
-                                 Maximum No. of Meetings{" "}
-                                 <span className="text-gray-400 font-normal">
-                                    (Optional)
-                                 </span>
+                                 Committee Name{" "}
+                                 <span className="text-red-500">*</span>
                               </label>
                               <input
-                                 type="number"
-                                 min="0"
-                                 step="1"
                                  className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                 placeholder="0"
-                                 defaultValue="0"
-                                 value={maximumNumberOfMeetings}
+                                 placeholder="e.g., Technical Committee"
+                                 value={committeeName}
                                  onChange={(e) =>
-                                    setMaximumNumberOfMeetings(e.target.value)
+                                    setCommitteeName(e.target.value)
                                  }
                               />
                            </div>
+
+                           <div className="mb-4">
+                              <label className="block mb-2 font-semibold text-gray-700">
+                                 Description
+                              </label>
+                              <textarea
+                                 className="w-full border border-gray-300 p-2 rounded min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 placeholder="Committee Description"
+                                 value={committeeDescription}
+                                 onChange={(e) =>
+                                    setCommitteeDescription(e.target.value)
+                                 }
+                              />
+                           </div>
+
+                           <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                 <label className="block mb-2 font-semibold text-gray-700">
+                                    Status{" "}
+                                    <span className="text-red-500">*</span>
+                                 </label>
+                                 <select
+                                    className="w-full border border-gray-300 p-2 rounded bg-white"
+                                    value={status}
+                                    onChange={(e) => setStatus(e.target.value)}
+                                 >
+                                    {statusOptions.map((s) => (
+                                       <option key={s} value={s}>
+                                          {s}
+                                       </option>
+                                    ))}
+                                 </select>
+                              </div>
+
+                              <div>
+                                 <label className="block mb-2 font-semibold text-gray-700">
+                                    Maximum No. of Meetings{" "}
+                                    <span className="text-gray-400 font-normal">
+                                       (Optional)
+                                    </span>
+                                 </label>
+                                 <input
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="0"
+                                    defaultValue="0"
+                                    value={maximumNumberOfMeetings}
+                                    onChange={(e) =>
+                                       setMaximumNumberOfMeetings(
+                                          e.target.value
+                                       )
+                                    }
+                                 />
+                              </div>
+                           </div>
                         </div>
                      </div>
-                  </div>
                   </div>
 
                   <div className="flex justify-end gap-4 mt-6">

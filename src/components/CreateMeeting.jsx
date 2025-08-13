@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { X, Plus, ArrowLeft, Search } from "lucide-react";
+import { X, Plus, ArrowLeft, Search, Trash2, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -262,8 +262,7 @@ const CreateMeetingDialog = () => {
          !committeeId ||
          !title.trim() ||
          !description.trim() ||
-         !meetingPlace.trim() ||
-         addedInviteeIds.length === 0
+         !meetingPlace.trim()
       ) {
          toast.error("Please fill all required fields.");
          return;
@@ -392,9 +391,9 @@ const CreateMeetingDialog = () => {
                                  onClick={() =>
                                     setIsCreateInviteeDialogOpen(true)
                                  }
-                                 className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center gap-1.5"
                               >
-                                 Create Invitee
+                                 <UserPlus size={15} /> Create Invitee
                               </button>
                            </div>
 
@@ -480,16 +479,14 @@ const CreateMeetingDialog = () => {
                                                 <span className="text-gray-700 font-normal text-sm">
                                                    {inviteeName}
                                                 </span>
-                                                <span
+                                                <button
                                                    onClick={() =>
                                                       removeInvitee(id)
                                                    }
                                                    className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
                                                 >
-                                                   <span className="text-xl leading-none relative -top-[1px]">
-                                                      −
-                                                   </span>
-                                                </span>
+                                                   <Trash2 size={14} />
+                                                </button>
                                              </li>
                                           );
                                        })}
@@ -559,7 +556,7 @@ const CreateMeetingDialog = () => {
 
                            <div>
                               <label className="block mb-2 font-semibold text-gray-700">
-                                 Meeting Title
+                                 Meeting Title *
                               </label>
                               <input
                                  type="text"
@@ -573,7 +570,7 @@ const CreateMeetingDialog = () => {
 
                            <div>
                               <label className="block mb-2 font-semibold text-gray-700">
-                                 Description
+                                 Description *
                               </label>
                               <textarea
                                  placeholder="e.g., Review of project milestones and next steps"
@@ -590,7 +587,7 @@ const CreateMeetingDialog = () => {
                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <div>
                                  <label className="block mb-2 font-semibold text-gray-700">
-                                    Date
+                                    Date *
                                  </label>
                                  <input
                                     type="date"
@@ -605,7 +602,7 @@ const CreateMeetingDialog = () => {
 
                               <div>
                                  <label className="block mb-2 font-semibold text-gray-700">
-                                    Time
+                                    Time *
                                  </label>
                                  <input
                                     type="time"
@@ -621,7 +618,7 @@ const CreateMeetingDialog = () => {
 
                            <div>
                               <label className="block mb-2 font-semibold text-gray-700">
-                                 Meeting Place
+                                 Meeting Place *
                               </label>
                               <input
                                  type="text"
@@ -658,9 +655,7 @@ const CreateMeetingDialog = () => {
                                              onClick={() => removeAgenda(idx)}
                                              className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
                                           >
-                                             <span className="text-xl leading-none relative -top-[1px]">
-                                                −
-                                             </span>
+                                             <Trash2 size={14} />
                                           </button>
                                        )}
                                     </div>
@@ -698,9 +693,7 @@ const CreateMeetingDialog = () => {
                                              onClick={() => removeDecision(idx)}
                                              className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
                                           >
-                                             <span className="text-xl leading-none relative -top-[1px]">
-                                                −
-                                             </span>
+                                             <Trash2 size={14} />
                                           </button>
                                        )}
                                     </div>

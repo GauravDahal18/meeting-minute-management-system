@@ -503,10 +503,10 @@ const CommitteeDetails = () => {
             <div className="max-w-6xl mx-auto">
                <button
                   onClick={handleBackToCommittees}
-                  className="flex items-center gap-2 mb-6 text-blue-600 hover:text-blue-800 transition-colors"
+                  className="flex items-center gap-2 mb-6 text-blue-600 hover:text-blue-800 transition-colors font-medium"
                >
-                  <ArrowLeft size={16} />
-                  Back
+                  <ArrowLeft size={18} />
+                  Back to Committees
                </button>
 
                {committee ? (
@@ -533,15 +533,15 @@ const CommitteeDetails = () => {
                                  onClick={() =>
                                     navigate(`/committee/${committeeId}/edit`)
                                  }
-                                 className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center gap-1"
                               >
-                                 Edit Committee
+                                 <Edit size={14} /> Edit Committee
                               </button>
                               <button
                                  onClick={handleDeleteCommittee}
-                                 className="px-3 py-1 bg-red-400 text-white rounded hover:bg-red-700 transition-colors text-sm"
+                                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium flex items-center justify-center gap-1"
                               >
-                                 Delete Committee
+                                 <Trash2 size={14} /> Delete Committee
                               </button>
                            </div>
                         </div>
@@ -556,9 +556,9 @@ const CommitteeDetails = () => {
                               </h2>
                               <button
                                  onClick={handleAddMember}
-                                 className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors text-sm flex items-center gap-1"
+                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center gap-1.5"
                               >
-                                 <UserPlus size={14} />
+                                 <UserPlus size={15} />
                                  Create Member
                               </button>
                            </div>
@@ -675,7 +675,7 @@ const CommitteeDetails = () => {
                                                             `role-${member.id}`
                                                          )
                                                       }
-                                                      className="px-3 py-1 bg-green-100 text-green-600 rounded text-xs hover:bg-green-200 transition-colors flex items-center gap-1"
+                                                      className="px-3 py-1 bg-blue-100 text-blue-600 rounded-md text-xs hover:bg-blue-200 transition-colors flex items-center gap-1 font-medium"
                                                    >
                                                       <UserPlus size={12} />
                                                       Add
@@ -766,9 +766,9 @@ const CommitteeDetails = () => {
                               </h2>
                               <button
                                  onClick={handleCreateMeeting}
-                                 className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm flex items-center gap-1"
+                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center gap-1.5"
                               >
-                                 <Plus className="h-4 w-4" /> Create Meeting
+                                 <Plus size={15} /> Create Meeting
                               </button>
                            </div>
 
@@ -809,20 +809,20 @@ const CommitteeDetails = () => {
                                                 e.stopPropagation();
                                                 handleViewMeeting(meeting.id);
                                              }}
-                                             className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors"
+                                             className="p-2 bg-gray-100 text-blue-600 rounded-lg hover:bg-gray-200 transition-colors"
                                              title="Preview Meeting"
                                           >
-                                             <Eye className="h-4 w-4" />
+                                             <Eye size={16} />
                                           </button>
                                           <button
                                              onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleEditMeeting(meeting.id);
                                              }}
-                                             className="p-2 bg-green-100 text-green-600 rounded-full hover:bg-green-200 transition-colors"
+                                             className="p-2 bg-gray-100 text-blue-600 rounded-lg hover:bg-gray-200 transition-colors"
                                              title="Edit Meeting"
                                           >
-                                             <Edit className="h-4 w-4" />
+                                             <Edit size={16} />
                                           </button>
                                           <button
                                              onClick={(e) => {
@@ -831,10 +831,10 @@ const CommitteeDetails = () => {
                                                    meeting.id
                                                 );
                                              }}
-                                             className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors"
+                                             className="p-2 bg-gray-100 text-blue-600 rounded-lg hover:bg-gray-200 transition-colors"
                                              title="Download as Document"
                                           >
-                                             <FileDown className="h-4 w-4" />
+                                             <FileDown size={16} />
                                           </button>
                                        </div>
                                     </div>
@@ -885,13 +885,13 @@ const CommitteeDetails = () => {
                            <div className="flex gap-3">
                               <button
                                  onClick={cancelDeleteCommittee}
-                                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded text-sm hover:bg-gray-300 transition-colors"
+                                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm hover:bg-gray-300 transition-colors font-medium"
                               >
                                  Cancel
                               </button>
                               <button
                                  onClick={confirmDeleteCommittee}
-                                 className="px-4 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition-colors"
+                                 className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors font-medium"
                               >
                                  Delete
                               </button>

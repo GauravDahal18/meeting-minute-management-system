@@ -56,7 +56,8 @@ const CreateMeetingDialog = () => {
    const [addedInviteeIds, setAddedInviteeIds] = useState([]);
    const [searchTerm, setSearchTerm] = useState("");
    const [selectedInviteeId, setSelectedInviteeId] = useState("");
-   const [isCreateInviteeDialogOpen, setIsCreateInviteeDialogOpen] = useState(false);
+   const [isCreateInviteeDialogOpen, setIsCreateInviteeDialogOpen] =
+      useState(false);
 
    const [loading, setLoading] = useState(true);
 
@@ -184,21 +185,23 @@ const CreateMeetingDialog = () => {
          prev.filter((inviteeId) => inviteeId !== id)
       );
    };
-   
+
    const handleInviteeCreated = (newInvitee) => {
       // Extract the new invitee's ID and automatically add them to the selected invitees
       if (newInvitee && newInvitee.mainBody && newInvitee.mainBody.memberId) {
          const newInviteeId = newInvitee.mainBody.memberId;
          const firstName = newInvitee.mainBody.firstName;
          const lastName = newInvitee.mainBody.lastName;
-         
+
          // Add the new invitee to the selected invitees list
          if (!addedInviteeIds.includes(newInviteeId)) {
-            setAddedInviteeIds(prev => [...prev, newInviteeId]);
-            toast.success(`${firstName} ${lastName} created and added to meeting`);
+            setAddedInviteeIds((prev) => [...prev, newInviteeId]);
+            toast.success(
+               `${firstName} ${lastName} created and added to meeting`
+            );
          }
       }
-      
+
       // Refresh the list of members to include the newly created invitee
       (async () => {
          try {
@@ -386,7 +389,9 @@ const CreateMeetingDialog = () => {
                               </h3>
                               <button
                                  type="button"
-                                 onClick={() => setIsCreateInviteeDialogOpen(true)}
+                                 onClick={() =>
+                                    setIsCreateInviteeDialogOpen(true)
+                                 }
                                  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors text-sm"
                               >
                                  Create Invitee
@@ -740,7 +745,7 @@ const CreateMeetingDialog = () => {
          </div>
 
          {/* Create Invitee Dialog */}
-         <CreateInviteeDialog 
+         <CreateInviteeDialog
             isOpen={isCreateInviteeDialogOpen}
             onClose={() => setIsCreateInviteeDialogOpen(false)}
             onInviteeCreated={handleInviteeCreated}

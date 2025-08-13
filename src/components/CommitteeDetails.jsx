@@ -8,10 +8,12 @@ import {
    Eye,
    Edit,
    UserPlus,
+   FileDown,
 } from "lucide-react";
 import { BASE_URL } from "../utils/constants.js";
 import { toast } from "react-toastify";
 import CreateMemberDialog from "./CreateMemberDialog";
+import COMMITTEE_ROLES from "../utils/roleConstants";
 
 const CommitteeDetails = () => {
    const { committeeId } = useParams();
@@ -27,6 +29,9 @@ const CommitteeDetails = () => {
    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
    const [isCreateMemberDialogOpen, setIsCreateMemberDialogOpen] =
       useState(false);
+   const [customRoles, setCustomRoles] = useState({});
+
+   const [allMembers, setAllMembers] = useState([]);
 
    useEffect(() => {
       const fetchCommitteeDetails = async () => {
@@ -42,7 +47,19 @@ const CommitteeDetails = () => {
             if (response.ok) {
                const data = await response.json();
                setCommittee(data.mainBody);
-               setMembers(data.mainBody.members || []);
+               // Ensure we store the complete member objects
+               const committeeMembersList = data.mainBody.members || [];
+               setMembers(committeeMembersList);
+
+               console.log("Initial committee members:", committeeMembersList);
+
+               // Also clear search results when committee data changes
+               // This prevents stale data from appearing in search results
+               setSearchResults([]);
+               setShowSearchResults(false);
+
+               // Fetch all members to compare with committee members
+               fetchAllMembers(committeeMembersList);
             } else {
                setError(`HTTP error! status: ${response.status}`);
             }
@@ -51,6 +68,25 @@ const CommitteeDetails = () => {
             setError(error.message);
          } finally {
             setLoading(false);
+         }
+      };
+
+      const fetchAllMembers = async (committeeMembersList) => {
+         try {
+            const response = await fetch(`${BASE_URL}/api/getAllMembers`, {
+               method: "GET",
+               credentials: "include",
+            });
+
+            if (response.ok) {
+               const data = await response.json();
+               setAllMembers(data.mainBody || []);
+               console.log("Fetched all members:", data.mainBody?.length || 0);
+            } else {
+               console.error("Error fetching all members:", response.status);
+            }
+         } catch (error) {
+            console.error("Error fetching all members:", error);
          }
       };
 
@@ -72,36 +108,65 @@ const CommitteeDetails = () => {
             }, 300);
          };
       })(),
-      []
+      [members, allMembers] // Add dependencies
    );
 
-   const searchMembersByName = async (name) => {
+   const searchMembersByName = (name) => {
       setSearchLoading(true);
       try {
-         const response = await fetch(
-            `${BASE_URL}/api/searchMembersByName?name=${encodeURIComponent(
-               name
-            )}`,
-            {
-               method: "GET",
-               credentials: "include",
+         console.log("DETAILED DEBUG INFO:");
+         console.log("All members:", allMembers);
+         console.log("Current committee members:", members);
+
+         // Create a Set of member IDs that are already in the committee
+         const existingMemberIdsSet = new Set();
+
+         // Collect all possible member IDs from committee members
+         members.forEach((member) => {
+            // Store IDs in the set
+            if (member.memberId) {
+               existingMemberIdsSet.add(String(member.memberId));
             }
+            if (member.id) {
+               existingMemberIdsSet.add(String(member.id));
+            }
+            if (member.userId) {
+               existingMemberIdsSet.add(String(member.userId));
+            }
+         });
+
+         console.log(
+            "Existing member IDs Set:",
+            Array.from(existingMemberIdsSet)
          );
 
-         if (response.ok) {
-            const data = await response.json();
-            const existingMemberIds = members.map(
-               (member) => member.memberId || member.id
-            );
-            const filteredResults = data.mainBody.filter(
-               (member) => !existingMemberIds.includes(member.id)
-            );
-            setSearchResults(filteredResults);
-            setShowSearchResults(true);
-         } else {
-            console.error("Error searching members:", response.status);
-            setSearchResults([]);
-         }
+         // Filter all members to find those that match the search and aren't in the committee
+         const filteredResults = allMembers.filter((member) => {
+            // Check if member is in committee
+            const memberId = String(member.memberId || member.id);
+            const isInCommittee = existingMemberIdsSet.has(memberId);
+
+            // Check if member matches search term
+            const matchesSearch =
+               `${member.firstName} ${member.lastName}`
+                  .toLowerCase()
+                  .includes(name.toLowerCase()) ||
+               (member.institution || "")
+                  .toLowerCase()
+                  .includes(name.toLowerCase()) ||
+               (member.post || "").toLowerCase().includes(name.toLowerCase());
+
+            // Include in results if matches search and NOT in committee
+            return matchesSearch && !isInCommittee;
+         });
+
+         console.log(
+            "Total search results after filtering:",
+            filteredResults.length
+         );
+
+         setSearchResults(filteredResults);
+         setShowSearchResults(true);
       } catch (error) {
          console.error("Error searching members:", error);
          setSearchResults([]);
@@ -129,8 +194,22 @@ const CommitteeDetails = () => {
 
    const handleAddMemberClick = (member, dropdownId) => {
       const dropdown = document.getElementById(dropdownId);
-      const selectedRole = dropdown ? dropdown.value : "member";
-      handleAddMemberToCommittee(member, selectedRole);
+      const customRoleInput = document.getElementById(
+         `custom-role-${member.id}`
+      );
+
+      // If there's a custom role and it's not empty, use it; otherwise use dropdown value
+      const customRoleValue = customRoleInput
+         ? customRoleInput.value.trim()
+         : "";
+      const selectedRole =
+         customRoleValue || (dropdown ? dropdown.value : "Member");
+
+      // Make sure the first letter is capitalized for consistency
+      const formattedRole =
+         selectedRole === "custom" ? customRoleValue : selectedRole;
+
+      handleAddMemberToCommittee(member, formattedRole);
    };
 
    const handleBackToCommittees = () => {
@@ -149,6 +228,7 @@ const CommitteeDetails = () => {
       // Refresh committee details to include the new member
       (async () => {
          try {
+            // Fetch updated committee details
             const response = await fetch(
                `${BASE_URL}/api/getCommitteeDetails?committeeId=${committeeId}`,
                {
@@ -161,6 +241,21 @@ const CommitteeDetails = () => {
                const data = await response.json();
                setCommittee(data.mainBody);
                setMembers(data.mainBody.members || []);
+
+               // Also refresh the full members list
+               const allMembersResponse = await fetch(
+                  `${BASE_URL}/api/getAllMembers`,
+                  {
+                     method: "GET",
+                     credentials: "include",
+                  }
+               );
+
+               if (allMembersResponse.ok) {
+                  const allMembersData = await allMembersResponse.json();
+                  setAllMembers(allMembersData.mainBody || []);
+               }
+
                toast.success(
                   `${newMemberData.mainBody?.firstName || "Member"} ${
                      newMemberData.mainBody?.lastName || ""
@@ -291,6 +386,7 @@ const CommitteeDetails = () => {
 
    const handleAddMemberToCommittee = async (member, role) => {
       try {
+         // Use BASE_URL for consistency
          const response = await fetch(
             `${BASE_URL}/api/addMembersToCommittee?committeeId=${committeeId}`,
             {
@@ -301,7 +397,7 @@ const CommitteeDetails = () => {
                credentials: "include",
                body: JSON.stringify([
                   {
-                     memberId: member.id,
+                     memberId: member.memberId || member.id,
                      role: role,
                   },
                ]),
@@ -309,6 +405,12 @@ const CommitteeDetails = () => {
          );
 
          if (response.ok) {
+            // Show success notification
+            toast.success(
+               `${member.firstName} ${member.lastName} added as ${role}`
+            );
+
+            // Refresh committee details
             const committeeResponse = await fetch(
                `${BASE_URL}/api/getCommitteeDetails?committeeId=${committeeId}`,
                {
@@ -319,32 +421,43 @@ const CommitteeDetails = () => {
 
             if (committeeResponse.ok) {
                const data = await committeeResponse.json();
+               const updatedMembers = data.mainBody.members || [];
                setCommittee(data.mainBody);
-               setMembers(data.mainBody.members || []);
-            }
+               setMembers(updatedMembers);
 
-            setSearchResults((prev) => prev.filter((m) => m.id !== member.id));
+               // Update search results by removing the newly added member
+               const memberId = String(member.memberId || member.id);
+               console.log(
+                  `Removing member with ID ${memberId} from search results`
+               );
 
-            if (searchResults.length === 1) {
-               setShowSearchResults(false);
-               setSearchTerm("");
+               setSearchResults((prev) =>
+                  prev.filter((m) => String(m.memberId || m.id) !== memberId)
+               );
+
+               // If search results are now empty, clear the search
+               if (searchResults.length <= 1) {
+                  setShowSearchResults(false);
+                  setSearchTerm("");
+               } else {
+                  // Re-run the search to update results from allMembers
+                  searchMembersByName(searchTerm.trim());
+               }
             }
          } else {
+            // Show error notification
+            toast.error(`Failed to add member: ${response.statusText}`);
             console.error("Error adding member to committee:", response.status);
          }
       } catch (error) {
+         // Show error notification for exceptions
+         toast.error(`Error: ${error.message || "Failed to add member"}`);
          console.error("Error adding member to committee:", error);
       }
    };
 
-   const filteredMembers = members.filter(
-      (member) =>
-         `${member.firstName} ${member.lastName}`
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-         member.institution.toLowerCase().includes(searchTerm.toLowerCase()) ||
-         member.post.toLowerCase().includes(searchTerm.toLowerCase())
-   );
+   // No need to filter the members list - we always want to show all committee members
+   const filteredMembers = members;
 
    if (loading) {
       return (
@@ -443,8 +556,9 @@ const CommitteeDetails = () => {
                               </h2>
                               <button
                                  onClick={handleAddMember}
-                                 className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                                 className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors text-sm flex items-center gap-1"
                               >
+                                 <UserPlus size={14} />
                                  Create Member
                               </button>
                            </div>
@@ -477,12 +591,15 @@ const CommitteeDetails = () => {
                               )}
                            </div>
 
-                           {/* Search Results */}
-                           {showSearchResults && searchResults.length > 0 && (
+                           {/* Search Results - Shown only when searching */}
+                           {showSearchResults && (
                               <div className="mb-4">
                                  <div className="flex justify-between items-center mb-2">
                                     <h3 className="text-sm font-medium text-gray-700">
-                                       Search Results
+                                       Search Results{" "}
+                                       {searchResults.length > 0
+                                          ? `(${searchResults.length})`
+                                          : ""}
                                     </h3>
                                     <button
                                        onClick={clearSearch}
@@ -491,76 +608,120 @@ const CommitteeDetails = () => {
                                        Clear
                                     </button>
                                  </div>
-                                 <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-2 bg-gray-50">
-                                    {searchResults.map((member) => (
-                                       <div
-                                          key={member.id}
-                                          className="flex justify-between items-center p-2 hover:bg-white rounded border border-gray-100 bg-white"
-                                       >
-                                          <div className="flex-1">
-                                             <div className="text-sm">
-                                                <span className="font-medium">
-                                                   {member.firstName}
-                                                   {member.lastName}
-                                                </span>
+
+                                 {searchResults.length > 0 ? (
+                                    <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-2 bg-gray-50">
+                                       {searchResults.map((member) => (
+                                          <div
+                                             key={member.id}
+                                             className="flex justify-between items-center p-2 hover:bg-white rounded border border-gray-100 bg-white"
+                                          >
+                                             <div className="flex-1">
+                                                <div className="text-sm">
+                                                   <span className="font-medium">
+                                                      {member.firstName}{" "}
+                                                      {member.lastName}
+                                                   </span>
+                                                </div>
+                                                <div className="text-xs text-gray-500">
+                                                   {member.post} at{" "}
+                                                   {member.institution}
+                                                </div>
+                                                <div className="text-xs text-gray-400">
+                                                   {member.qualification}
+                                                </div>
                                              </div>
-                                             <div className="text-xs text-gray-500">
-                                                {member.post} at{" "}
-                                                {member.institution}
-                                             </div>
-                                             <div className="text-xs text-gray-400">
-                                                {member.qualification}
+                                             <div className="flex flex-col gap-2">
+                                                <div className="flex items-center gap-2">
+                                                   <select
+                                                      id={`role-${member.id}`}
+                                                      className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                                      defaultValue="Member"
+                                                      onChange={(e) => {
+                                                         // When dropdown changes, update the custom input
+                                                         const customInput =
+                                                            document.getElementById(
+                                                               `custom-role-${member.id}`
+                                                            );
+                                                         if (customInput) {
+                                                            customInput.value =
+                                                               e.target
+                                                                  .value ===
+                                                               "custom"
+                                                                  ? ""
+                                                                  : e.target
+                                                                       .value;
+                                                         }
+                                                      }}
+                                                   >
+                                                      {COMMITTEE_ROLES.map(
+                                                         (role) => (
+                                                            <option
+                                                               key={role}
+                                                               value={role}
+                                                            >
+                                                               {role}
+                                                            </option>
+                                                         )
+                                                      )}
+                                                      <option value="custom">
+                                                         Custom Role...
+                                                      </option>
+                                                   </select>
+                                                   <button
+                                                      onClick={() =>
+                                                         handleAddMemberClick(
+                                                            member,
+                                                            `role-${member.id}`
+                                                         )
+                                                      }
+                                                      className="px-3 py-1 bg-green-100 text-green-600 rounded text-xs hover:bg-green-200 transition-colors flex items-center gap-1"
+                                                   >
+                                                      <UserPlus size={12} />
+                                                      Add
+                                                   </button>
+                                                </div>
+                                                <input
+                                                   id={`custom-role-${member.id}`}
+                                                   type="text"
+                                                   className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full"
+                                                   placeholder="Enter custom role (Nepali)..."
+                                                   onChange={(e) => {
+                                                      // When custom input changes, update the dropdown
+                                                      const dropdown =
+                                                         document.getElementById(
+                                                            `role-${member.id}`
+                                                         );
+                                                      if (
+                                                         dropdown &&
+                                                         e.target.value.trim() !==
+                                                            ""
+                                                      ) {
+                                                         dropdown.value =
+                                                            "custom";
+                                                      }
+                                                   }}
+                                                />
                                              </div>
                                           </div>
-                                          <div className="flex items-center gap-2">
-                                             <select
-                                                id={`role-${member.id}`}
-                                                className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                                                defaultValue="member"
-                                             >
-                                                <option value="member">
-                                                   Member
-                                                </option>
-                                                <option value="member-secretary">
-                                                   Member-Secretary
-                                                </option>
-                                                <option value="invitee">
-                                                   Invitee
-                                                </option>
-                                             </select>
-                                             <button
-                                                onClick={() =>
-                                                   handleAddMemberClick(
-                                                      member,
-                                                      `role-${member.id}`
-                                                   )
-                                                }
-                                                className="px-3 py-1 bg-green-100 text-green-600 rounded text-xs hover:bg-green-200 transition-colors flex items-center gap-1"
-                                             >
-                                                <UserPlus size={12} />
-                                                Add
-                                             </button>
-                                          </div>
-                                       </div>
-                                    ))}
-                                 </div>
+                                       ))}
+                                    </div>
+                                 ) : searchTerm.trim().length >= 2 &&
+                                   !searchLoading ? (
+                                    <div className="p-3 text-center text-gray-500 bg-gray-50 rounded-lg border">
+                                       No members found matching "{searchTerm}"
+                                    </div>
+                                 ) : null}
                               </div>
                            )}
 
-                           {/* No Search Results */}
-                           {showSearchResults &&
-                              searchResults.length === 0 &&
-                              searchTerm.trim().length >= 2 &&
-                              !searchLoading && (
-                                 <div className="mb-4 p-3 text-center text-gray-500 bg-gray-50 rounded-lg border">
-                                    No members found matching "{searchTerm}"
-                                 </div>
-                              )}
-
-                           {/* Existing Members List */}
-                           {!showSearchResults && (
-                              <div className="space-y-2 max-h-64 overflow-y-auto">
-                                 {filteredMembers.map((member, index) => (
+                           {/* Existing Members List - Always shown */}
+                           <div className="mb-4">
+                              <h3 className="text-sm font-medium text-gray-700 mb-2">
+                                 Current Members ({members.length})
+                              </h3>
+                              <div className="space-y-2 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-2">
+                                 {members.map((member, index) => (
                                     <div
                                        key={member.memberId}
                                        className="flex justify-between items-center p-2 hover:bg-gray-50 rounded"
@@ -580,51 +741,21 @@ const CommitteeDetails = () => {
                                                 ({member.role})
                                              </span>
                                           </div>
+                                          <div className="text-xs text-gray-400">
+                                             {member.post}
+                                          </div>
                                        </div>
                                     </div>
                                  ))}
-                                 {filteredMembers.length === 0 && (
+                                 {members.length === 0 && (
                                     <div className="text-center text-gray-500 py-4">
-                                       {searchTerm
-                                          ? "No members found"
-                                          : "No members added yet"}
+                                       No members added yet
                                     </div>
                                  )}
                               </div>
-                           )}
+                           </div>
 
-                           {/* Show existing members count when searching */}
-                           {showSearchResults && (
-                              <div className="mb-4">
-                                 <h3 className="text-sm font-medium text-gray-700 mb-2">
-                                    Current Members ({members.length})
-                                 </h3>
-                                 <div className="space-y-1 max-h-32 overflow-y-auto">
-                                    {members.map((member, index) => (
-                                       <div
-                                          key={member.memberId}
-                                          className="flex justify-between items-center p-1 text-xs"
-                                       >
-                                          <span className="text-gray-600">
-                                             {index + 1}. {member.firstName}{" "}
-                                             {member.lastName}
-                                          </span>
-                                          <span className="text-gray-400 text-xs">
-                                             {member.post}
-                                          </span>
-                                       </div>
-                                    ))}
-                                 </div>
-                              </div>
-                           )}
-
-                           {/* Create Member Button */}
-                           <button
-                              onClick={handleAddMember}
-                              className="w-full mt-4 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition-colors"
-                           >
-                              Create Member
-                           </button>
+                           {/* Create Member Button moved to top section */}
                         </div>
 
                         {/* Meetings Section */}
@@ -635,9 +766,9 @@ const CommitteeDetails = () => {
                               </h2>
                               <button
                                  onClick={handleCreateMeeting}
-                                 className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm"
+                                 className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm flex items-center gap-1"
                               >
-                                 Create Meeting
+                                 <Plus className="h-4 w-4" /> Create Meeting
                               </button>
                            </div>
 
@@ -678,18 +809,20 @@ const CommitteeDetails = () => {
                                                 e.stopPropagation();
                                                 handleViewMeeting(meeting.id);
                                              }}
-                                             className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs hover:bg-blue-200 transition-colors"
+                                             className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors"
+                                             title="Preview Meeting"
                                           >
-                                             Preview
+                                             <Eye className="h-4 w-4" />
                                           </button>
                                           <button
                                              onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleEditMeeting(meeting.id);
                                              }}
-                                             className="px-2 py-1 bg-green-100 text-green-600 rounded text-xs hover:bg-green-200 transition-colors"
+                                             className="p-2 bg-green-100 text-green-600 rounded-full hover:bg-green-200 transition-colors"
+                                             title="Edit Meeting"
                                           >
-                                             Edit
+                                             <Edit className="h-4 w-4" />
                                           </button>
                                           <button
                                              onClick={(e) => {
@@ -698,9 +831,10 @@ const CommitteeDetails = () => {
                                                    meeting.id
                                                 );
                                              }}
-                                             className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs hover:bg-blue-200 transition-colors"
+                                             className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors"
+                                             title="Download as Document"
                                           >
-                                             Download Docx
+                                             <FileDown className="h-4 w-4" />
                                           </button>
                                        </div>
                                     </div>

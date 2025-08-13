@@ -213,31 +213,10 @@ const CommitteeDetails = () => {
     window.open(previewUrl, "_blank");
   };
 
-  const handleDownloadMeeting = async (meetingId) => {
+  const handleDownloadMeeting = (meetingId) => {
     const downloadUrl = `${BASE_URL}/api/previewMeetingMinute?committeeId=${committeeId}&meetingId=${meetingId}&lang=nepali&download=docx`;
-    try {
-      const response = await fetch(downloadUrl, {
-        method: "GET",
-        credentials: "include",
-      });
-      if (!response.ok) {
-        const data = await response.json().catch(() => null);
-        toast.error(data?.message || "Failed to download file");
-        return;
-      }
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `meeting_${meetingId}.docx`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      console.error("Download error:", e);
-      toast.error("Unable to download file");
-    }
+    // Simply open the download URL in a new window
+    window.open(downloadUrl, "_blank");
   };
 
   const handleEditMeeting = async (meetingId) => {
@@ -638,21 +617,30 @@ const CommitteeDetails = () => {
                               meeting.heldDate[2]
                             ).toLocaleDateString()}
                           </div>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                             <button
-                              onClick={() => handleViewMeeting(meeting.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewMeeting(meeting.id);
+                              }}
                               className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs hover:bg-blue-200 transition-colors"
                             >
                               Preview
                             </button>
                             <button
-                              onClick={() => handleEditMeeting(meeting.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditMeeting(meeting.id);
+                              }}
                               className="px-2 py-1 bg-green-100 text-green-600 rounded text-xs hover:bg-green-200 transition-colors"
                             >
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDownloadMeeting(meeting.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDownloadMeeting(meeting.id);
+                              }}
                               className="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs hover:bg-blue-200 transition-colors"
                             >
                               Download Docx

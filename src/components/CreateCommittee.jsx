@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, Search, Minus } from "lucide-react";
 import COMMITTEE_ROLES from "../utils/roleConstants";
 
 // Use the global roles constant
@@ -23,7 +23,7 @@ const CreateCommitteeDialog = () => {
       "Responsible for overseeing strategic development and coordination of all subcommittees."
    );
    const [status, setStatus] = useState(statusOptions[0]); // e.g., "Active"
-   const [maximumNumberOfMeetings, setMaximumNumberOfMeetings] = useState("12");
+   const [maximumNumberOfMeetings, setMaximumNumberOfMeetings] = useState("0");
    const [searchTerm, setSearchTerm] = useState("");
    const [selectedMemberId, setSelectedMemberId] = useState("");
    const [selectedRole, setSelectedRole] = useState(roles[0]);
@@ -147,10 +147,7 @@ const CreateCommitteeDialog = () => {
          toast.error("Please enter a committee name");
          return;
       }
-      if (!committeeDescription.trim()) {
-         toast.error("Please enter a committee description");
-         return;
-      }
+      // Description is optional
 
       // Handle maximum number of meetings - optional field with default 0
       let maxMeetNum = 0; // Default value
@@ -174,6 +171,21 @@ const CreateCommitteeDialog = () => {
          toast.error("Please add at least one member to the committee");
          return;
       }
+      
+      // Check if there is exactly one Coordinator
+      const coordinatorCount = committeeMembership.filter(
+         m => m.role.toLowerCase() === "coordinator"
+      ).length;
+      
+      if (coordinatorCount === 0) {
+         toast.error("Please add at least one Coordinator to the committee");
+         return;
+      }
+      
+      if (coordinatorCount > 1) {
+         toast.error("A committee can have only one Coordinator");
+         return;
+      }
 
       // Transform memberships to required map schema: { "memberId": "ROLE" }
       const membersMap = {};
@@ -185,7 +197,7 @@ const CreateCommitteeDialog = () => {
 
       const payload = {
          name: committeeName.trim(),
-         description: committeeDescription.trim(),
+         description: committeeDescription ? committeeDescription.trim() : "",
          status,
          maximumNumberOfMeetings: maxMeetNum,
          members: membersMap,
@@ -244,20 +256,21 @@ const CreateCommitteeDialog = () => {
                      </h2>
                      <p className="text-sm text-gray-500 mt-1">
                         Fill in the committee details and add members with
-                        roles.
+                        roles. <span className="text-red-500">*</span> indicates required fields.
                      </p>
                   </div>
 
-                  {/* Two Column Layout with Vertical Separator */}
+                  {/* Two Column Layout with Different Widths */}
                   <div className="grid grid-cols-5 gap-6">
-                     {/* Left Side - Member Search and List (40% width) */}
-                     <div className="col-span-2 space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                           Manage Members
-                        </h3>
+                     {/* Left Side - Member Search and List (2/5 width) */}
+                     <div className="col-span-2 space-y-5">
+                        <div className="border rounded-lg shadow-sm p-5 bg-white h-[450px] flex flex-col">
+                           <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">
+                              Manage Members
+                           </h3>
 
                         {/* Member Search with Icon */}
-                        <div className="space-y-3">
+                        <div className="space-y-4 mb-5 flex-shrink-0">
                            <div className="relative">
                               <input
                                  className="w-full border border-gray-300 p-2 pl-10 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -284,11 +297,11 @@ const CreateCommitteeDialog = () => {
                         </div>
 
                         {/* Manual add and role */}
-                        <div className="space-y-2">
-                           <label className="block text-sm font-medium text-gray-700">
-                              Add Member with Role
+                        <div className="space-y-2 mb-5 flex-shrink-0">
+                           <label className="block mb-2 font-semibold text-gray-700">
+                              Add Member with Role <span className="text-red-500">*</span>
                            </label>
-                           <div className="flex flex-col gap-2">
+                           <div className="flex flex-col gap-1">
                               <select
                                  className="w-full border border-gray-300 p-2 rounded text-sm"
                                  value={selectedMemberId}
@@ -315,7 +328,7 @@ const CreateCommitteeDialog = () => {
                                  ))}
                               </select>
 
-                              <div className="flex gap-2">
+                              <div className="flex gap-3 mt-1">
                                  <input
                                     type="text"
                                     className="flex-1 border border-gray-300 p-2 rounded text-sm"
@@ -360,11 +373,11 @@ const CreateCommitteeDialog = () => {
                         </div>
 
                         {/* Members list */}
-                        <div>
+                        <div className="flex-1 flex flex-col min-h-0">
                            <h4 className="font-semibold text-gray-700 mb-2">
-                              Committee Members
+                              Committee Members <span className="text-red-500">*</span>
                            </h4>
-                           <div className="max-h-60 overflow-y-auto">
+                           <div className="flex-1 overflow-y-auto">
                               <ul className="mb-2 divide-y divide-gray-200 border border-gray-200 rounded">
                                  {committeeMembership.map((m) => {
                                     const user = membersData.find(
@@ -386,12 +399,13 @@ const CreateCommitteeDialog = () => {
                                              </span>
                                           </div>
                                           <button
-                                             className="text-red-600 hover:text-red-700 text-sm"
+                                             className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors"
                                              onClick={() =>
                                                 removeMember(m.memberId)
                                              }
+                                             title="Remove member"
                                           >
-                                             Remove
+                                             <Minus className="h-4 w-4" />
                                           </button>
                                        </li>
                                     );
@@ -404,22 +418,19 @@ const CreateCommitteeDialog = () => {
                               </ul>
                            </div>
                         </div>
+                        </div>
                      </div>
 
-                     {/* Vertical Separator */}
-                     <div className="flex justify-center">
-                        <div className="w-px bg-gray-300 h-full"></div>
-                     </div>
+                     {/* Right Side - Committee Details (3/5 width) */}
+                     <div className="col-span-3 space-y-5">
+                        <div className="border rounded-lg shadow-sm p-5 bg-white h-[450px] flex flex-col">
+                           <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">
+                              Committee Details
+                           </h3>
 
-                     {/* Right Side - Committee Details (60% width) */}
-                     <div className="col-span-2 space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                           Committee Details
-                        </h3>
-
-                        <div>
-                           <label className="block mb-1 font-semibold text-gray-700">
-                              Committee Name
+                        <div className="mb-4">
+                           <label className="block mb-2 font-semibold text-gray-700">
+                              Committee Name <span className="text-red-500">*</span>
                            </label>
                            <input
                               className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -429,12 +440,12 @@ const CreateCommitteeDialog = () => {
                            />
                         </div>
 
-                        <div>
-                           <label className="block mb-1 font-semibold text-gray-700">
+                        <div className="mb-4">
+                           <label className="block mb-2 font-semibold text-gray-700">
                               Description
                            </label>
                            <textarea
-                              className="w-full border border-gray-300 p-2 rounded min-h-[90px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full border border-gray-300 p-2 rounded min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               placeholder="Committee Description"
                               value={committeeDescription}
                               onChange={(e) =>
@@ -443,10 +454,10 @@ const CreateCommitteeDialog = () => {
                            />
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4">
+                        <div className="grid grid-cols-2 gap-4">
                            <div>
-                              <label className="block mb-1 font-semibold text-gray-700">
-                                 Status
+                              <label className="block mb-2 font-semibold text-gray-700">
+                                 Status <span className="text-red-500">*</span>
                               </label>
                               <select
                                  className="w-full border border-gray-300 p-2 rounded bg-white"
@@ -462,7 +473,7 @@ const CreateCommitteeDialog = () => {
                            </div>
 
                            <div>
-                              <label className="block mb-1 font-semibold text-gray-700">
+                              <label className="block mb-2 font-semibold text-gray-700">
                                  Maximum No. of Meetings{" "}
                                  <span className="text-gray-400 font-normal">
                                     (Optional)
@@ -474,6 +485,7 @@ const CreateCommitteeDialog = () => {
                                  step="1"
                                  className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                  placeholder="0"
+                                 defaultValue="0"
                                  value={maximumNumberOfMeetings}
                                  onChange={(e) =>
                                     setMaximumNumberOfMeetings(e.target.value)
@@ -483,16 +495,17 @@ const CreateCommitteeDialog = () => {
                         </div>
                      </div>
                   </div>
+                  </div>
 
-                  <div className="flex justify-end gap-3">
+                  <div className="flex justify-end gap-4 mt-6">
                      <button
-                        className="bg-gray-100 border border-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-200"
+                        className="bg-gray-100 border border-gray-300 text-gray-800 px-5 py-2.5 rounded hover:bg-gray-200 font-medium"
                         onClick={() => navigate("/home")}
                      >
                         Cancel
                      </button>
                      <button
-                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                        className="bg-green-600 text-white px-6 py-2.5 rounded hover:bg-green-700 font-medium"
                         onClick={handleSubmit}
                      >
                         Submit

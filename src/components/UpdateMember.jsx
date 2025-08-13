@@ -143,7 +143,7 @@ const UpdateMember = () => {
             onClick={handleBackToCommittees}
             className="flex items-center gap-2 mb-6 text-blue-600 hover:text-blue-800 transition-colors"
           >
-            <ArrowLeft size={16} /> Back to Committees
+            <ArrowLeft size={16} /> Back
           </button>
 
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">

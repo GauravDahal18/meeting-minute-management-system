@@ -7,6 +7,7 @@ import { useAuth } from "../context/AuthContext";
 
 import { getCommittees } from "../utils/GetAllCommittes";
 import { getCommitteeDetails } from "../utils/GetCommitteeMembers";
+import CreateInviteeDialog from "./CreateInviteeDialog";
 import axios from "axios";
 
 const CreateMeetingDialog = () => {
@@ -55,6 +56,7 @@ const CreateMeetingDialog = () => {
    const [addedInviteeIds, setAddedInviteeIds] = useState([]);
    const [searchTerm, setSearchTerm] = useState("");
    const [selectedInviteeId, setSelectedInviteeId] = useState("");
+   const [isCreateInviteeDialogOpen, setIsCreateInviteeDialogOpen] = useState(false);
 
    const [loading, setLoading] = useState(true);
 
@@ -181,6 +183,36 @@ const CreateMeetingDialog = () => {
       setAddedInviteeIds((prev) =>
          prev.filter((inviteeId) => inviteeId !== id)
       );
+   };
+   
+   const handleInviteeCreated = (newInvitee) => {
+      // Extract the new invitee's ID and automatically add them to the selected invitees
+      if (newInvitee && newInvitee.mainBody && newInvitee.mainBody.memberId) {
+         const newInviteeId = newInvitee.mainBody.memberId;
+         const firstName = newInvitee.mainBody.firstName;
+         const lastName = newInvitee.mainBody.lastName;
+         
+         // Add the new invitee to the selected invitees list
+         if (!addedInviteeIds.includes(newInviteeId)) {
+            setAddedInviteeIds(prev => [...prev, newInviteeId]);
+            toast.success(`${firstName} ${lastName} created and added to meeting`);
+         }
+      }
+      
+      // Refresh the list of members to include the newly created invitee
+      (async () => {
+         try {
+            const response = await axios.get(
+               "http://localhost:8080/api/getAllMembers",
+               { withCredentials: true }
+            );
+            if (response.status === 200) {
+               setAllMembers(response.data.mainBody);
+            }
+         } catch (err) {
+            console.error("Failed to refresh members list:", err);
+         }
+      })();
    };
 
    // Test authentication status
@@ -354,7 +386,7 @@ const CreateMeetingDialog = () => {
                               </h3>
                               <button
                                  type="button"
-                                 onClick={() => navigate(`/createInvitee`)}
+                                 onClick={() => setIsCreateInviteeDialogOpen(true)}
                                  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors text-sm"
                               >
                                  Create Invitee
@@ -706,6 +738,13 @@ const CreateMeetingDialog = () => {
                </div>
             </div>
          </div>
+
+         {/* Create Invitee Dialog */}
+         <CreateInviteeDialog 
+            isOpen={isCreateInviteeDialogOpen}
+            onClose={() => setIsCreateInviteeDialogOpen(false)}
+            onInviteeCreated={handleInviteeCreated}
+         />
       </div>
    );
 };

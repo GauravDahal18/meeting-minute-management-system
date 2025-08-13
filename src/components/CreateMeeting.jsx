@@ -332,7 +332,7 @@ const CreateMeetingDialog = () => {
                         Create Meeting
                      </h2>
                      <p className="text-sm text-gray-500 mt-1">
-                        Fill in meeting details and select attendees
+                        Fill in meeting details and select invitees
                      </p>
                      {!isAuthenticated && (
                         <p className="text-sm text-red-500 mt-1">
@@ -342,353 +342,364 @@ const CreateMeetingDialog = () => {
                   </div>
 
                   <form
-                     className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+                     className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:items-start"
                      onSubmit={handleSubmit}
                   >
                      {/* Left: Invitees Selection */}
-                     <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                           Select Invitees ({filteredInvitees.length})
-                        </h3>
-
-                        {/* Search Box */}
-                        <div className="relative">
-                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                              <Search className="h-5 w-5 text-gray-400" />
+                     <div className="lg:col-span-1 space-y-4">
+                        <div className="border border-gray-400 rounded-lg p-4 space-y-4">
+                           <div className="flex items-center justify-between gap-4">
+                              <h3 className="text-lg font-semibold text-gray-800">
+                                 Select Invitees ({filteredInvitees.length})
+                              </h3>
+                              <button
+                                 type="button"
+                                 onClick={() => navigate(`/createInvitee`)}
+                                 className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                              >
+                                 Create Invitee
+                              </button>
                            </div>
-                           <input
-                              type="text"
-                              placeholder="Search invitees..."
-                              value={searchTerm}
-                              onChange={(e) => setSearchTerm(e.target.value)}
-                              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           />
-                        </div>
 
-                        {/* Invitees List */}
-                        <div className="border border-gray-200 rounded-lg p-4 max-h-64 overflow-y-auto">
-                           <ul className="space-y-3">
-                              {filteredInvitees.map((invitee) => {
-                                 const isAdded = addedInviteeIds.includes(
-                                    invitee.id
-                                 );
-                                 return (
-                                    <li
-                                       key={invitee.id}
-                                       className="flex justify-between items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                                    >
-                                       <span className="text-gray-700 font-medium">
-                                          {invitee.name}
-                                       </span>
-                                       {isAdded ? (
-                                          <div className="flex items-center gap-2">
-                                             <span className="text-green-600 text-sm font-medium">
-                                                Added
-                                             </span>
-                                             <button
-                                                type="button"
-                                                onClick={() =>
-                                                   removeInvitee(invitee.id)
-                                                }
-                                                className="px-2 py-1 text-sm rounded hover:bg-red-100 text-red-600 transition-colors"
-                                             >
-                                                Remove
-                                             </button>
-                                          </div>
-                                       ) : (
+                           {/* Search Box */}
+                           <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                 <Search className="h-5 w-5 text-gray-400" />
+                              </div>
+                              <input
+                                 type="text"
+                                 placeholder="Search invitees..."
+                                 value={searchTerm}
+                                 onChange={(e) => setSearchTerm(e.target.value)}
+                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              />
+                           </div>
+
+                           {/* Invitees List */}
+                           <div className="border border-gray-200 rounded-lg p-4 max-h-64 overflow-y-auto">
+                              <ul className="space-y-3">
+                                 {filteredInvitees
+                                    .filter(
+                                       (invitee) =>
+                                          !addedInviteeIds.includes(invitee.id)
+                                    )
+                                    .map((invitee) => (
+                                       <li
+                                          key={invitee.id}
+                                          className="flex justify-between items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                                       >
+                                          <span className="text-gray-700">
+                                             {invitee.name}
+                                          </span>
                                           <button
                                              type="button"
                                              onClick={() =>
                                                 addInvitee(invitee.id)
                                              }
-                                             className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                                             className="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors"
                                           >
-                                             ADD
+                                             <span className="text-xl leading-none relative -top-[1px]">
+                                                +
+                                             </span>
                                           </button>
-                                       )}
-                                    </li>
-                                 );
-                              })}
-                              {filteredInvitees.length === 0 && searchTerm && (
-                                 <li className="text-gray-500 text-center py-4">
-                                    No invitees found matching "{searchTerm}"
-                                 </li>
-                              )}
-                              {filteredInvitees.length === 0 && !searchTerm && (
-                                 <li className="text-gray-500 text-center py-4">
-                                    All external members are already committee
-                                    members
-                                 </li>
-                              )}
-                           </ul>
-                        </div>
+                                       </li>
+                                    ))}
+                                 {filteredInvitees.length === 0 &&
+                                    searchTerm && (
+                                       <li className="text-gray-500 text-center py-4">
+                                          No invitees found matching "
+                                          {searchTerm}"
+                                       </li>
+                                    )}
+                                 {filteredInvitees.length === 0 &&
+                                    !searchTerm && (
+                                       <li className="text-gray-500 text-center py-4">
+                                          All external members are already
+                                          committee members
+                                       </li>
+                                    )}
+                              </ul>
+                           </div>
 
-                        {/* Added Invitees Display */}
-                        {addedInviteeIds.length > 0 && (
+                           {/* Added Invitees Display */}
+                           {addedInviteeIds.length > 0 && (
+                              <div className="mt-6">
+                                 <h4 className="text-md font-medium text-gray-600 border-b pb-2 mb-3">
+                                    Added Invitees
+                                 </h4>
+                                 <div className="border border-gray-100 rounded-lg p-3 max-h-32 overflow-y-auto">
+                                    <ul className="space-y-1">
+                                       {addedInviteeIds.map((id) => {
+                                          const invitee = invitees.find(
+                                             (m) => m.id === id
+                                          );
+                                          const inviteeName =
+                                             invitee?.name || "Unknown";
+                                          return (
+                                             <li
+                                                key={id}
+                                                className="flex justify-between items-center py-1 px-2"
+                                             >
+                                                <span className="text-gray-700 font-normal text-sm">
+                                                   {inviteeName}
+                                                </span>
+                                                <span
+                                                   onClick={() =>
+                                                      removeInvitee(id)
+                                                   }
+                                                   className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
+                                                >
+                                                   <span className="text-xl leading-none relative -top-[1px]">
+                                                      −
+                                                   </span>
+                                                </span>
+                                             </li>
+                                          );
+                                       })}
+                                    </ul>
+                                 </div>
+                              </div>
+                           )}
+
+                           {/* Committee Members Display */}
                            <div className="mt-6">
                               <h4 className="text-md font-medium text-gray-600 border-b pb-2 mb-3">
-                                 Added Invitees
+                                 Committee Members ({availableMembers.length})
                               </h4>
-                              <div className="border border-gray-100 rounded-lg p-3 max-h-32 overflow-y-auto">
+                              <div className="border border-gray-100 rounded-lg p-3 max-h-48 overflow-y-auto bg-gray-50">
                                  <ul className="space-y-1">
-                                    {addedInviteeIds.map((id) => {
-                                       const invitee = invitees.find(
-                                          (m) => m.id === id
-                                       );
-                                       const inviteeName =
-                                          invitee?.name || "Unknown";
-                                       return (
-                                          <li
-                                             key={id}
-                                             className="flex justify-between items-center py-1 px-2"
-                                          >
-                                             <span className="text-gray-700 font-normal text-sm">
-                                                {inviteeName}
+                                    {availableMembers.map((member) => (
+                                       <li
+                                          key={member.id}
+                                          className="flex justify-between items-center py-1 px-2"
+                                       >
+                                          <div className="flex justify-between items-center flex-1">
+                                             <span className="text-gray-500 font-normal text-sm">
+                                                {member.name}
                                              </span>
-                                             <span
-                                                onClick={() =>
-                                                   removeInvitee(id)
-                                                }
-                                                className="cursor-pointer text-red-600 hover:text-red-800 transition-colors"
-                                             >
-                                                Remove
-                                             </span>
-                                          </li>
-                                       );
-                                    })}
+                                             {member.role && (
+                                                <span className="text-gray-400 font-normal text-xs">
+                                                   {member.role}
+                                                </span>
+                                             )}
+                                          </div>
+                                       </li>
+                                    ))}
+                                    {availableMembers.length === 0 && (
+                                       <li className="text-gray-400 text-center py-4 text-sm">
+                                          No committee members found
+                                       </li>
+                                    )}
                                  </ul>
                               </div>
-                           </div>
-                        )}
-
-                        {/* Committee Members Display */}
-                        <div className="mt-6">
-                           <h4 className="text-md font-medium text-gray-600 border-b pb-2 mb-3">
-                              Committee Members ({availableMembers.length})
-                           </h4>
-                           <div className="border border-gray-100 rounded-lg p-3 max-h-48 overflow-y-auto bg-gray-50">
-                              <ul className="space-y-1">
-                                 {availableMembers.map((member) => (
-                                    <li
-                                       key={member.id}
-                                       className="flex justify-between items-center py-1 px-2"
-                                    >
-                                       <div className="flex justify-between items-center flex-1">
-                                          <span className="text-gray-500 font-normal text-sm">
-                                             {member.name}
-                                          </span>
-                                          {member.role && (
-                                             <span className="text-gray-400 font-normal text-xs">
-                                                {member.role}
-                                             </span>
-                                          )}
-                                       </div>
-                                    </li>
-                                 ))}
-                                 {availableMembers.length === 0 && (
-                                    <li className="text-gray-400 text-center py-4 text-sm">
-                                       No committee members found
-                                    </li>
-                                 )}
-                              </ul>
                            </div>
                         </div>
                      </div>
 
                      {/* Right: Meeting Details */}
-                     <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                           Meeting Details
-                        </h3>
-
-                        <div>
-                           <label className="block mb-1 font-semibold text-gray-700">
-                              Committee
-                           </label>
-                           <select
-                              value={committeeId}
-                              onChange={() => {}}
-                              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              disabled
-                           >
-                              <option value="">-- Select committee --</option>
-                              {allCommittees.map((c) => (
-                                 <option key={c.id} value={c.id}>
-                                    {c.name}
-                                 </option>
-                              ))}
-                           </select>
-                        </div>
-
-                        <div>
-                           <label className="block mb-1 font-semibold text-gray-700">
-                              Meeting Title
-                           </label>
-                           <input
-                              type="text"
-                              placeholder="e.g., Monthly Progress Meeting"
-                              value={title}
-                              onChange={(e) => setTitle(e.target.value)}
-                              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              required
-                           />
-                        </div>
-
-                        <div>
-                           <label className="block mb-1 font-semibold text-gray-700">
-                              Description
-                           </label>
-                           <textarea
-                              placeholder="e.g., Review of project milestones and next steps"
-                              value={description}
-                              onChange={(e) => setDescription(e.target.value)}
-                              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              required
-                              rows={3}
-                           />
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                     <div className="lg:col-span-2">
+                        <div className="border border-gray-400 rounded-lg p-6 space-y-6">
                            <div>
-                              <label className="block mb-1 font-semibold text-gray-700">
-                                 Date
+                              <label className="block mb-2 font-semibold text-gray-700">
+                                 Committee
+                              </label>
+                              <select
+                                 value={committeeId}
+                                 onChange={() => {}}
+                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 disabled
+                              >
+                                 <option value="">
+                                    -- Select committee --
+                                 </option>
+                                 {allCommittees.map((c) => (
+                                    <option key={c.id} value={c.id}>
+                                       {c.name}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+
+                           <div>
+                              <label className="block mb-2 font-semibold text-gray-700">
+                                 Meeting Title
                               </label>
                               <input
-                                 type="date"
+                                 type="text"
+                                 placeholder="e.g., Monthly Progress Meeting"
+                                 value={title}
+                                 onChange={(e) => setTitle(e.target.value)}
+                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                  required
-                                 value={meetingDate}
+                              />
+                           </div>
+
+                           <div>
+                              <label className="block mb-2 font-semibold text-gray-700">
+                                 Description
+                              </label>
+                              <textarea
+                                 placeholder="e.g., Review of project milestones and next steps"
+                                 value={description}
                                  onChange={(e) =>
-                                    setMeetingDate(e.target.value)
+                                    setDescription(e.target.value)
                                  }
                                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 required
+                                 rows={3}
                               />
                            </div>
 
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div>
+                                 <label className="block mb-2 font-semibold text-gray-700">
+                                    Date
+                                 </label>
+                                 <input
+                                    type="date"
+                                    required
+                                    value={meetingDate}
+                                    onChange={(e) =>
+                                       setMeetingDate(e.target.value)
+                                    }
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 />
+                              </div>
+
+                              <div>
+                                 <label className="block mb-2 font-semibold text-gray-700">
+                                    Time
+                                 </label>
+                                 <input
+                                    type="time"
+                                    value={heldTime}
+                                    onChange={(e) =>
+                                       setHeldTime(e.target.value)
+                                    }
+                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    required
+                                 />
+                              </div>
+                           </div>
+
                            <div>
-                              <label className="block mb-1 font-semibold text-gray-700">
-                                 Time
+                              <label className="block mb-2 font-semibold text-gray-700">
+                                 Meeting Place
                               </label>
                               <input
-                                 type="time"
-                                 value={heldTime}
-                                 onChange={(e) => setHeldTime(e.target.value)}
+                                 type="text"
+                                 placeholder="e.g., Conference Room B"
+                                 value={meetingPlace}
+                                 onChange={(e) =>
+                                    setMeetingPlace(e.target.value)
+                                 }
                                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                  required
                               />
                            </div>
-                        </div>
 
-                        <div>
-                           <label className="block mb-1 font-semibold text-gray-700">
-                              Meeting Place
-                           </label>
-                           <input
-                              type="text"
-                              placeholder="e.g., Conference Room B"
-                              value={meetingPlace}
-                              onChange={(e) => setMeetingPlace(e.target.value)}
-                              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              required
-                           />
-                        </div>
-
-                        {/* Agenda Section */}
-                        <div>
-                           <label className="block mb-2 font-semibold text-gray-700">
-                              Agenda Items
-                           </label>
-                           <div className="space-y-3 max-h-48 overflow-y-auto">
-                              {agenda.map((item, idx) => (
-                                 <div key={idx} className="flex gap-2">
-                                    <textarea
-                                       placeholder={`Agenda item ${idx + 1}`}
-                                       value={item}
-                                       onChange={(e) =>
-                                          updateAgenda(idx, e.target.value)
-                                       }
-                                       className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                       rows={2}
-                                    />
-                                    {agenda.length > 1 && (
-                                       <button
-                                          type="button"
-                                          onClick={() => removeAgenda(idx)}
-                                          className="px-2 py-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                       >
-                                          ❌
-                                       </button>
-                                    )}
-                                 </div>
-                              ))}
+                           {/* Agenda Section */}
+                           <div>
+                              <label className="block mb-2 font-semibold text-gray-700">
+                                 Agenda Items
+                              </label>
+                              <div className="space-y-3">
+                                 {agenda.map((item, idx) => (
+                                    <div key={idx} className="flex gap-2">
+                                       <textarea
+                                          placeholder={`Agenda item ${idx + 1}`}
+                                          value={item}
+                                          onChange={(e) =>
+                                             updateAgenda(idx, e.target.value)
+                                          }
+                                          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          rows={2}
+                                       />
+                                       {agenda.length > 1 && (
+                                          <button
+                                             type="button"
+                                             onClick={() => removeAgenda(idx)}
+                                             className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
+                                          >
+                                             <span className="text-xl leading-none relative -top-[1px]">
+                                                −
+                                             </span>
+                                          </button>
+                                       )}
+                                    </div>
+                                 ))}
+                              </div>
+                              <button
+                                 type="button"
+                                 onClick={addAgendaRow}
+                                 className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors mt-2"
+                              >
+                                 <Plus size={16} /> Add agenda item
+                              </button>
                            </div>
-                           <button
-                              type="button"
-                              onClick={addAgendaRow}
-                              className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors mt-2"
-                           >
-                              <Plus size={16} /> Add agenda item
-                           </button>
-                        </div>
 
-                        {/* Decisions Section */}
-                        <div>
-                           <label className="block mb-2 font-semibold text-gray-700">
-                              Decisions Made
-                           </label>
-                           <div className="space-y-3 max-h-48 overflow-y-auto">
-                              {decisions.map((decision, idx) => (
-                                 <div key={idx} className="flex gap-2">
-                                    <textarea
-                                       placeholder={`Decision ${idx + 1}`}
-                                       value={decision}
-                                       onChange={(e) =>
-                                          updateDecision(idx, e.target.value)
-                                       }
-                                       className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                       rows={2}
-                                    />
-                                    {decisions.length > 1 && (
-                                       <button
-                                          type="button"
-                                          onClick={() => removeDecision(idx)}
-                                          className="px-2 py-1 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                       >
-                                          ❌
-                                       </button>
-                                    )}
-                                 </div>
-                              ))}
+                           {/* Decisions Section */}
+                           <div>
+                              <label className="block mb-2 font-semibold text-gray-700">
+                                 Decisions Made
+                              </label>
+                              <div className="space-y-3">
+                                 {decisions.map((decision, idx) => (
+                                    <div key={idx} className="flex gap-2">
+                                       <textarea
+                                          placeholder={`Decision ${idx + 1}`}
+                                          value={decision}
+                                          onChange={(e) =>
+                                             updateDecision(idx, e.target.value)
+                                          }
+                                          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          rows={2}
+                                       />
+                                       {decisions.length > 1 && (
+                                          <button
+                                             type="button"
+                                             onClick={() => removeDecision(idx)}
+                                             className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
+                                          >
+                                             <span className="text-xl leading-none relative -top-[1px]">
+                                                −
+                                             </span>
+                                          </button>
+                                       )}
+                                    </div>
+                                 ))}
+                              </div>
+                              <button
+                                 type="button"
+                                 onClick={addDecisionRow}
+                                 className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors mt-2"
+                              >
+                                 <Plus size={16} /> Add decision
+                              </button>
                            </div>
-                           <button
-                              type="button"
-                              onClick={addDecisionRow}
-                              className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors mt-2"
-                           >
-                              <Plus size={16} /> Add decision
-                           </button>
-                        </div>
 
-                        <div className="flex justify-end gap-3 pt-6">
-                           <button
-                              type="button"
-                              onClick={handleCancel}
-                              className="rounded-lg px-4 py-2 text-sm border border-gray-300 hover:bg-gray-50 transition-colors"
-                           >
-                              Cancel
-                           </button>
-                           <button
-                              type="submit"
-                              disabled={!isAuthenticated}
-                              className={`rounded-lg px-4 py-2 text-sm text-white transition-colors ${
-                                 isAuthenticated
-                                    ? "bg-blue-600 hover:bg-blue-700"
-                                    : "bg-gray-400 cursor-not-allowed"
-                              }`}
-                           >
-                              {!isAuthenticated
-                                 ? "Authentication Required"
-                                 : "Create Meeting"}
-                           </button>
+                           <div className="flex justify-end gap-3 pt-6">
+                              <button
+                                 type="button"
+                                 onClick={handleCancel}
+                                 className="rounded-lg px-4 py-2 text-sm border border-gray-300 hover:bg-gray-50 transition-colors"
+                              >
+                                 Cancel
+                              </button>
+                              <button
+                                 type="submit"
+                                 disabled={!isAuthenticated}
+                                 className={`rounded-lg px-4 py-2 text-sm text-white transition-colors ${
+                                    isAuthenticated
+                                       ? "bg-blue-600 hover:bg-blue-700"
+                                       : "bg-gray-400 cursor-not-allowed"
+                                 }`}
+                              >
+                                 {!isAuthenticated
+                                    ? "Authentication Required"
+                                    : "Create Meeting"}
+                              </button>
+                           </div>
                         </div>
                      </div>
                   </form>

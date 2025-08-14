@@ -911,7 +911,7 @@ const CommitteeDetails = () => {
                                                    : "text-gray-400"
                                              }`}
                                           >
-                                             {member.post}
+                                             {member.institution}
                                           </div>
                                        </div>
                                     </div>

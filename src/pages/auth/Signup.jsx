@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // <-- import icons
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useTheme } from "../../context/ThemeContext.jsx";
+import DarkModeToggle from "../../components/DarkModeToggle.jsx";
 
 function Signup() {
   const [formData, setFormData] = useState({
@@ -22,6 +24,7 @@ function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigate = useNavigate();
+  const { isDarkMode } = useTheme();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -99,15 +102,33 @@ function Signup() {
     }
   };
 
-  const inputClass =
-    "w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500";
+  const inputClass = `w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors duration-200 ${
+    isDarkMode 
+      ? 'border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400' 
+      : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+  }`;
 
   const errorText = (msg) => <p className="text-red-500 text-sm mt-1">{msg}</p>;
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-100 to-blue-200">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-purple-700 mb-6">
+    <div className={`flex items-center justify-center min-h-screen transition-colors duration-200 ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900' 
+        : 'bg-gradient-to-br from-purple-100 to-blue-200'
+    }`}>
+      {/* Dark Mode Toggle - Positioned absolutely in top right */}
+      <div className="absolute top-4 right-4 z-10">
+        <DarkModeToggle />
+      </div>
+      
+      <div className={`p-8 rounded-xl shadow-lg w-full max-w-md transition-colors duration-200 ${
+        isDarkMode 
+          ? 'bg-gray-800 border border-gray-700' 
+          : 'bg-white'
+      }`}>
+        <h2 className={`text-2xl font-bold text-center mb-6 transition-colors duration-200 ${
+          isDarkMode ? 'text-purple-400' : 'text-purple-700'
+        }`}>
           Create an Account
         </h2>
 
@@ -118,7 +139,9 @@ function Signup() {
         <form onSubmit={handleSignup} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={`block text-sm font-medium mb-1 transition-colors duration-200 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 First Name
               </label>
               <input
@@ -131,7 +154,9 @@ function Signup() {
               {fieldErrors.firstname && errorText(fieldErrors.firstname)}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className={`block text-sm font-medium mb-1 transition-colors duration-200 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 Last Name
               </label>
               <input
@@ -146,7 +171,9 @@ function Signup() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={`block text-sm font-medium mb-1 transition-colors duration-200 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Email
             </label>
             <input
@@ -160,7 +187,9 @@ function Signup() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={`block text-sm font-medium mb-1 transition-colors duration-200 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Username
             </label>
             <input
@@ -175,7 +204,9 @@ function Signup() {
 
           {/* Password input with eye icon */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={`block text-sm font-medium mb-1 transition-colors duration-200 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Password
             </label>
             <div className="relative">
@@ -189,7 +220,9 @@ function Signup() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-200 ${
+                  isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
+                }`}
                 tabIndex={-1}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -200,7 +233,9 @@ function Signup() {
 
           {/* Confirm Password input with eye icon */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={`block text-sm font-medium mb-1 transition-colors duration-200 ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Confirm Password
             </label>
             <div className="relative">
@@ -214,7 +249,9 @@ function Signup() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-200 ${
+                  isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
+                }`}
                 tabIndex={-1}
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
@@ -227,17 +264,25 @@ function Signup() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-200 disabled:opacity-50"
+            className={`w-full py-2 rounded-lg transition-colors duration-200 disabled:opacity-50 ${
+              isDarkMode 
+                ? 'bg-purple-700 hover:bg-purple-800 text-white' 
+                : 'bg-purple-600 hover:bg-purple-700 text-white'
+            }`}
           >
             {loading ? "Signing up..." : "Sign Up"}
           </button>
 
-          <div className="text-sm text-center text-gray-600 mt-4">
+          <div className={`text-sm text-center mt-4 transition-colors duration-200 ${
+            isDarkMode ? 'text-gray-400' : 'text-gray-600'
+          }`}>
             Already have an account?{" "}
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="text-purple-600 hover:underline font-medium"
+              className={`font-medium hover:underline transition-colors duration-200 ${
+                isDarkMode ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'
+              }`}
             >
               Login
             </button>

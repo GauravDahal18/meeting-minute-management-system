@@ -25,7 +25,7 @@ const CreateMemberDialog = ({
    const [email, setEmail] = useState("");
    const [role, setRole] = useState("");
    const [customRole, setCustomRole] = useState("");
-   const [post, setPost] = useState(posts[0]);
+   const [post, setPost] = useState("");
    const [institution, setInstitution] = useState("");
    const [isLoading, setIsLoading] = useState(false);
    const [showErrors, setShowErrors] = useState(false);
@@ -95,7 +95,7 @@ const CreateMemberDialog = ({
             setRole("");
             setCustomRole("");
             setInstitution("");
-            setPost(posts[0]);
+            setPost("");
             setShowErrors(false);
 
             // Close dialog
@@ -154,7 +154,7 @@ const CreateMemberDialog = ({
                            isDarkMode ? "text-gray-300" : "text-gray-700"
                         }`}
                      >
-                        First Name (English) *
+                        First Name *
                      </label>
                      <input
                         type="text"
@@ -165,7 +165,7 @@ const CreateMemberDialog = ({
                               ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
-                        placeholder="Enter first name in English"
+                        placeholder="Enter first name"
                         required
                      />
                   </div>
@@ -176,7 +176,7 @@ const CreateMemberDialog = ({
                            isDarkMode ? "text-gray-300" : "text-gray-700"
                         }`}
                      >
-                        Last Name (English) *
+                        Last Name *
                      </label>
                      <input
                         type="text"
@@ -187,68 +187,171 @@ const CreateMemberDialog = ({
                               ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
-                        placeholder="Enter last name in English"
+                        placeholder="Enter last name"
                         required
                      />
                   </div>
                </div>
 
-               {/* First Name (Nepali) & Last Name (Nepali) side by side */}
-               <div className="grid grid-cols-2 gap-4">
+               {/* Separator line */}
+               <div
+                  className={`border-t pt-4 transition-colors duration-200 ${
+                     isDarkMode ? "border-gray-600" : "border-gray-300"
+                  }`}
+               >
+                  <p
+                     className={`text-xs mb-4 transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-400" : "text-gray-500"
+                     }`}
+                  >
+                     The following fields will be used in meeting minutes
+                  </p>
+
+                  {/* First Name (Nepali) & Last Name (Nepali) side by side */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                     <div>
+                        <label
+                           className={`block mb-1 font-semibold transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                           }`}
+                        >
+                           First Name (Nepali) *
+                        </label>
+                        <input
+                           type="text"
+                           value={firstNameNepali}
+                           onChange={(e) => setFirstNameNepali(e.target.value)}
+                           className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                 : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
+                           }`}
+                           placeholder="राम"
+                           required
+                        />
+                        {showErrors && !firstNameNepali.trim() && (
+                           <p className="text-xs text-red-600 mt-1">
+                              Required for minute generation
+                           </p>
+                        )}
+                     </div>
+
+                     <div>
+                        <label
+                           className={`block mb-1 font-semibold transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                           }`}
+                        >
+                           Last Name (Nepali) *
+                        </label>
+                        <input
+                           type="text"
+                           value={lastNameNepali}
+                           onChange={(e) => setLastNameNepali(e.target.value)}
+                           className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                 : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
+                           }`}
+                           placeholder="श्रेष्ठ"
+                           required
+                        />
+                        {showErrors && !lastNameNepali.trim() && (
+                           <p className="text-xs text-red-600 mt-1">
+                              Required for minute generation
+                           </p>
+                        )}
+                     </div>
+                  </div>
+
+                  {/* Post */}
+                  <div className="mb-4">
+                     <label
+                        className={`block mb-1 font-semibold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
+                        Post (Nepali) *
+                     </label>
+                     <input
+                        type="text"
+                        value={post}
+                        onChange={(e) => setPost(e.target.value)}
+                        list="post-suggestions"
+                        className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                              : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
+                        }`}
+                        placeholder="डा., प्रा."
+                        required
+                     />
+                     <datalist id="post-suggestions">
+                        <option value="डा." />
+                        <option value="प्रा." />
+                     </datalist>
+                  </div>
+
+                  {/* Role */}
                   <div>
                      <label
                         className={`block mb-1 font-semibold transition-colors duration-200 ${
                            isDarkMode ? "text-gray-300" : "text-gray-700"
                         }`}
                      >
-                        First Name (Nepali) *
+                        Role *
                      </label>
-                     <input
-                        type="text"
-                        value={firstNameNepali}
-                        onChange={(e) => setFirstNameNepali(e.target.value)}
-                        className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
-                              : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
-                        }`}
-                        placeholder="राम"
-                        required
-                     />
-                     {showErrors && !firstNameNepali.trim() && (
+                     <div className="flex gap-2">
+                        <input
+                           type="text"
+                           value={customRole || role}
+                           onChange={(e) => {
+                              setCustomRole(e.target.value);
+                              if (e.target.value.trim() !== "") {
+                                 setRole(""); // Clear dropdown selection when typing custom role
+                              }
+                           }}
+                           className={`flex-[2] border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                 : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
+                           }`}
+                           placeholder="Enter Custom Role(Nepali)"
+                        />
+                        <select
+                           value={role}
+                           onChange={(e) => {
+                              setRole(e.target.value);
+                              setCustomRole(e.target.value); // Update text input when selecting from dropdown
+                           }}
+                           className={`flex-1 border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200"
+                                 : "border-gray-400 bg-white text-gray-900"
+                           }`}
+                        >
+                           <option value="">-- Select a role --</option>
+                           {roleOptions.map((roleOption) => (
+                              <option key={roleOption} value={roleOption}>
+                                 {roleOption}
+                              </option>
+                           ))}
+                        </select>
+                     </div>
+                     {showErrors && !role.trim() && !customRole.trim() && (
                         <p className="text-xs text-red-600 mt-1">
-                           Required for minute generation
-                        </p>
-                     )}
-                  </div>
-
-                  <div>
-                     <label
-                        className={`block mb-1 font-semibold transition-colors duration-200 ${
-                           isDarkMode ? "text-gray-300" : "text-gray-700"
-                        }`}
-                     >
-                        Last Name (Nepali) *
-                     </label>
-                     <input
-                        type="text"
-                        value={lastNameNepali}
-                        onChange={(e) => setLastNameNepali(e.target.value)}
-                        className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
-                              : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
-                        }`}
-                        placeholder="श्रेष्ठ"
-                        required
-                     />
-                     {showErrors && !lastNameNepali.trim() && (
-                        <p className="text-xs text-red-600 mt-1">
-                           Required for minute generation
+                           Please select or enter a role
                         </p>
                      )}
                   </div>
                </div>
+
+               {/* Separator line */}
+               <div
+                  className={`border-t pt-4 transition-colors duration-200 ${
+                     isDarkMode ? "border-gray-600" : "border-gray-300"
+                  }`}
+               />
 
                {/* Email */}
                <div>
@@ -295,90 +398,12 @@ const CreateMemberDialog = ({
                   />
                </div>
 
-               {/* Post - Typeable in Nepali */}
-               <div>
-                  <label
-                     className={`block mb-1 font-semibold transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}
-                  >
-                     Post (Nepali) *
-                  </label>
-                  <input
-                     type="text"
-                     value={post}
-                     onChange={(e) => setPost(e.target.value)}
-                     className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                        isDarkMode
-                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
-                           : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
-                     }`}
-                     placeholder="प्रोफेसर, डाक्टर"
-                     required
-                  />
-               </div>
-
-               {/* Role - Text input and dropdown on same line */}
-               <div>
-                  <label
-                     className={`block mb-1 font-semibold transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}
-                  >
-                     Role *
-                  </label>
-                  <div className="flex gap-2">
-                     <input
-                        type="text"
-                        value={customRole || role}
-                        onChange={(e) => {
-                           setCustomRole(e.target.value);
-                           if (e.target.value.trim() !== "") {
-                              setRole(""); // Clear dropdown selection when typing custom role
-                           }
-                        }}
-                        className={`flex-[2] border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
-                              : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
-                        }`}
-                        placeholder="Enter custom role"
-                     />
-                     <select
-                        value={role}
-                        onChange={(e) => {
-                           setRole(e.target.value);
-                           setCustomRole(e.target.value); // Update text input when selecting from dropdown
-                        }}
-                        className={`flex-1 border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode
-                              ? "border-gray-600 bg-gray-700 text-gray-200"
-                              : "border-gray-400 bg-white text-gray-900"
-                        }`}
-                     >
-                        <option value="">-- Select a role --</option>
-                        {roleOptions.map((roleOption) => (
-                           <option key={roleOption} value={roleOption}>
-                              {roleOption}
-                           </option>
-                        ))}
-                     </select>
-                  </div>
-                  {showErrors && !role.trim() && !customRole.trim() && (
-                     <p className="text-xs text-red-600 mt-1">
-                        Please select or enter a role
-                     </p>
-                  )}
-               </div>
-
                {/* Note about required fields */}
                <div
                   className={`text-xs transition-colors duration-200 ${
                      isDarkMode ? "text-gray-400" : "text-gray-500"
                   }`}
-               >
-                  * Fields marked with an asterisk are required
-               </div>
+               ></div>
 
                {/* Buttons */}
                <div className="flex justify-between pt-4">

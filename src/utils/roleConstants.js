@@ -4,7 +4,6 @@
  */
 
 export const COMMITTEE_ROLES = [
-   "Coordinator",
    "Vice Coordinator",
    "Member",
    "Member-Secretary",

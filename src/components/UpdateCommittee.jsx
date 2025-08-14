@@ -54,7 +54,7 @@ const UpdateCommittee = () => {
       })();
    }, [committeeId, navigate]);
 
-   const handleBackToCommittees = () => navigate("/home");
+   const handleBackToCommittees = () => navigate(-1);
 
    const buildPayload = useMemo(() => {
       return () => {

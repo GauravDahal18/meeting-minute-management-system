@@ -240,58 +240,74 @@ const EditMeeting = () => {
 
    if (isLoading) {
       return (
-         <div className={`min-h-screen flex items-center justify-center transition-colors duration-200 ${
-            isDarkMode ? "bg-gray-900" : "bg-gray-50"
-         }`}>
+         <div
+            className={`min-h-screen flex items-center justify-center transition-colors duration-200 ${
+               isDarkMode ? "bg-gray-900" : "bg-gray-50"
+            }`}
+         >
             <div className="text-center">
                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-               <p className={`transition-colors duration-200 ${
-                  isDarkMode ? "text-gray-300" : "text-gray-600"
-               }`}>Loading meeting details...</p>
+               <p
+                  className={`transition-colors duration-200 ${
+                     isDarkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+               >
+                  Loading meeting details...
+               </p>
             </div>
          </div>
       );
    }
 
    return (
-      <div className={`min-h-screen transition-colors duration-200 ${
-         isDarkMode ? "bg-gray-900" : "bg-gray-50"
-      }`}>
+      <div
+         className={`min-h-screen transition-colors duration-200 ${
+            isDarkMode ? "bg-gray-900" : "bg-gray-50"
+         }`}
+      >
          <div className="max-w-4xl mx-auto py-8 px-4">
             {/* Header */}
             <div className="mb-8">
                <button
-                  onClick={() => navigate(`/committee/${committeeId}`)}
+                  onClick={() => navigate(-1)}
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 transition-colors"
                >
                   <ArrowLeft size={20} />
                   Back
                </button>
-               <h1 className={`text-3xl font-bold transition-colors duration-200 ${
-                  isDarkMode ? "text-gray-200" : "text-gray-900"
-               }`}>
+               <h1
+                  className={`text-3xl font-bold transition-colors duration-200 ${
+                     isDarkMode ? "text-gray-200" : "text-gray-900"
+                  }`}
+               >
                   Edit Meeting
                </h1>
                {committee && (
-                  <p className={`mt-2 transition-colors duration-200 ${
-                     isDarkMode ? "text-gray-400" : "text-gray-600"
-                  }`}>
+                  <p
+                     className={`mt-2 transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-400" : "text-gray-600"
+                     }`}
+                  >
                      Committee: {committee.name}
                   </p>
                )}
             </div>
 
             {/* Form */}
-            <div className={`rounded-lg shadow-sm p-6 transition-colors duration-200 ${
-               isDarkMode ? "bg-gray-800" : "bg-white"
-            }`}>
+            <div
+               className={`rounded-lg shadow-sm p-6 transition-colors duration-200 ${
+                  isDarkMode ? "bg-gray-800" : "bg-white"
+               }`}
+            >
                <form className="space-y-6">
                   {/* Basic Information */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div>
-                        <label className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
-                           isDarkMode ? "text-gray-300" : "text-gray-700"
-                        }`}>
+                        <label
+                           className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                           }`}
+                        >
                            Meeting Title *
                         </label>
                         <input
@@ -304,8 +320,8 @@ const EditMeeting = () => {
                               }))
                            }
                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode 
-                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                                  : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                            }`}
                            placeholder="Enter meeting title"
@@ -314,9 +330,11 @@ const EditMeeting = () => {
                      </div>
 
                      <div>
-                        <label className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
-                           isDarkMode ? "text-gray-300" : "text-gray-700"
-                        }`}>
+                        <label
+                           className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                           }`}
+                        >
                            Held Place
                         </label>
                         <input
@@ -329,8 +347,8 @@ const EditMeeting = () => {
                               }))
                            }
                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode 
-                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                                  : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                            }`}
                            placeholder="Meeting location"
@@ -340,9 +358,11 @@ const EditMeeting = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div>
-                        <label className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
-                           isDarkMode ? "text-gray-300" : "text-gray-700"
-                        }`}>
+                        <label
+                           className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                           }`}
+                        >
                            Date
                         </label>
                         <input
@@ -355,17 +375,19 @@ const EditMeeting = () => {
                               }))
                            }
                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode 
-                                 ? "border-gray-600 bg-gray-700 text-gray-200" 
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200"
                                  : "border-gray-300 bg-white text-gray-900"
                            }`}
                         />
                      </div>
 
                      <div>
-                        <label className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
-                           isDarkMode ? "text-gray-300" : "text-gray-700"
-                        }`}>
+                        <label
+                           className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                           }`}
+                        >
                            Time
                         </label>
                         <input
@@ -378,8 +400,8 @@ const EditMeeting = () => {
                               }))
                            }
                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode 
-                                 ? "border-gray-600 bg-gray-700 text-gray-200" 
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200"
                                  : "border-gray-300 bg-white text-gray-900"
                            }`}
                         />
@@ -387,9 +409,11 @@ const EditMeeting = () => {
                   </div>
 
                   <div>
-                     <label className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}>
+                     <label
+                        className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
                         Description
                      </label>
                      <textarea
@@ -402,8 +426,8 @@ const EditMeeting = () => {
                            }))
                         }
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                         }`}
                         placeholder="Meeting description"
@@ -413,9 +437,11 @@ const EditMeeting = () => {
                   {/* Agendas Section */}
                   <div>
                      <div className="mb-4">
-                        <h3 className={`text-lg font-medium mb-2 transition-colors duration-200 ${
-                           isDarkMode ? "text-gray-200" : "text-gray-900"
-                        }`}>
+                        <h3
+                           className={`text-lg font-medium mb-2 transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-200" : "text-gray-900"
+                           }`}
+                        >
                            Agendas
                         </h3>
                         <div className="space-y-3">
@@ -428,8 +454,8 @@ const EditMeeting = () => {
                                        handleAgendaChange(index, e.target.value)
                                     }
                                     className={`flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                                       isDarkMode 
-                                          ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                                       isDarkMode
+                                          ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                                           : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                                     }`}
                                     placeholder={`Agenda ${index + 1}`}
@@ -444,11 +470,13 @@ const EditMeeting = () => {
                               </div>
                            ))}
                            {meeting.agendas.length === 0 && (
-                              <p className={`text-center py-8 rounded-lg transition-colors duration-200 ${
-                                 isDarkMode 
-                                    ? "text-gray-400 bg-gray-700" 
-                                    : "text-gray-500 bg-gray-50"
-                              }`}>
+                              <p
+                                 className={`text-center py-8 rounded-lg transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-400 bg-gray-700"
+                                       : "text-gray-500 bg-gray-50"
+                                 }`}
+                              >
                                  No agendas added yet. Click "Add agenda item"
                                  to get started.
                               </p>
@@ -470,9 +498,11 @@ const EditMeeting = () => {
                   {/* Decisions Section */}
                   <div>
                      <div className="mb-4">
-                        <h3 className={`text-lg font-medium mb-2 transition-colors duration-200 ${
-                           isDarkMode ? "text-gray-200" : "text-gray-900"
-                        }`}>
+                        <h3
+                           className={`text-lg font-medium mb-2 transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-200" : "text-gray-900"
+                           }`}
+                        >
                            Decisions
                         </h3>
                         <div className="space-y-3">
@@ -488,8 +518,8 @@ const EditMeeting = () => {
                                        )
                                     }
                                     className={`flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                                       isDarkMode 
-                                          ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                                       isDarkMode
+                                          ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                                           : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                                     }`}
                                     placeholder={`Decision ${index + 1}`}
@@ -504,11 +534,13 @@ const EditMeeting = () => {
                               </div>
                            ))}
                            {meeting.decisions.length === 0 && (
-                              <p className={`text-center py-8 rounded-lg transition-colors duration-200 ${
-                                 isDarkMode 
-                                    ? "text-gray-400 bg-gray-700" 
-                                    : "text-gray-500 bg-gray-50"
-                              }`}>
+                              <p
+                                 className={`text-center py-8 rounded-lg transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-400 bg-gray-700"
+                                       : "text-gray-500 bg-gray-50"
+                                 }`}
+                              >
                                  No decisions added yet. Click "Add decision" to
                                  get started.
                               </p>

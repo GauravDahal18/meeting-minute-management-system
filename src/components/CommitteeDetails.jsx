@@ -538,7 +538,7 @@ const CommitteeDetails = () => {
                   className="flex items-center gap-2 mb-6 text-blue-600 hover:text-blue-800 transition-colors font-medium"
                >
                   <ArrowLeft size={18} />
-                  Back to Committees
+                  Back
                </button>
 
                {committee ? (

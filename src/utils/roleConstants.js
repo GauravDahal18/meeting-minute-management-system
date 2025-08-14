@@ -13,7 +13,6 @@ export const COMMITTEE_ROLES = [
    "Chairperson",
    "Vice Chairperson",
    "Treasurer",
-   "Invitee Member",
    "Advisor",
    "Observer",
    "Spokesperson",

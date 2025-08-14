@@ -1,12 +1,21 @@
 import ioeLogo from "./ioeLogo.png";
 import LogoutButton from "../LogoutButton.jsx";
+import DarkModeToggle from "../DarkModeToggle.jsx";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../../context/ThemeContext.jsx";
 
 const Header = ({ showLogout = false }) => {
    const navigate = useNavigate();
+   const { isDarkMode } = useTheme();
 
    return (
-      <header className="relative flex items-center justify-between bg-gradient-to-r from-gray-600 via-slate-700 to-gray-700 p-4 md:p-5 shadow-lg border-b border-gray-500">
+      <header
+         className={`relative flex items-center justify-between p-4 md:p-5 shadow-lg border-b transition-colors duration-200 ${
+            isDarkMode
+               ? "bg-gradient-to-r from-gray-800 via-gray-900 to-gray-800 border-gray-600"
+               : "bg-gradient-to-r from-gray-600 via-slate-700 to-gray-700 border-gray-500"
+         }`}
+      >
          {/* Left Side - IOE Logo and Text */}
          <div
             className="flex items-center gap-4 min-w-0 flex-shrink-0 cursor-pointer"
@@ -23,7 +32,11 @@ const Header = ({ showLogout = false }) => {
                <div className="text-white font-bold text-lg md:text-xl leading-tight font-serif">
                   INSTITUTE OF ENGINEERING
                </div>
-               <div className="text-gray-100 text-sm md:text-base font-medium font-sans">
+               <div
+                  className={`text-sm md:text-base font-medium font-sans transition-colors duration-200 ${
+                     isDarkMode ? "text-gray-200" : "text-gray-100"
+                  }`}
+               >
                   Pulchowk Campus
                </div>
             </div>
@@ -32,15 +45,22 @@ const Header = ({ showLogout = false }) => {
          {/* Center - Meeting Minute Management System */}
          <div className="absolute left-1/2 transform -translate-x-1/2">
             <h1 className="text-lg md:text-2xl font-bold tracking-wide font-serif whitespace-nowrap">
-               <span className="bg-gradient-to-r from-amber-200 to-yellow-100 bg-clip-text text-transparent">
+               <span
+                  className={`bg-clip-text text-transparent transition-colors duration-200 ${
+                     isDarkMode
+                        ? "bg-gradient-to-r from-amber-300 to-yellow-200"
+                        : "bg-gradient-to-r from-amber-200 to-yellow-100"
+                  }`}
+               >
                   Meeting Minute Management System
                </span>
             </h1>
          </div>
 
-         {/* Right Side - Logout Button */}
+         {/* Right Side - Dark Mode Toggle and Logout Button */}
          {showLogout && (
-            <div className="ml-4 flex-shrink-0">
+            <div className="ml-4 flex-shrink-0 flex items-center gap-2">
+               <DarkModeToggle />
                <LogoutButton className="bg-gradient-to-r from-amber-600 to-red-600 hover:from-amber-700 hover:to-red-700 text-white px-4 py-2 rounded-lg font-semibold shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl border border-amber-500/30 font-sans" />
             </div>
          )}

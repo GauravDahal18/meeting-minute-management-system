@@ -5,12 +5,14 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { ArrowLeft, Search, Minus } from "lucide-react";
 import COMMITTEE_ROLES from "../utils/roleConstants";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 // Use the global roles constant
 const roles = COMMITTEE_ROLES;
 const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const CreateCommitteeDialog = () => {
+   const { isDarkMode } = useTheme();
    // const [committeeName, setCommitteeName] = useState("");
    // const [committeeDescription, setCommitteeDescription] = useState("");
    // const [status, setStatus] = useState(statusOptions[0]);
@@ -238,7 +240,11 @@ const CreateCommitteeDialog = () => {
    };
 
    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div
+         className={`min-h-screen flex flex-col transition-colors duration-200 ${
+            isDarkMode ? "bg-gray-900" : "bg-gray-50"
+         }`}
+      >
          <div className="flex-1 p-6">
             <div className="max-w-6xl mx-auto">
                <button
@@ -249,12 +255,26 @@ const CreateCommitteeDialog = () => {
                   Back
                </button>
 
-               <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 space-y-6">
+               <div
+                  className={`rounded-xl shadow-lg border p-6 space-y-6 transition-colors duration-200 ${
+                     isDarkMode
+                        ? "bg-gray-800 border-gray-700"
+                        : "bg-white border-gray-200"
+                  }`}
+               >
                   <div className="border-b pb-3">
-                     <h2 className="text-2xl font-bold text-gray-800">
+                     <h2
+                        className={`text-2xl font-bold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-200" : "text-gray-800"
+                        }`}
+                     >
                         Create Committee
                      </h2>
-                     <p className="text-sm text-gray-500 mt-1">
+                     <p
+                        className={`text-sm mt-1 transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-400" : "text-gray-500"
+                        }`}
+                     >
                         Fill in the committee details and add members with
                         roles. <span className="text-red-500">*</span> indicates
                         required fields.
@@ -265,8 +285,20 @@ const CreateCommitteeDialog = () => {
                   <div className="grid grid-cols-5 gap-6">
                      {/* Left Side - Member Search and List (2/5 width) */}
                      <div className="col-span-2 space-y-5">
-                        <div className="border rounded-lg shadow-sm p-5 bg-white h-[450px] flex flex-col">
-                           <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">
+                        <div
+                           className={`border rounded-lg shadow-sm p-5 h-[450px] flex flex-col transition-colors duration-200 ${
+                              isDarkMode
+                                 ? "bg-gray-800 border-gray-700"
+                                 : "bg-white border-gray-200"
+                           }`}
+                        >
+                           <h3
+                              className={`text-lg font-semibold border-b pb-2 mb-4 transition-colors duration-200 ${
+                                 isDarkMode
+                                    ? "text-gray-200 border-gray-600"
+                                    : "text-gray-800 border-gray-200"
+                              }`}
+                           >
                               Manage Members
                            </h3>
 
@@ -274,7 +306,11 @@ const CreateCommitteeDialog = () => {
                            <div className="space-y-4 mb-5 flex-shrink-0">
                               <div className="relative">
                                  <input
-                                    className="w-full border border-gray-300 p-2 pl-10 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className={`w-full border p-2 pl-10 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                          : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+                                    }`}
                                     placeholder="Search members by name..."
                                     value={searchTerm}
                                     onChange={(e) =>
@@ -282,14 +318,24 @@ const CreateCommitteeDialog = () => {
                                     }
                                  />
                                  <Search
-                                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                    className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                                       isDarkMode
+                                          ? "text-gray-500"
+                                          : "text-gray-400"
+                                    }`}
                                     size={16}
                                  />
                               </div>
 
                               {/* Search results indicator */}
                               {searchTerm && (
-                                 <div className="text-xs text-green-600 bg-green-50 border border-green-200 rounded p-2">
+                                 <div
+                                    className={`text-xs border rounded p-2 transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-green-300 bg-green-900/30 border-green-700"
+                                          : "text-green-600 bg-green-50 border-green-200"
+                                    }`}
+                                 >
                                     {filteredMembers.length === 0
                                        ? `No results found for "${searchTerm}"`
                                        : filteredMembers.length === 1
@@ -301,13 +347,23 @@ const CreateCommitteeDialog = () => {
 
                            {/* Manual add and role */}
                            <div className="space-y-2 mb-5 flex-shrink-0">
-                              <label className="block mb-2 font-semibold text-gray-700">
+                              <label
+                                 className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-300"
+                                       : "text-gray-700"
+                                 }`}
+                              >
                                  Add Member with Role{" "}
                                  <span className="text-red-500">*</span>
                               </label>
                               <div className="flex flex-col gap-1">
                                  <select
-                                    className="w-full border border-gray-300 p-2 rounded text-sm"
+                                    className={`w-full border p-2 rounded text-sm transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "border-gray-600 bg-gray-700 text-gray-200"
+                                          : "border-gray-300 bg-white text-gray-900"
+                                    }`}
                                     value={selectedMemberId}
                                     onChange={(e) =>
                                        setSelectedMemberId(e.target.value)
@@ -335,7 +391,11 @@ const CreateCommitteeDialog = () => {
                                  <div className="flex gap-3 mt-1">
                                     <input
                                        type="text"
-                                       className="flex-1 border border-gray-300 p-2 rounded text-sm"
+                                       className={`flex-1 border p-2 rounded text-sm transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                             : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+                                       }`}
                                        placeholder="Enter custom role (nepali)"
                                        value={selectedRole}
                                        onChange={(e) =>
@@ -343,7 +403,11 @@ const CreateCommitteeDialog = () => {
                                        }
                                     />
                                     <select
-                                       className="w-32 border border-gray-300 p-2 rounded text-sm"
+                                       className={`w-32 border p-2 rounded text-sm transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "border-gray-600 bg-gray-700 text-gray-200"
+                                             : "border-gray-300 bg-white text-gray-900"
+                                       }`}
                                        value={selectedRole}
                                        onChange={(e) =>
                                           handleRoleChange(e.target.value)
@@ -369,7 +433,13 @@ const CreateCommitteeDialog = () => {
 
                                  {/* Role error message */}
                                  {roleError && (
-                                    <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded p-2 mt-1">
+                                    <div
+                                       className={`text-xs border rounded p-2 mt-1 transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-red-300 bg-red-900/30 border-red-700"
+                                             : "text-red-600 bg-red-50 border-red-200"
+                                       }`}
+                                    >
                                        {roleError}
                                     </div>
                                  )}
@@ -378,12 +448,24 @@ const CreateCommitteeDialog = () => {
 
                            {/* Members list */}
                            <div className="flex-1 flex flex-col min-h-0">
-                              <h4 className="font-semibold text-gray-700 mb-2">
+                              <h4
+                                 className={`font-semibold mb-2 transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-300"
+                                       : "text-gray-700"
+                                 }`}
+                              >
                                  Committee Members{" "}
                                  <span className="text-red-500">*</span>
                               </h4>
                               <div className="flex-1 overflow-y-auto">
-                                 <ul className="mb-2 divide-y divide-gray-200 border border-gray-200 rounded">
+                                 <ul
+                                    className={`mb-2 divide-y border rounded transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "divide-gray-600 border-gray-600"
+                                          : "divide-gray-200 border-gray-200"
+                                    }`}
+                                 >
                                     {committeeMembership.map((m) => {
                                        const user = membersData.find(
                                           (x) => x.memberId === m.memberId
@@ -394,19 +476,35 @@ const CreateCommitteeDialog = () => {
                                              className="py-2 px-3 flex justify-between items-center"
                                           >
                                              <div className="flex flex-col">
-                                                <span className="text-sm font-medium">
+                                                <span
+                                                   className={`text-sm font-medium transition-colors duration-200 ${
+                                                      isDarkMode
+                                                         ? "text-gray-200"
+                                                         : "text-gray-900"
+                                                   }`}
+                                                >
                                                    {user
                                                       ? `${user.firstName} ${user.lastName}`
                                                       : m.memberId}
                                                 </span>
-                                                <span className="text-xs text-gray-500">
+                                                <span
+                                                   className={`text-xs transition-colors duration-200 ${
+                                                      isDarkMode
+                                                         ? "text-gray-400"
+                                                         : "text-gray-500"
+                                                   }`}
+                                                >
                                                    {capitalizeFirstLetter(
                                                       m.role
                                                    )}
                                                 </span>
                                              </div>
                                              <button
-                                                className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors"
+                                                className={`w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
+                                                   isDarkMode
+                                                      ? "bg-red-900/40 text-red-300 hover:bg-red-800/60"
+                                                      : "bg-red-100 text-red-600 hover:bg-red-200"
+                                                }`}
                                                 onClick={() =>
                                                    removeMember(m.memberId)
                                                 }
@@ -418,7 +516,13 @@ const CreateCommitteeDialog = () => {
                                        );
                                     })}
                                     {committeeMembership.length === 0 && (
-                                       <li className="py-3 px-3 text-sm text-gray-500">
+                                       <li
+                                          className={`py-3 px-3 text-sm transition-colors duration-200 ${
+                                             isDarkMode
+                                                ? "text-gray-400"
+                                                : "text-gray-500"
+                                          }`}
+                                       >
                                           No members added yet
                                        </li>
                                     )}
@@ -430,18 +534,40 @@ const CreateCommitteeDialog = () => {
 
                      {/* Right Side - Committee Details (3/5 width) */}
                      <div className="col-span-3 space-y-5">
-                        <div className="border rounded-lg shadow-sm p-5 bg-white h-[450px] flex flex-col">
-                           <h3 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">
+                        <div
+                           className={`border rounded-lg shadow-sm p-5 h-[450px] flex flex-col transition-colors duration-200 ${
+                              isDarkMode
+                                 ? "bg-gray-800 border-gray-700"
+                                 : "bg-white border-gray-200"
+                           }`}
+                        >
+                           <h3
+                              className={`text-lg font-semibold border-b pb-2 mb-4 transition-colors duration-200 ${
+                                 isDarkMode
+                                    ? "text-gray-200 border-gray-600"
+                                    : "text-gray-800 border-gray-200"
+                              }`}
+                           >
                               Committee Details
                            </h3>
 
                            <div className="mb-4">
-                              <label className="block mb-2 font-semibold text-gray-700">
+                              <label
+                                 className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-300"
+                                       : "text-gray-700"
+                                 }`}
+                              >
                                  Committee Name{" "}
                                  <span className="text-red-500">*</span>
                               </label>
                               <input
-                                 className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 className={`w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                       : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+                                 }`}
                                  placeholder="e.g., Technical Committee"
                                  value={committeeName}
                                  onChange={(e) =>
@@ -451,11 +577,21 @@ const CreateCommitteeDialog = () => {
                            </div>
 
                            <div className="mb-4">
-                              <label className="block mb-2 font-semibold text-gray-700">
+                              <label
+                                 className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-300"
+                                       : "text-gray-700"
+                                 }`}
+                              >
                                  Description
                               </label>
                               <textarea
-                                 className="w-full border border-gray-300 p-2 rounded min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 className={`w-full border p-2 rounded min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                       : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+                                 }`}
                                  placeholder="Committee Description"
                                  value={committeeDescription}
                                  onChange={(e) =>
@@ -466,12 +602,22 @@ const CreateCommitteeDialog = () => {
 
                            <div className="grid grid-cols-2 gap-4">
                               <div>
-                                 <label className="block mb-2 font-semibold text-gray-700">
+                                 <label
+                                    className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-gray-300"
+                                          : "text-gray-700"
+                                    }`}
+                                 >
                                     Status{" "}
                                     <span className="text-red-500">*</span>
                                  </label>
                                  <select
-                                    className="w-full border border-gray-300 p-2 rounded bg-white"
+                                    className={`w-full border p-2 rounded transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "border-gray-600 bg-gray-700 text-gray-200"
+                                          : "border-gray-300 bg-white text-gray-900"
+                                    }`}
                                     value={status}
                                     onChange={(e) => setStatus(e.target.value)}
                                  >
@@ -484,9 +630,21 @@ const CreateCommitteeDialog = () => {
                               </div>
 
                               <div>
-                                 <label className="block mb-2 font-semibold text-gray-700">
+                                 <label
+                                    className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-gray-300"
+                                          : "text-gray-700"
+                                    }`}
+                                 >
                                     Maximum No. of Meetings{" "}
-                                    <span className="text-gray-400 font-normal">
+                                    <span
+                                       className={`font-normal transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-400"
+                                             : "text-gray-400"
+                                       }`}
+                                    >
                                        (Optional)
                                     </span>
                                  </label>
@@ -494,7 +652,11 @@ const CreateCommitteeDialog = () => {
                                     type="number"
                                     min="0"
                                     step="1"
-                                    className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className={`w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                          : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+                                    }`}
                                     placeholder="0"
                                     defaultValue="0"
                                     value={maximumNumberOfMeetings}
@@ -512,7 +674,11 @@ const CreateCommitteeDialog = () => {
 
                   <div className="flex justify-end gap-4 mt-6">
                      <button
-                        className="bg-gray-100 border border-gray-300 text-gray-800 px-5 py-2.5 rounded hover:bg-gray-200 font-medium"
+                        className={`border px-5 py-2.5 rounded font-medium transition-colors duration-200 ${
+                           isDarkMode
+                              ? "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600"
+                              : "bg-gray-100 border-gray-300 text-gray-800 hover:bg-gray-200"
+                        }`}
                         onClick={() => navigate("/home")}
                      >
                         Cancel

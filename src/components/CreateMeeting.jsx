@@ -4,6 +4,7 @@ import { X, Plus, ArrowLeft, Search, Trash2, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 import { getCommittees } from "../utils/GetAllCommittes";
 import { getCommitteeDetails } from "../utils/GetCommitteeMembers";
@@ -14,6 +15,7 @@ const CreateMeetingDialog = () => {
    const navigate = useNavigate();
    const { committeeId } = useParams();
    const { isAuthenticated, isAuthLoading } = useAuth();
+   const { isDarkMode } = useTheme();
 
    // const [meetingDate, setMeetingDate] = useState(
    //   format(new Date(), "yyyy-MM-dd")
@@ -349,7 +351,9 @@ const CreateMeetingDialog = () => {
    if (loading || isAuthLoading) return null;
 
    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className={`min-h-screen flex flex-col transition-colors duration-200 ${
+         isDarkMode ? "bg-gray-900" : "bg-gray-50"
+      }`}>
          <div className="flex-1 p-6">
             <div className="max-w-6xl mx-auto">
                <button
@@ -360,12 +364,20 @@ const CreateMeetingDialog = () => {
                   Back
                </button>
 
-               <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                  <div className="mb-6 border-b pb-4">
-                     <h2 className="text-2xl font-bold text-gray-800">
+               <div className={`rounded-xl shadow-lg border p-6 transition-colors duration-200 ${
+                  isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+               }`}>
+                  <div className={`mb-6 border-b pb-4 transition-colors duration-200 ${
+                     isDarkMode ? "border-gray-700" : "border-gray-200"
+                  }`}>
+                     <h2 className={`text-2xl font-bold transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-200" : "text-gray-800"
+                     }`}>
                         Create Meeting
                      </h2>
-                     <p className="text-sm text-gray-500 mt-1">
+                     <p className={`text-sm mt-1 transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-400" : "text-gray-500"
+                     }`}>
                         Fill in meeting details and select invitees
                      </p>
                      {!isAuthenticated && (
@@ -381,9 +393,13 @@ const CreateMeetingDialog = () => {
                   >
                      {/* Left: Invitees Selection */}
                      <div className="lg:col-span-1 space-y-4">
-                        <div className="border border-gray-400 rounded-lg p-4 space-y-4">
+                        <div className={`border rounded-lg p-4 space-y-4 transition-colors duration-200 ${
+                           isDarkMode ? "border-gray-600" : "border-gray-400"
+                        }`}>
                            <div className="flex items-center justify-between gap-4">
-                              <h3 className="text-lg font-semibold text-gray-800">
+                              <h3 className={`text-lg font-semibold transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-200" : "text-gray-800"
+                              }`}>
                                  Select Invitees ({filteredInvitees.length})
                               </h3>
                               <button
@@ -400,19 +416,27 @@ const CreateMeetingDialog = () => {
                            {/* Search Box */}
                            <div className="relative">
                               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                 <Search className="h-5 w-5 text-gray-400" />
+                                 <Search className={`h-5 w-5 transition-colors duration-200 ${
+                                    isDarkMode ? "text-gray-500" : "text-gray-400"
+                                 }`} />
                               </div>
                               <input
                                  type="text"
                                  placeholder="Search invitees..."
                                  value={searchTerm}
                                  onChange={(e) => setSearchTerm(e.target.value)}
-                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode 
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                                       : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+                                 }`}
                               />
                            </div>
 
                            {/* Invitees List */}
-                           <div className="border border-gray-200 rounded-lg p-4 max-h-64 overflow-y-auto">
+                           <div className={`border rounded-lg p-4 max-h-64 overflow-y-auto transition-colors duration-200 ${
+                              isDarkMode ? "border-gray-600" : "border-gray-200"
+                           }`}>
                               <ul className="space-y-3">
                                  {filteredInvitees
                                     .filter(
@@ -422,9 +446,15 @@ const CreateMeetingDialog = () => {
                                     .map((invitee) => (
                                        <li
                                           key={invitee.id}
-                                          className="flex justify-between items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                                          className={`flex justify-between items-center p-3 border rounded-lg transition-colors ${
+                                             isDarkMode
+                                                ? "border-gray-600 hover:bg-gray-700"
+                                                : "border-gray-200 hover:bg-gray-50"
+                                          }`}
                                        >
-                                          <span className="text-gray-700">
+                                          <span className={`transition-colors duration-200 ${
+                                             isDarkMode ? "text-gray-300" : "text-gray-700"
+                                          }`}>
                                              {invitee.name}
                                           </span>
                                           <button
@@ -432,7 +462,11 @@ const CreateMeetingDialog = () => {
                                              onClick={() =>
                                                 addInvitee(invitee.id)
                                              }
-                                             className="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors"
+                                             className={`w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
+                                                isDarkMode
+                                                   ? "bg-blue-900/40 text-blue-300 hover:bg-blue-800/60"
+                                                   : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                                             }`}
                                           >
                                              <span className="text-xl leading-none relative -top-[1px]">
                                                 +
@@ -442,14 +476,18 @@ const CreateMeetingDialog = () => {
                                     ))}
                                  {filteredInvitees.length === 0 &&
                                     searchTerm && (
-                                       <li className="text-gray-500 text-center py-4">
+                                       <li className={`text-center py-4 transition-colors duration-200 ${
+                                          isDarkMode ? "text-gray-400" : "text-gray-500"
+                                       }`}>
                                           No invitees found matching "
                                           {searchTerm}"
                                        </li>
                                     )}
                                  {filteredInvitees.length === 0 &&
                                     !searchTerm && (
-                                       <li className="text-gray-500 text-center py-4">
+                                       <li className={`text-center py-4 transition-colors duration-200 ${
+                                          isDarkMode ? "text-gray-400" : "text-gray-500"
+                                       }`}>
                                           All external members are already
                                           committee members
                                        </li>
@@ -460,10 +498,14 @@ const CreateMeetingDialog = () => {
                            {/* Added Invitees Display */}
                            {addedInviteeIds.length > 0 && (
                               <div className="mt-6">
-                                 <h4 className="text-md font-medium text-gray-600 border-b pb-2 mb-3">
+                                 <h4 className={`text-md font-medium border-b pb-2 mb-3 transition-colors duration-200 ${
+                                    isDarkMode ? "text-gray-300 border-gray-600" : "text-gray-600 border-gray-200"
+                                 }`}>
                                     Added Invitees
                                  </h4>
-                                 <div className="border border-gray-100 rounded-lg p-3 max-h-32 overflow-y-auto">
+                                 <div className={`border rounded-lg p-3 max-h-32 overflow-y-auto transition-colors duration-200 ${
+                                    isDarkMode ? "border-gray-600" : "border-gray-100"
+                                 }`}>
                                     <ul className="space-y-1">
                                        {addedInviteeIds.map((id) => {
                                           const invitee = invitees.find(
@@ -476,7 +518,9 @@ const CreateMeetingDialog = () => {
                                                 key={id}
                                                 className="flex justify-between items-center py-1 px-2"
                                              >
-                                                <span className="text-gray-700 font-normal text-sm">
+                                                <span className={`font-normal text-sm transition-colors duration-200 ${
+                                                   isDarkMode ? "text-gray-300" : "text-gray-700"
+                                                }`}>
                                                    {inviteeName}
                                                 </span>
                                                 <button
@@ -497,10 +541,14 @@ const CreateMeetingDialog = () => {
 
                            {/* Committee Members Display */}
                            <div className="mt-6">
-                              <h4 className="text-md font-medium text-gray-600 border-b pb-2 mb-3">
+                              <h4 className={`text-md font-medium border-b pb-2 mb-3 transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-300 border-gray-600" : "text-gray-600 border-gray-200"
+                              }`}>
                                  Committee Members ({availableMembers.length})
                               </h4>
-                              <div className="border border-gray-100 rounded-lg p-3 max-h-48 overflow-y-auto bg-gray-50">
+                              <div className={`border rounded-lg p-3 max-h-48 overflow-y-auto transition-colors duration-200 ${
+                                 isDarkMode ? "border-gray-600 bg-gray-700" : "border-gray-100 bg-gray-50"
+                              }`}>
                                  <ul className="space-y-1">
                                     {availableMembers.map((member) => (
                                        <li
@@ -508,11 +556,15 @@ const CreateMeetingDialog = () => {
                                           className="flex justify-between items-center py-1 px-2"
                                        >
                                           <div className="flex justify-between items-center flex-1">
-                                             <span className="text-gray-500 font-normal text-sm">
+                                             <span className={`font-normal text-sm transition-colors duration-200 ${
+                                                isDarkMode ? "text-gray-400" : "text-gray-500"
+                                             }`}>
                                                 {member.name}
                                              </span>
                                              {member.role && (
-                                                <span className="text-gray-400 font-normal text-xs">
+                                                <span className={`font-normal text-xs transition-colors duration-200 ${
+                                                   isDarkMode ? "text-gray-500" : "text-gray-400"
+                                                }`}>
                                                    {member.role}
                                                 </span>
                                              )}
@@ -520,7 +572,9 @@ const CreateMeetingDialog = () => {
                                        </li>
                                     ))}
                                     {availableMembers.length === 0 && (
-                                       <li className="text-gray-400 text-center py-4 text-sm">
+                                       <li className={`text-center py-4 text-sm transition-colors duration-200 ${
+                                          isDarkMode ? "text-gray-500" : "text-gray-400"
+                                       }`}>
                                           No committee members found
                                        </li>
                                     )}
@@ -532,15 +586,23 @@ const CreateMeetingDialog = () => {
 
                      {/* Right: Meeting Details */}
                      <div className="lg:col-span-2">
-                        <div className="border border-gray-400 rounded-lg p-6 space-y-6">
+                        <div className={`border rounded-lg p-6 space-y-6 transition-colors duration-200 ${
+                           isDarkMode ? "border-gray-600" : "border-gray-400"
+                        }`}>
                            <div>
-                              <label className="block mb-2 font-semibold text-gray-700">
+                              <label className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-300" : "text-gray-700"
+                              }`}>
                                  Committee
                               </label>
                               <select
                                  value={committeeId}
                                  onChange={() => {}}
-                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode 
+                                       ? "border-gray-600 bg-gray-700 text-gray-200" 
+                                       : "border-gray-300 bg-white text-gray-700"
+                                 }`}
                                  disabled
                               >
                                  <option value="">
@@ -555,7 +617,9 @@ const CreateMeetingDialog = () => {
                            </div>
 
                            <div>
-                              <label className="block mb-2 font-semibold text-gray-700">
+                              <label className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-300" : "text-gray-700"
+                              }`}>
                                  Meeting Title *
                               </label>
                               <input
@@ -563,13 +627,19 @@ const CreateMeetingDialog = () => {
                                  placeholder="e.g., Monthly Progress Meeting"
                                  value={title}
                                  onChange={(e) => setTitle(e.target.value)}
-                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode 
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                                       : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
+                                 }`}
                                  required
                               />
                            </div>
 
                            <div>
-                              <label className="block mb-2 font-semibold text-gray-700">
+                              <label className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-300" : "text-gray-700"
+                              }`}>
                                  Description *
                               </label>
                               <textarea
@@ -578,7 +648,11 @@ const CreateMeetingDialog = () => {
                                  onChange={(e) =>
                                     setDescription(e.target.value)
                                  }
-                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode 
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                                       : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
+                                 }`}
                                  required
                                  rows={3}
                               />
@@ -586,7 +660,9 @@ const CreateMeetingDialog = () => {
 
                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                               <div>
-                                 <label className="block mb-2 font-semibold text-gray-700">
+                                 <label className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                                 }`}>
                                     Date *
                                  </label>
                                  <input
@@ -596,12 +672,18 @@ const CreateMeetingDialog = () => {
                                     onChange={(e) =>
                                        setMeetingDate(e.target.value)
                                     }
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                       isDarkMode 
+                                          ? "border-gray-600 bg-gray-700 text-gray-200" 
+                                          : "border-gray-300 bg-white text-gray-700"
+                                    }`}
                                  />
                               </div>
 
                               <div>
-                                 <label className="block mb-2 font-semibold text-gray-700">
+                                 <label className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                    isDarkMode ? "text-gray-300" : "text-gray-700"
+                                 }`}>
                                     Time *
                                  </label>
                                  <input
@@ -610,14 +692,20 @@ const CreateMeetingDialog = () => {
                                     onChange={(e) =>
                                        setHeldTime(e.target.value)
                                     }
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                       isDarkMode 
+                                          ? "border-gray-600 bg-gray-700 text-gray-200" 
+                                          : "border-gray-300 bg-white text-gray-700"
+                                    }`}
                                     required
                                  />
                               </div>
                            </div>
 
                            <div>
-                              <label className="block mb-2 font-semibold text-gray-700">
+                              <label className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-300" : "text-gray-700"
+                              }`}>
                                  Meeting Place *
                               </label>
                               <input
@@ -627,14 +715,20 @@ const CreateMeetingDialog = () => {
                                  onChange={(e) =>
                                     setMeetingPlace(e.target.value)
                                  }
-                                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode 
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                                       : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
+                                 }`}
                                  required
                               />
                            </div>
 
                            {/* Agenda Section */}
                            <div>
-                              <label className="block mb-2 font-semibold text-gray-700">
+                              <label className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-300" : "text-gray-700"
+                              }`}>
                                  Agenda Items
                               </label>
                               <div className="space-y-3">
@@ -646,7 +740,11 @@ const CreateMeetingDialog = () => {
                                           onChange={(e) =>
                                              updateAgenda(idx, e.target.value)
                                           }
-                                          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          className={`flex-1 rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                             isDarkMode 
+                                                ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                                                : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
+                                          }`}
                                           rows={2}
                                        />
                                        {agenda.length > 1 && (
@@ -664,7 +762,11 @@ const CreateMeetingDialog = () => {
                               <button
                                  type="button"
                                  onClick={addAgendaRow}
-                                 className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors mt-2"
+                                 className={`flex items-center gap-2 text-sm font-medium transition-colors mt-2 ${
+                                    isDarkMode
+                                       ? "text-blue-400 hover:text-blue-300"
+                                       : "text-blue-600 hover:text-blue-800"
+                                 }`}
                               >
                                  <Plus size={16} /> Add agenda item
                               </button>
@@ -672,7 +774,9 @@ const CreateMeetingDialog = () => {
 
                            {/* Decisions Section */}
                            <div>
-                              <label className="block mb-2 font-semibold text-gray-700">
+                              <label className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-300" : "text-gray-700"
+                              }`}>
                                  Decisions Made
                               </label>
                               <div className="space-y-3">
@@ -684,7 +788,11 @@ const CreateMeetingDialog = () => {
                                           onChange={(e) =>
                                              updateDecision(idx, e.target.value)
                                           }
-                                          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          className={`flex-1 rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                             isDarkMode 
+                                                ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                                                : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
+                                          }`}
                                           rows={2}
                                        />
                                        {decisions.length > 1 && (
@@ -702,7 +810,11 @@ const CreateMeetingDialog = () => {
                               <button
                                  type="button"
                                  onClick={addDecisionRow}
-                                 className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors mt-2"
+                                 className={`flex items-center gap-2 text-sm font-medium transition-colors mt-2 ${
+                                    isDarkMode
+                                       ? "text-blue-400 hover:text-blue-300"
+                                       : "text-blue-600 hover:text-blue-800"
+                                 }`}
                               >
                                  <Plus size={16} /> Add decision
                               </button>
@@ -712,7 +824,11 @@ const CreateMeetingDialog = () => {
                               <button
                                  type="button"
                                  onClick={handleCancel}
-                                 className="rounded-lg px-4 py-2 text-sm border border-gray-300 hover:bg-gray-50 transition-colors"
+                                 className={`rounded-lg px-4 py-2 text-sm border transition-colors ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600"
+                                       : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                                 }`}
                               >
                                  Cancel
                               </button>

@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Plus, ArrowUpDown, Users, Calendar, Building2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants.js";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 const CommitteeDashboard = () => {
    const [committees, setCommittees] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
    const [showSortOptions, setShowSortOptions] = useState(false);
+   const { isDarkMode } = useTheme();
 
    const navigate = useNavigate();
 
@@ -87,8 +89,16 @@ const CommitteeDashboard = () => {
 
    if (loading) {
       return (
-         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center text-gray-600">
+         <div
+            className={`min-h-screen flex items-center justify-center transition-colors duration-200 ${
+               isDarkMode ? "bg-gray-900" : "bg-gray-50"
+            }`}
+         >
+            <div
+               className={`text-center transition-colors duration-200 ${
+                  isDarkMode ? "text-gray-300" : "text-gray-600"
+               }`}
+            >
                Loading committees...
             </div>
          </div>
@@ -97,13 +107,33 @@ const CommitteeDashboard = () => {
 
    if (error) {
       return (
-         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center bg-white p-6 rounded-lg shadow border">
+         <div
+            className={`min-h-screen flex items-center justify-center transition-colors duration-200 ${
+               isDarkMode ? "bg-gray-900" : "bg-gray-50"
+            }`}
+         >
+            <div
+               className={`text-center p-6 rounded-lg shadow border transition-colors duration-200 ${
+                  isDarkMode
+                     ? "bg-gray-800 border-gray-700"
+                     : "bg-white border-gray-200"
+               }`}
+            >
                <div className="text-4xl mb-2">⚠️</div>
-               <div className="font-semibold mb-1">
+               <div
+                  className={`font-semibold mb-1 transition-colors duration-200 ${
+                     isDarkMode ? "text-gray-200" : "text-gray-800"
+                  }`}
+               >
                   Error Loading Committees
                </div>
-               <div className="text-sm text-gray-600 mb-4">{error}</div>
+               <div
+                  className={`text-sm mb-4 transition-colors duration-200 ${
+                     isDarkMode ? "text-gray-400" : "text-gray-600"
+                  }`}
+               >
+                  {error}
+               </div>
                <button
                   onClick={() => window.location.reload()}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
@@ -116,18 +146,36 @@ const CommitteeDashboard = () => {
    }
 
    return (
-      <div className="min-h-screen bg-gray-50">
+      <div
+         className={`min-h-screen transition-colors duration-200 ${
+            isDarkMode ? "bg-gray-900" : "bg-gray-50"
+         }`}
+      >
          <div className="max-w-7xl mx-auto p-6">
             {/* Header */}
-            <div className="mb-6 bg-white rounded-lg shadow border p-5">
+            <div
+               className={`mb-6 rounded-lg shadow border p-5 transition-colors duration-200 ${
+                  isDarkMode
+                     ? "bg-gray-800 border-gray-700"
+                     : "bg-white border-gray-200"
+               }`}
+            >
                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                      <Building2 className="text-blue-600" size={28} />
                      <div>
-                        <h1 className="text-xl font-semibold text-gray-800">
+                        <h1
+                           className={`text-xl font-semibold transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-200" : "text-gray-800"
+                           }`}
+                        >
                            Committee Dashboard
                         </h1>
-                        <p className="text-sm text-gray-500">
+                        <p
+                           className={`text-sm transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-400" : "text-gray-500"
+                           }`}
+                        >
                            Manage your committees, meetings, and members
                         </p>
                      </div>
@@ -143,21 +191,39 @@ const CommitteeDashboard = () => {
                      <div className="relative">
                         <button
                            onClick={toggleSortOptions}
-                           className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors font-medium"
+                           className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors font-medium ${
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-800 hover:bg-gray-700 text-gray-200"
+                                 : "border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+                           }`}
                         >
                            <ArrowUpDown size={16} /> Sort
                         </button>
                         {showSortOptions && (
-                           <div className="absolute right-0 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                           <div
+                              className={`absolute right-0 mt-1 w-56 border rounded-lg shadow-lg z-10 transition-colors duration-200 ${
+                                 isDarkMode
+                                    ? "bg-gray-800 border-gray-700"
+                                    : "bg-white border-gray-200"
+                              }`}
+                           >
                               <button
                                  onClick={sortCommitteesByName}
-                                 className="block w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors font-medium text-sm first:rounded-t-lg"
+                                 className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm first:rounded-t-lg ${
+                                    isDarkMode
+                                       ? "hover:bg-gray-700 text-gray-200"
+                                       : "hover:bg-gray-50 text-gray-700"
+                                 }`}
                               >
                                  Sort by Name (A-Z)
                               </button>
                               <button
                                  onClick={sortCommitteesByDate}
-                                 className="block w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors font-medium text-sm last:rounded-b-lg border-t border-gray-100"
+                                 className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm last:rounded-b-lg border-t ${
+                                    isDarkMode
+                                       ? "hover:bg-gray-700 text-gray-200 border-gray-600"
+                                       : "hover:bg-gray-50 text-gray-700 border-gray-100"
+                                 }`}
                               >
                                  Sort by Created Date
                               </button>
@@ -170,27 +236,55 @@ const CommitteeDashboard = () => {
 
             {/* Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-               <div className="bg-white border rounded shadow p-4">
+               <div
+                  className={`border rounded shadow p-4 transition-colors duration-200 ${
+                     isDarkMode
+                        ? "bg-gray-800 border-gray-700"
+                        : "bg-white border-gray-200"
+                  }`}
+               >
                   <div className="flex items-center gap-3">
                      <Building2 className="text-blue-600" size={20} />
                      <div>
-                        <div className="text-xs text-gray-500">
+                        <div
+                           className={`text-xs transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-400" : "text-gray-500"
+                           }`}
+                        >
                            Total Committees
                         </div>
-                        <div className="text-xl font-semibold text-gray-800">
+                        <div
+                           className={`text-xl font-semibold transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-200" : "text-gray-800"
+                           }`}
+                        >
                            {committees.length}
                         </div>
                      </div>
                   </div>
                </div>
-               <div className="bg-white border rounded shadow p-4">
+               <div
+                  className={`border rounded shadow p-4 transition-colors duration-200 ${
+                     isDarkMode
+                        ? "bg-gray-800 border-gray-700"
+                        : "bg-white border-gray-200"
+                  }`}
+               >
                   <div className="flex items-center gap-3">
                      <Users className="text-green-600" size={20} />
                      <div>
-                        <div className="text-xs text-gray-500">
+                        <div
+                           className={`text-xs transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-400" : "text-gray-500"
+                           }`}
+                        >
                            Total Members
                         </div>
-                        <div className="text-xl font-semibold text-gray-800">
+                        <div
+                           className={`text-xl font-semibold transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-200" : "text-gray-800"
+                           }`}
+                        >
                            {committees.reduce(
                               (sum, c) => sum + c.numberOfMembers,
                               0
@@ -199,12 +293,28 @@ const CommitteeDashboard = () => {
                      </div>
                   </div>
                </div>
-               <div className="bg-white border rounded shadow p-4">
+               <div
+                  className={`border rounded shadow p-4 transition-colors duration-200 ${
+                     isDarkMode
+                        ? "bg-gray-800 border-gray-700"
+                        : "bg-white border-gray-200"
+                  }`}
+               >
                   <div className="flex items-center gap-3">
                      <Calendar className="text-orange-600" size={20} />
                      <div>
-                        <div className="text-xs text-gray-500">Meetings</div>
-                        <div className="text-2xl font-semibold text-gray-800">
+                        <div
+                           className={`text-xs transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-400" : "text-gray-500"
+                           }`}
+                        >
+                           Meetings
+                        </div>
+                        <div
+                           className={`text-2xl font-semibold transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-200" : "text-gray-800"
+                           }`}
+                        >
                            {committees.reduce(
                               (sum, c) => sum + c.numberOfMeetings,
                               0
@@ -215,9 +325,19 @@ const CommitteeDashboard = () => {
                </div>
             </div>
 
-            <div className="bg-white border rounded-lg shadow p-5">
+            <div
+               className={`border rounded-lg shadow p-5 transition-colors duration-200 ${
+                  isDarkMode
+                     ? "bg-gray-800 border-gray-700"
+                     : "bg-white border-gray-200"
+               }`}
+            >
                <div className="mb-4">
-                  <h2 className="text-lg font-semibold text-gray-800">
+                  <h2
+                     className={`text-lg font-semibold transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-200" : "text-gray-800"
+                     }`}
+                  >
                      Committees
                   </h2>
                </div>
@@ -226,46 +346,102 @@ const CommitteeDashboard = () => {
                      <button
                         key={committee.id}
                         onClick={() => handleCommitteeClick(committee)}
-                        className="text-left bg-white rounded-lg shadow-sm hover:shadow-md transition p-4 hover:bg-gray-100"
-                        style={{ border: "1px solid #c4c9d0" }}
+                        className={`text-left rounded-lg shadow-sm hover:shadow-md transition-all duration-200 p-4 ${
+                           isDarkMode
+                              ? "bg-gray-700 hover:bg-gray-600 border border-gray-600"
+                              : "bg-white hover:bg-gray-100 border border-gray-300"
+                        }`}
                      >
                         <div className="flex items-center justify-between mb-3 ">
-                           <div className="font-semibold text-gray-800 truncate mr-2">
+                           <div
+                              className={`font-semibold truncate mr-2 transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-200" : "text-gray-800"
+                              }`}
+                           >
                               {committee.committeeName}
                            </div>
                            <span
                               className={`text-xs px-2 py-0.5 rounded border ${
                                  committee.status === "ACTIVE"
-                                    ? "bg-green-50 text-green-700 border-green-200"
+                                    ? isDarkMode
+                                       ? "bg-green-900/50 text-green-300 border-green-600"
+                                       : "bg-green-50 text-green-700 border-green-200"
+                                    : isDarkMode
+                                    ? "bg-red-900/50 text-red-300 border-red-600"
                                     : "bg-red-50 text-red-700 border-red-200"
                               }`}
                            >
                               {committee.status}
                            </span>
                         </div>
-                        <div className="text-sm text-gray-600 line-clamp-2 mb-4">
+                        <div
+                           className={`text-sm line-clamp-2 mb-4 transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-400" : "text-gray-600"
+                           }`}
+                        >
                            {committee.committeeDescription || "No description"}
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div
+                           className={`flex items-center gap-4 text-sm transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-400" : "text-gray-500"
+                           }`}
+                        >
                            <span className="inline-flex items-center gap-1">
                               <Users size={14} />{" "}
-                              <span className="text-xs text-gray-600">
+                              <span
+                                 className={`text-xs transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-400"
+                                       : "text-gray-600"
+                                 }`}
+                              >
                                  Members:
                               </span>{" "}
                               <span className="font-semibold">
                                  {committee.numberOfMembers}
                               </span>
                            </span>
-                           <span className="inline-flex items-center gap-1 bg-orange-50 px-2 py-1 rounded border border-orange-200">
-                              <Calendar size={14} className="text-orange-600" />
-                              <span className="text-xs font-semibold text-orange-700">
+                           <span
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded border transition-colors duration-200 ${
+                                 isDarkMode
+                                    ? "bg-gray-800/50 border-gray-600/40"
+                                    : "bg-gray-200/40 border-gray-400/30"
+                              }`}
+                           >
+                              <Calendar
+                                 size={14}
+                                 className={`transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-orange-600/80"
+                                       : "text-orange-500/90"
+                                 }`}
+                              />
+                              <span
+                                 className={`text-xs font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-300/90"
+                                       : "text-gray-600"
+                                 }`}
+                              >
                                  Meetings:
                               </span>
-                              <span className="font-bold text-orange-800">
+                              <span
+                                 className={`font-bold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-200/90"
+                                       : "text-gray-700"
+                                 }`}
+                              >
                                  {committee.numberOfMeetings}
                               </span>
                               {committee.maxNoOfMeetings > 0 ? (
-                                 <span className="text-orange-600">
+                                 <span
+                                    className={`transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-gray-400/80"
+                                          : "text-gray-500"
+                                    }`}
+                                 >
                                     /{committee.maxNoOfMeetings}
                                  </span>
                               ) : (
@@ -277,7 +453,11 @@ const CommitteeDashboard = () => {
                   ))}
                </div>
                {committees.length === 0 && (
-                  <div className="text-center text-gray-500 py-10">
+                  <div
+                     className={`text-center py-10 transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-400" : "text-gray-500"
+                     }`}
+                  >
                      No committees found
                   </div>
                )}

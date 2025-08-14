@@ -14,10 +14,12 @@ import { BASE_URL } from "../utils/constants.js";
 import { toast } from "react-toastify";
 import CreateMemberDialog from "./CreateMemberDialog";
 import COMMITTEE_ROLES from "../utils/roleConstants";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 const CommitteeDetails = () => {
    const { committeeId } = useParams();
    const navigate = useNavigate();
+   const { isDarkMode } = useTheme();
    const [committee, setCommittee] = useState(null);
    const [members, setMembers] = useState([]);
    const [loading, setLoading] = useState(true);
@@ -461,9 +463,19 @@ const CommitteeDetails = () => {
 
    if (loading) {
       return (
-         <div className="min-h-screen bg-gray-50 flex flex-col">
+         <div
+            className={`min-h-screen flex flex-col transition-colors duration-200 ${
+               isDarkMode ? "bg-gray-900" : "bg-gray-50"
+            }`}
+         >
             <div className="flex-1 flex items-center justify-center">
-               <div className="text-center">Loading committee details...</div>
+               <div
+                  className={`text-center transition-colors duration-200 ${
+                     isDarkMode ? "text-gray-300" : "text-gray-600"
+                  }`}
+               >
+                  Loading committee details...
+               </div>
             </div>
          </div>
       );
@@ -471,22 +483,38 @@ const CommitteeDetails = () => {
 
    if (error) {
       return (
-         <div className="min-h-screen bg-gray-50 flex flex-col">
+         <div
+            className={`min-h-screen flex flex-col transition-colors duration-200 ${
+               isDarkMode ? "bg-gray-900" : "bg-gray-50"
+            }`}
+         >
             <div className="flex-1 flex items-center justify-center p-6">
                <div className="max-w-4xl mx-auto">
                   <div className="text-center">
-                     <div className="mb-4">
+                     <div
+                        className={`mb-4 transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
                         Error loading committee: {error}
                      </div>
                      <button
                         onClick={handleBackToCommittees}
-                        className="px-4 py-2 border rounded-md hover:shadow-lg mr-2"
+                        className={`px-4 py-2 border rounded-md hover:shadow-lg mr-2 transition-colors duration-200 ${
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700"
+                              : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                        }`}
                      >
                         Back
                      </button>
                      <button
                         onClick={() => window.location.reload()}
-                        className="px-4 py-2 border rounded-md hover:shadow-lg"
+                        className={`px-4 py-2 border rounded-md hover:shadow-lg transition-colors duration-200 ${
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-800 text-gray-200 hover:bg-gray-700"
+                              : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                        }`}
                      >
                         Retry
                      </button>
@@ -498,7 +526,11 @@ const CommitteeDetails = () => {
    }
 
    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div
+         className={`min-h-screen flex flex-col transition-colors duration-200 ${
+            isDarkMode ? "bg-gray-900" : "bg-gray-50"
+         }`}
+      >
          <div className="flex-1 p-6">
             <div className="max-w-6xl mx-auto">
                <button
@@ -512,14 +544,32 @@ const CommitteeDetails = () => {
                {committee ? (
                   <div className="space-y-6">
                      {/* Committee Header */}
-                     <div className="bg-white rounded-lg shadow-sm border p-6">
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                     <div
+                        className={`rounded-lg shadow-sm border p-6 transition-colors duration-200 ${
+                           isDarkMode
+                              ? "bg-gray-800 border-gray-700"
+                              : "bg-white border-gray-200"
+                        }`}
+                     >
+                        <h1
+                           className={`text-3xl font-bold mb-2 transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-200" : "text-gray-800"
+                           }`}
+                        >
                            {committee.name}
                         </h1>
-                        <p className="text-gray-600 mb-4">
+                        <p
+                           className={`mb-4 transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-400" : "text-gray-600"
+                           }`}
+                        >
                            {committee.description}
                         </p>
-                        <div className="flex items-center justify-between text-sm text-gray-500">
+                        <div
+                           className={`flex items-center justify-between text-sm transition-colors duration-200 ${
+                              isDarkMode ? "text-gray-400" : "text-gray-500"
+                           }`}
+                        >
                            <div>
                               Created:{" "}
                               {new Date(
@@ -539,7 +589,11 @@ const CommitteeDetails = () => {
                               </button>
                               <button
                                  onClick={handleDeleteCommittee}
-                                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium flex items-center justify-center gap-1"
+                                 className={`px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-1 ${
+                                    isDarkMode
+                                       ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                 }`}
                               >
                                  <Trash2 size={14} /> Delete Committee
                               </button>
@@ -549,9 +603,21 @@ const CommitteeDetails = () => {
 
                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Members Section */}
-                        <div className="bg-white rounded-lg shadow-sm border p-6">
+                        <div
+                           className={`rounded-lg shadow-sm border p-6 transition-colors duration-200 ${
+                              isDarkMode
+                                 ? "bg-gray-800 border-gray-700"
+                                 : "bg-white border-gray-200"
+                           }`}
+                        >
                            <div className="flex justify-between items-center mb-4">
-                              <h2 className="text-xl font-semibold text-gray-800">
+                              <h2
+                                 className={`text-xl font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-200"
+                                       : "text-gray-800"
+                                 }`}
+                              >
                                  Members
                               </h2>
                               <button
@@ -566,7 +632,11 @@ const CommitteeDetails = () => {
                            {/* Search Bar */}
                            <div className="relative mb-4">
                               <Search
-                                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                 className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
+                                    isDarkMode
+                                       ? "text-gray-500"
+                                       : "text-gray-400"
+                                 }`}
                                  size={16}
                               />
                               <input
@@ -574,7 +644,11 @@ const CommitteeDetails = () => {
                                  placeholder="Search members to add..."
                                  value={searchTerm}
                                  onChange={handleSearchChange}
-                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                 className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                       : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+                                 }`}
                               />
                               {searchLoading && (
                                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -584,7 +658,11 @@ const CommitteeDetails = () => {
                               {searchTerm && !searchLoading && (
                                  <button
                                     onClick={clearSearch}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 hover:text-gray-600 ${
+                                       isDarkMode
+                                          ? "text-gray-400"
+                                          : "text-gray-400"
+                                    }`}
                                  >
                                     ×
                                  </button>
@@ -595,7 +673,13 @@ const CommitteeDetails = () => {
                            {showSearchResults && (
                               <div className="mb-4">
                                  <div className="flex justify-between items-center mb-2">
-                                    <h3 className="text-sm font-medium text-gray-700">
+                                    <h3
+                                       className={`text-sm font-medium transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-300"
+                                             : "text-gray-700"
+                                       }`}
+                                    >
                                        Search Results{" "}
                                        {searchResults.length > 0
                                           ? `(${searchResults.length})`
@@ -603,31 +687,63 @@ const CommitteeDetails = () => {
                                     </h3>
                                     <button
                                        onClick={clearSearch}
-                                       className="text-xs text-gray-500 hover:text-gray-700"
+                                       className={`text-xs hover:text-gray-700 transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-400"
+                                             : "text-gray-500"
+                                       }`}
                                     >
                                        Clear
                                     </button>
                                  </div>
 
                                  {searchResults.length > 0 ? (
-                                    <div className="space-y-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-2 bg-gray-50">
+                                    <div
+                                       className={`space-y-2 max-h-48 overflow-y-auto border rounded-lg p-2 transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "border-gray-600 bg-gray-700"
+                                             : "border-gray-200 bg-gray-50"
+                                       }`}
+                                    >
                                        {searchResults.map((member) => (
                                           <div
                                              key={member.id}
-                                             className="flex justify-between items-center p-2 hover:bg-white rounded border border-gray-100 bg-white"
+                                             className={`flex justify-between items-center p-2 rounded border transition-colors duration-200 ${
+                                                isDarkMode
+                                                   ? "hover:bg-gray-600 border-gray-600 bg-gray-800"
+                                                   : "hover:bg-white border-gray-100 bg-white"
+                                             }`}
                                           >
                                              <div className="flex-1">
                                                 <div className="text-sm">
-                                                   <span className="font-medium">
+                                                   <span
+                                                      className={`font-medium transition-colors duration-200 ${
+                                                         isDarkMode
+                                                            ? "text-gray-200"
+                                                            : "text-gray-900"
+                                                      }`}
+                                                   >
                                                       {member.firstName}{" "}
                                                       {member.lastName}
                                                    </span>
                                                 </div>
-                                                <div className="text-xs text-gray-500">
+                                                <div
+                                                   className={`text-xs transition-colors duration-200 ${
+                                                      isDarkMode
+                                                         ? "text-gray-400"
+                                                         : "text-gray-500"
+                                                   }`}
+                                                >
                                                    {member.post} at{" "}
                                                    {member.institution}
                                                 </div>
-                                                <div className="text-xs text-gray-400">
+                                                <div
+                                                   className={`text-xs transition-colors duration-200 ${
+                                                      isDarkMode
+                                                         ? "text-gray-500"
+                                                         : "text-gray-400"
+                                                   }`}
+                                                >
                                                    {member.qualification}
                                                 </div>
                                              </div>
@@ -635,7 +751,11 @@ const CommitteeDetails = () => {
                                                 <div className="flex items-center gap-2">
                                                    <select
                                                       id={`role-${member.id}`}
-                                                      className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                                      className={`px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ${
+                                                         isDarkMode
+                                                            ? "border-gray-600 bg-gray-700 text-gray-200"
+                                                            : "border-gray-300 bg-white text-gray-900"
+                                                      }`}
                                                       defaultValue="Member"
                                                       onChange={(e) => {
                                                          // When dropdown changes, update the custom input
@@ -684,7 +804,11 @@ const CommitteeDetails = () => {
                                                 <input
                                                    id={`custom-role-${member.id}`}
                                                    type="text"
-                                                   className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full"
+                                                   className={`px-2 py-1 text-xs border rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full transition-colors duration-200 ${
+                                                      isDarkMode
+                                                         ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                                         : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+                                                   }`}
                                                    placeholder="Enter custom role (Nepali)..."
                                                    onChange={(e) => {
                                                       // When custom input changes, update the dropdown
@@ -708,7 +832,13 @@ const CommitteeDetails = () => {
                                     </div>
                                  ) : searchTerm.trim().length >= 2 &&
                                    !searchLoading ? (
-                                    <div className="p-3 text-center text-gray-500 bg-gray-50 rounded-lg border">
+                                    <div
+                                       className={`p-3 text-center rounded-lg border transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-400 bg-gray-700 border-gray-600"
+                                             : "text-gray-500 bg-gray-50 border-gray-200"
+                                       }`}
+                                    >
                                        No members found matching "{searchTerm}"
                                     </div>
                                  ) : null}
@@ -717,14 +847,30 @@ const CommitteeDetails = () => {
 
                            {/* Existing Members List - Always shown */}
                            <div className="mb-4">
-                              <h3 className="text-sm font-medium text-gray-700 mb-2">
+                              <h3
+                                 className={`text-sm font-medium mb-2 transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-300"
+                                       : "text-gray-700"
+                                 }`}
+                              >
                                  Current Members ({members.length})
                               </h3>
-                              <div className="space-y-2 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-2">
+                              <div
+                                 className={`space-y-2 max-h-64 overflow-y-auto border rounded-lg p-2 transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600"
+                                       : "border-gray-200"
+                                 }`}
+                              >
                                  {members.map((member, index) => (
                                     <div
                                        key={member.memberId}
-                                       className="flex justify-between items-center p-2 hover:bg-gray-50 rounded"
+                                       className={`flex justify-between items-center p-2 rounded transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "hover:bg-gray-700"
+                                             : "hover:bg-gray-50"
+                                       }`}
                                     >
                                        <div
                                           className="flex-1 cursor-pointer"
@@ -733,22 +879,46 @@ const CommitteeDetails = () => {
                                           }
                                        >
                                           <div className="text-sm">
-                                             <span className="font-medium">
+                                             <span
+                                                className={`font-medium transition-colors duration-200 ${
+                                                   isDarkMode
+                                                      ? "text-gray-200"
+                                                      : "text-gray-900"
+                                                }`}
+                                             >
                                                 {index + 1}. {member.firstName}{" "}
                                                 {member.lastName}
                                              </span>
-                                             <span className="text-xs text-gray-500 ml-2">
+                                             <span
+                                                className={`text-xs ml-2 transition-colors duration-200 ${
+                                                   isDarkMode
+                                                      ? "text-gray-400"
+                                                      : "text-gray-500"
+                                                }`}
+                                             >
                                                 ({member.role})
                                              </span>
                                           </div>
-                                          <div className="text-xs text-gray-400">
+                                          <div
+                                             className={`text-xs transition-colors duration-200 ${
+                                                isDarkMode
+                                                   ? "text-gray-500"
+                                                   : "text-gray-400"
+                                             }`}
+                                          >
                                              {member.post}
                                           </div>
                                        </div>
                                     </div>
                                  ))}
                                  {members.length === 0 && (
-                                    <div className="text-center text-gray-500 py-4">
+                                    <div
+                                       className={`text-center py-4 transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-400"
+                                             : "text-gray-500"
+                                       }`}
+                                    >
                                        No members added yet
                                     </div>
                                  )}
@@ -759,9 +929,21 @@ const CommitteeDetails = () => {
                         </div>
 
                         {/* Meetings Section */}
-                        <div className="bg-white rounded-lg shadow-sm border p-6">
+                        <div
+                           className={`rounded-lg shadow-sm border p-6 transition-colors duration-200 ${
+                              isDarkMode
+                                 ? "bg-gray-800 border-gray-700"
+                                 : "bg-white border-gray-200"
+                           }`}
+                        >
                            <div className="flex justify-between items-center mb-4">
-                              <h2 className="text-xl font-semibold text-gray-800">
+                              <h2
+                                 className={`text-xl font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-200"
+                                       : "text-gray-800"
+                                 }`}
+                              >
                                  Meetings
                               </h2>
                               <button
@@ -782,18 +964,37 @@ const CommitteeDetails = () => {
                                        onClick={() =>
                                           handleViewMeeting(meeting.id)
                                        }
-                                       className="border border-gray-300 rounded-lg p-4 hover:shadow-md transition-shadow hover:bg-gray-100 cursor-pointer"
+                                       className={`border rounded-lg p-4 hover:shadow-md transition-all duration-200 cursor-pointer ${
+                                          isDarkMode
+                                             ? "border-gray-600 hover:bg-gray-700"
+                                             : "border-gray-300 hover:bg-gray-100"
+                                       }`}
                                     >
-                                       <h3 className="font-medium text-gray-800 mb-2">
+                                       <h3
+                                          className={`font-medium mb-2 transition-colors duration-200 ${
+                                             isDarkMode
+                                                ? "text-gray-200"
+                                                : "text-gray-800"
+                                          }`}
+                                       >
                                           {meeting.title}
                                        </h3>
                                        <p
-                                          className="text-xs text-gray-600 line-clamp-2 mb-3
- "
+                                          className={`text-xs line-clamp-2 mb-3 transition-colors duration-200 ${
+                                             isDarkMode
+                                                ? "text-gray-400"
+                                                : "text-gray-600"
+                                          }`}
                                        >
                                           {meeting.description}
                                        </p>
-                                       <div className="text-xs text-gray-500 mb-3">
+                                       <div
+                                          className={`text-xs mb-3 transition-colors duration-200 ${
+                                             isDarkMode
+                                                ? "text-gray-400"
+                                                : "text-gray-500"
+                                          }`}
+                                       >
                                           {new Date(
                                              meeting.heldDate[0],
                                              meeting.heldDate[1] - 1,
@@ -809,7 +1010,11 @@ const CommitteeDetails = () => {
                                                 e.stopPropagation();
                                                 handleViewMeeting(meeting.id);
                                              }}
-                                             className="p-2 bg-gray-100 text-blue-600 rounded-lg hover:bg-gray-200 transition-colors"
+                                             className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 ${
+                                                isDarkMode
+                                                   ? "bg-blue-900/40 text-blue-300 hover:bg-blue-800/60 hover:text-blue-200"
+                                                   : "bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-700"
+                                             }`}
                                              title="Preview Meeting"
                                           >
                                              <Eye size={16} />
@@ -819,7 +1024,11 @@ const CommitteeDetails = () => {
                                                 e.stopPropagation();
                                                 handleEditMeeting(meeting.id);
                                              }}
-                                             className="p-2 bg-gray-100 text-blue-600 rounded-lg hover:bg-gray-200 transition-colors"
+                                             className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 ${
+                                                isDarkMode
+                                                   ? "bg-green-900/40 text-green-300 hover:bg-green-800/60 hover:text-green-200"
+                                                   : "bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700"
+                                             }`}
                                              title="Edit Meeting"
                                           >
                                              <Edit size={16} />
@@ -831,7 +1040,11 @@ const CommitteeDetails = () => {
                                                    meeting.id
                                                 );
                                              }}
-                                             className="p-2 bg-gray-100 text-blue-600 rounded-lg hover:bg-gray-200 transition-colors"
+                                             className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 ${
+                                                isDarkMode
+                                                   ? "bg-orange-900/40 text-orange-300 hover:bg-orange-800/60 hover:text-orange-200"
+                                                   : "bg-orange-100 text-orange-600 hover:bg-orange-200 hover:text-orange-700"
+                                             }`}
                                              title="Download as Document"
                                           >
                                              <FileDown size={16} />
@@ -840,7 +1053,13 @@ const CommitteeDetails = () => {
                                     </div>
                                  ))
                               ) : (
-                                 <div className="col-span-2 text-center text-gray-500 py-8">
+                                 <div
+                                    className={`col-span-2 text-center py-8 transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-gray-400"
+                                          : "text-gray-500"
+                                    }`}
+                                 >
                                     No meetings scheduled yet
                                  </div>
                               )}
@@ -850,7 +1069,11 @@ const CommitteeDetails = () => {
                   </div>
                ) : (
                   <div className="text-center py-8">
-                     <p className="text-gray-500 mb-4">
+                     <p
+                        className={`mb-4 transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-400" : "text-gray-500"
+                        }`}
+                     >
                         No committee data found
                      </p>
                      <button
@@ -869,23 +1092,41 @@ const CommitteeDetails = () => {
                <div className="fixed inset-0 backdrop-blur-sm bg-black/20 z-40"></div>
 
                <div className="fixed inset-0 flex items-center justify-center z-50">
-                  <div className="bg-white border-2 border-red-200 rounded-lg p-6 shadow-lg max-w-lg w-full">
+                  <div
+                     className={`border-2 border-red-200 rounded-lg p-6 shadow-lg max-w-lg w-full transition-colors duration-200 ${
+                        isDarkMode
+                           ? "bg-gray-800 border-red-800"
+                           : "bg-white border-red-200"
+                     }`}
+                  >
                      <div className="flex items-start gap-4">
                         <div className="flex-shrink-0">
                            <Trash2 className="h-7 w-7 text-red-600" />
                         </div>
                         <div className="flex-1">
-                           <h3 className="text-lg font-medium text-gray-900 mb-2">
+                           <h3
+                              className={`text-lg font-medium mb-2 transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-200" : "text-gray-900"
+                              }`}
+                           >
                               Delete Committee
                            </h3>
-                           <p className="text-sm text-gray-600 mb-4">
+                           <p
+                              className={`text-sm mb-4 transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-400" : "text-gray-600"
+                              }`}
+                           >
                               Are you sure? All meetings and membership will be
                               permanently deleted.
                            </p>
                            <div className="flex gap-3">
                               <button
                                  onClick={cancelDeleteCommittee}
-                                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm hover:bg-gray-300 transition-colors font-medium"
+                                 className={`px-4 py-2 rounded-lg text-sm transition-colors font-medium ${
+                                    isDarkMode
+                                       ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                                       : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                                 }`}
                               >
                                  Cancel
                               </button>

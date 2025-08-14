@@ -1,8 +1,8 @@
 import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
+   BrowserRouter as Router,
+   Routes,
+   Route,
+   Navigate,
 } from "react-router-dom";
 import Login from "./pages/auth/Login.jsx";
 import Signup from "./pages/auth/Signup.jsx";
@@ -12,6 +12,7 @@ import CommitteeDetails from "./components/CommitteeDetails.jsx";
 import CreateMeetingDialog from "./components/CreateMeeting.jsx";
 import EditMeeting from "./components/EditMeeting.jsx";
 import { useAuth, AuthProvider } from "./context/AuthContext.jsx";
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 import CreateMemberDialog from "./components/CreateMember.jsx";
 import UpdateCommittee from "./components/UpdateCommittee.jsx";
 
@@ -22,143 +23,147 @@ import MainLayout from "./Layouts/MainLayout.jsx";
 import UpdateMember from "./components/UpdateMember.jsx";
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isAuthLoading, checkAuthStatus } = useAuth();
+   const { isAuthenticated, isAuthLoading, checkAuthStatus } = useAuth();
 
-  useEffect(() => {
-    console.log("ProtectedRoute: useEffect triggered", {
-      isAuthenticated,
-      isAuthLoading,
-    });
-    // Only check auth status if we don't already know the user is authenticated
-    if (!isAuthenticated && !isAuthLoading) {
-      console.log("ProtectedRoute: Checking auth status");
-      checkAuthStatus();
-    }
-  }, [isAuthenticated, isAuthLoading, checkAuthStatus]);
+   useEffect(() => {
+      console.log("ProtectedRoute: useEffect triggered", {
+         isAuthenticated,
+         isAuthLoading,
+      });
+      // Only check auth status if we don't already know the user is authenticated
+      if (!isAuthenticated && !isAuthLoading) {
+         console.log("ProtectedRoute: Checking auth status");
+         checkAuthStatus();
+      }
+   }, [isAuthenticated, isAuthLoading, checkAuthStatus]);
 
-  console.log("ProtectedRoute: render", { isAuthenticated, isAuthLoading });
+   console.log("ProtectedRoute: render", { isAuthenticated, isAuthLoading });
 
-  if (isAuthLoading) {
-    return (
-      <div style={{ textAlign: "center", marginTop: "100px" }}>
-        {" "}
-        Loading authentication...
-      </div>
-    );
-  }
+   if (isAuthLoading) {
+      return (
+         <div style={{ textAlign: "center", marginTop: "100px" }}>
+            {" "}
+            Loading authentication...
+         </div>
+      );
+   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
+   if (!isAuthenticated) {
+      return <Navigate to="/login" replace />;
+   }
+   return children;
 };
 
 function App() {
-  return (
-    <Router>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<MainLayout />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route
-              path="/home"
-              element={
-                // <ProtectedRoute>
-                <CommitteeDashboard />
-                //</ProtectedRoute>
-              }
-            />
+   return (
+      <Router>
+         <ThemeProvider>
+            <AuthProvider>
+               <Routes>
+                  <Route path="/" element={<MainLayout />}>
+                     <Route path="/login" element={<Login />} />
+                     <Route path="/signup" element={<Signup />} />
+                     <Route
+                        path="/home"
+                        element={
+                           // <ProtectedRoute>
+                           <CommitteeDashboard />
+                           //</ProtectedRoute>
+                        }
+                     />
 
-            <Route
-              path="/home/createCommittee"
-              element={
-                // <ProtectedRoute>
-                <CreateCommitteeDialog />
-                // </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/committee/:committeeId"
-              element={
-                <ProtectedRoute>
-                  <CommitteeLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<CommitteeDetails />} />
-              <Route
-                path="createMeeting"
-                element={<CreateMeetingDialog />}
-                key="createMeeting"
-              />
-              <Route
-                path="createMember"
-                element={<CreateMemberDialog />}
-                key="createMember"
-              />
-              <Route
-                path="edit"
-                element={<UpdateCommittee />}
-                key="editCommittee"
-              />
-            </Route>
+                     <Route
+                        path="/home/createCommittee"
+                        element={
+                           // <ProtectedRoute>
+                           <CreateCommitteeDialog />
+                           // </ProtectedRoute>
+                        }
+                     />
+                     <Route
+                        path="/committee/:committeeId"
+                        element={
+                           <ProtectedRoute>
+                              <CommitteeLayout />
+                           </ProtectedRoute>
+                        }
+                     >
+                        <Route index element={<CommitteeDetails />} />
+                        <Route
+                           path="createMeeting"
+                           element={<CreateMeetingDialog />}
+                           key="createMeeting"
+                        />
+                        <Route
+                           path="createMember"
+                           element={<CreateMemberDialog />}
+                           key="createMember"
+                        />
+                        <Route
+                           path="edit"
+                           element={<UpdateCommittee />}
+                           key="editCommittee"
+                        />
+                     </Route>
 
-            <Route
-              path="/committees/:committeeId/meetings/:meetingId/edit"
-              element={
-                <ProtectedRoute>
-                  <EditMeeting />
-                </ProtectedRoute>
-              }
-            />
+                     <Route
+                        path="/committees/:committeeId/meetings/:meetingId/edit"
+                        element={
+                           <ProtectedRoute>
+                              <EditMeeting />
+                           </ProtectedRoute>
+                        }
+                     />
 
-            <Route
-              path="/member/:memberId"
-              element={
-                <ProtectedRoute>
-                  <MemberDetails />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/member/:memberId/edit"
-              element={
-                <ProtectedRoute>
-                  <UpdateMember />
-                </ProtectedRoute>
-              }
-            />
+                     <Route
+                        path="/member/:memberId"
+                        element={
+                           <ProtectedRoute>
+                              <MemberDetails />
+                           </ProtectedRoute>
+                        }
+                     />
+                     <Route
+                        path="/member/:memberId/edit"
+                        element={
+                           <ProtectedRoute>
+                              <UpdateMember />
+                           </ProtectedRoute>
+                        }
+                     />
 
-            <Route path="/" element={<HomeRedirector />} />
+                     <Route path="/" element={<HomeRedirector />} />
 
-            <Route
-              path="*"
-              element={
-                <h1 style={{ textAlign: "center", marginTop: "50px" }}>
-                  404 - Page Not Found
-                </h1>
-              }
-            />
-          </Route>
-        </Routes>
-      </AuthProvider>
-    </Router>
-  );
+                     <Route
+                        path="*"
+                        element={
+                           <h1
+                              style={{ textAlign: "center", marginTop: "50px" }}
+                           >
+                              404 - Page Not Found
+                           </h1>
+                        }
+                     />
+                  </Route>
+               </Routes>
+            </AuthProvider>
+         </ThemeProvider>
+      </Router>
+   );
 }
 
 const HomeRedirector = () => {
-  const { isAuthenticated, isAuthLoading } = useAuth();
+   const { isAuthenticated, isAuthLoading } = useAuth();
 
-  if (isAuthLoading) {
-    return (
-      <div style={{ textAlign: "center", marginTop: "50px" }}>
-        Loading application...
-      </div>
-    );
-  }
+   if (isAuthLoading) {
+      return (
+         <div style={{ textAlign: "center", marginTop: "50px" }}>
+            Loading application...
+         </div>
+      );
+   }
 
-  return <Navigate to={isAuthenticated ? "/home" : "/login"} replace />;
+   return <Navigate to={isAuthenticated ? "/home" : "/login"} replace />;
 };
 
 export default App;

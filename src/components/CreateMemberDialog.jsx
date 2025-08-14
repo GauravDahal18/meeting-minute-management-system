@@ -116,22 +116,28 @@ const CreateMemberDialog = ({
 
    return (
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-         <div className={`rounded-lg shadow-xl w-full max-w-2xl transition-colors duration-200 ${
-            isDarkMode ? "bg-gray-800" : "bg-white"
-         }`}>
-            <div className={`flex justify-between items-center border-b p-4 transition-colors duration-200 ${
-               isDarkMode ? "border-gray-700" : "border-gray-200"
-            }`}>
-               <h2 className={`text-xl font-bold transition-colors duration-200 ${
-                  isDarkMode ? "text-gray-200" : "text-gray-800"
-               }`}>
+         <div
+            className={`rounded-lg shadow-xl w-full max-w-2xl transition-colors duration-200 ${
+               isDarkMode ? "bg-gray-800" : "bg-white"
+            }`}
+         >
+            <div
+               className={`flex justify-between items-center border-b p-4 transition-colors duration-200 ${
+                  isDarkMode ? "border-gray-700" : "border-gray-200"
+               }`}
+            >
+               <h2
+                  className={`text-xl font-bold transition-colors duration-200 ${
+                     isDarkMode ? "text-gray-200" : "text-gray-800"
+                  }`}
+               >
                   Create New Member
                </h2>
                <button
                   onClick={onClose}
                   className={`transition-colors ${
-                     isDarkMode 
-                        ? "text-gray-400 hover:text-gray-200" 
+                     isDarkMode
+                        ? "text-gray-400 hover:text-gray-200"
                         : "text-gray-500 hover:text-gray-700"
                   }`}
                >
@@ -143,9 +149,11 @@ const CreateMemberDialog = ({
                {/* First Name & Last Name side by side */}
                <div className="grid grid-cols-2 gap-4">
                   <div>
-                     <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}>
+                     <label
+                        className={`block mb-1 font-semibold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
                         First Name (English) *
                      </label>
                      <input
@@ -153,8 +161,8 @@ const CreateMemberDialog = ({
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
                         placeholder="Enter first name in English"
@@ -163,9 +171,11 @@ const CreateMemberDialog = ({
                   </div>
 
                   <div>
-                     <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}>
+                     <label
+                        className={`block mb-1 font-semibold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
                         Last Name (English) *
                      </label>
                      <input
@@ -173,8 +183,8 @@ const CreateMemberDialog = ({
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
                         placeholder="Enter last name in English"
@@ -186,9 +196,11 @@ const CreateMemberDialog = ({
                {/* First Name (Nepali) & Last Name (Nepali) side by side */}
                <div className="grid grid-cols-2 gap-4">
                   <div>
-                     <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}>
+                     <label
+                        className={`block mb-1 font-semibold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
                         First Name (Nepali) *
                      </label>
                      <input
@@ -196,8 +208,8 @@ const CreateMemberDialog = ({
                         value={firstNameNepali}
                         onChange={(e) => setFirstNameNepali(e.target.value)}
                         className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
                         placeholder="राम"
@@ -211,9 +223,11 @@ const CreateMemberDialog = ({
                   </div>
 
                   <div>
-                     <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}>
+                     <label
+                        className={`block mb-1 font-semibold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
                         Last Name (Nepali) *
                      </label>
                      <input
@@ -221,8 +235,8 @@ const CreateMemberDialog = ({
                         value={lastNameNepali}
                         onChange={(e) => setLastNameNepali(e.target.value)}
                         className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
                         placeholder="श्रेष्ठ"
@@ -238,9 +252,11 @@ const CreateMemberDialog = ({
 
                {/* Email */}
                <div>
-                  <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                     isDarkMode ? "text-gray-300" : "text-gray-700"
-                  }`}>
+                  <label
+                     className={`block mb-1 font-semibold transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-300" : "text-gray-700"
+                     }`}
+                  >
                      Email (Optional)
                   </label>
                   <input
@@ -248,8 +264,8 @@ const CreateMemberDialog = ({
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
                      className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                        isDarkMode 
-                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                        isDarkMode
+                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                            : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                      }`}
                      placeholder="ram.shrestha@example.com"
@@ -258,9 +274,11 @@ const CreateMemberDialog = ({
 
                {/* Institution - Typeable */}
                <div>
-                  <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                     isDarkMode ? "text-gray-300" : "text-gray-700"
-                  }`}>
+                  <label
+                     className={`block mb-1 font-semibold transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-300" : "text-gray-700"
+                     }`}
+                  >
                      Institution *
                   </label>
                   <input
@@ -268,8 +286,8 @@ const CreateMemberDialog = ({
                      value={institution}
                      onChange={(e) => setInstitution(e.target.value)}
                      className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                        isDarkMode 
-                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                        isDarkMode
+                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                            : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                      }`}
                      placeholder="Pulchowk Campus, IOE"
@@ -279,9 +297,11 @@ const CreateMemberDialog = ({
 
                {/* Post - Typeable in Nepali */}
                <div>
-                  <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                     isDarkMode ? "text-gray-300" : "text-gray-700"
-                  }`}>
+                  <label
+                     className={`block mb-1 font-semibold transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-300" : "text-gray-700"
+                     }`}
+                  >
                      Post (Nepali) *
                   </label>
                   <input
@@ -289,8 +309,8 @@ const CreateMemberDialog = ({
                      value={post}
                      onChange={(e) => setPost(e.target.value)}
                      className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                        isDarkMode 
-                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                        isDarkMode
+                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                            : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                      }`}
                      placeholder="प्रोफेसर, डाक्टर"
@@ -300,9 +320,11 @@ const CreateMemberDialog = ({
 
                {/* Role - Text input and dropdown on same line */}
                <div>
-                  <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                     isDarkMode ? "text-gray-300" : "text-gray-700"
-                  }`}>
+                  <label
+                     className={`block mb-1 font-semibold transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-300" : "text-gray-700"
+                     }`}
+                  >
                      Role *
                   </label>
                   <div className="flex gap-2">
@@ -316,8 +338,8 @@ const CreateMemberDialog = ({
                            }
                         }}
                         className={`flex-[2] border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
                         placeholder="Enter custom role"
@@ -329,8 +351,8 @@ const CreateMemberDialog = ({
                            setCustomRole(e.target.value); // Update text input when selecting from dropdown
                         }}
                         className={`flex-1 border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200"
                               : "border-gray-400 bg-white text-gray-900"
                         }`}
                      >
@@ -350,9 +372,11 @@ const CreateMemberDialog = ({
                </div>
 
                {/* Note about required fields */}
-               <div className={`text-xs transition-colors duration-200 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-               }`}>
+               <div
+                  className={`text-xs transition-colors duration-200 ${
+                     isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+               >
                   * Fields marked with an asterisk are required
                </div>
 

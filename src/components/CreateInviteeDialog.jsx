@@ -96,22 +96,28 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
 
    return (
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-         <div className={`rounded-lg shadow-xl w-full max-w-2xl transition-colors duration-200 ${
-            isDarkMode ? "bg-gray-800" : "bg-white"
-         }`}>
-            <div className={`flex justify-between items-center border-b p-4 transition-colors duration-200 ${
-               isDarkMode ? "border-gray-700" : "border-gray-200"
-            }`}>
-               <h2 className={`text-xl font-bold transition-colors duration-200 ${
-                  isDarkMode ? "text-gray-200" : "text-gray-800"
-               }`}>
+         <div
+            className={`rounded-lg shadow-xl w-full max-w-2xl transition-colors duration-200 ${
+               isDarkMode ? "bg-gray-800" : "bg-white"
+            }`}
+         >
+            <div
+               className={`flex justify-between items-center border-b p-4 transition-colors duration-200 ${
+                  isDarkMode ? "border-gray-700" : "border-gray-200"
+               }`}
+            >
+               <h2
+                  className={`text-xl font-bold transition-colors duration-200 ${
+                     isDarkMode ? "text-gray-200" : "text-gray-800"
+                  }`}
+               >
                   Create New Invitee
                </h2>
                <button
                   onClick={onClose}
                   className={`transition-colors ${
-                     isDarkMode 
-                        ? "text-gray-400 hover:text-gray-200" 
+                     isDarkMode
+                        ? "text-gray-400 hover:text-gray-200"
                         : "text-gray-500 hover:text-gray-700"
                   }`}
                >
@@ -123,9 +129,11 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                {/* First Name & Last Name side by side */}
                <div className="grid grid-cols-2 gap-4">
                   <div>
-                     <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}>
+                     <label
+                        className={`block mb-1 font-semibold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
                         First Name (English) *
                      </label>
                      <input
@@ -133,8 +141,8 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
                         placeholder="Enter first name"
@@ -143,9 +151,11 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                   </div>
 
                   <div>
-                     <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}>
+                     <label
+                        className={`block mb-1 font-semibold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
                         Last Name (English) *
                      </label>
                      <input
@@ -153,8 +163,8 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
                         placeholder="Enter last name"
@@ -166,9 +176,11 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                {/* First Name (Nepali) & Last Name (Nepali) side by side */}
                <div className="grid grid-cols-2 gap-4">
                   <div>
-                     <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}>
+                     <label
+                        className={`block mb-1 font-semibold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
                         First Name (Nepali) *
                      </label>
                      <input
@@ -176,8 +188,8 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                         value={firstNameNepali}
                         onChange={(e) => setFirstNameNepali(e.target.value)}
                         className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
                         placeholder="राम"
@@ -191,9 +203,11 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                   </div>
 
                   <div>
-                     <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-700"
-                     }`}>
+                     <label
+                        className={`block mb-1 font-semibold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                        }`}
+                     >
                         Last Name (Nepali) *
                      </label>
                      <input
@@ -201,8 +215,8 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                         value={lastNameNepali}
                         onChange={(e) => setLastNameNepali(e.target.value)}
                         className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode 
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                               : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                         }`}
                         placeholder="श्रेष्ठ"
@@ -218,9 +232,11 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
 
                {/* Email */}
                <div>
-                  <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                     isDarkMode ? "text-gray-300" : "text-gray-700"
-                  }`}>
+                  <label
+                     className={`block mb-1 font-semibold transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-300" : "text-gray-700"
+                     }`}
+                  >
                      Email (Optional)
                   </label>
                   <input
@@ -228,8 +244,8 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
                      className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                        isDarkMode 
-                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                        isDarkMode
+                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                            : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                      }`}
                      placeholder="ram.shrestha@example.com"
@@ -238,9 +254,11 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
 
                {/* Institution - Typeable */}
                <div>
-                  <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                     isDarkMode ? "text-gray-300" : "text-gray-700"
-                  }`}>
+                  <label
+                     className={`block mb-1 font-semibold transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-300" : "text-gray-700"
+                     }`}
+                  >
                      Institution *
                   </label>
                   <input
@@ -248,8 +266,8 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                      value={institution}
                      onChange={(e) => setInstitution(e.target.value)}
                      className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                        isDarkMode 
-                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                        isDarkMode
+                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                            : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                      }`}
                      placeholder="Pulchowk Campus, IOE"
@@ -259,9 +277,11 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
 
                {/* Post - Typeable in Nepali */}
                <div>
-                  <label className={`block mb-1 font-semibold transition-colors duration-200 ${
-                     isDarkMode ? "text-gray-300" : "text-gray-700"
-                  }`}>
+                  <label
+                     className={`block mb-1 font-semibold transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-300" : "text-gray-700"
+                     }`}
+                  >
                      Post (Nepali) *
                   </label>
                   <input
@@ -269,8 +289,8 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                      value={post}
                      onChange={(e) => setPost(e.target.value)}
                      className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                        isDarkMode 
-                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400" 
+                        isDarkMode
+                           ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                            : "border-gray-400 bg-white text-gray-900 placeholder-gray-500"
                      }`}
                      placeholder="प्रोफेसर, डाक्टर"
@@ -279,9 +299,11 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
                </div>
 
                {/* Note about required fields */}
-               <div className={`text-xs transition-colors duration-200 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-               }`}>
+               <div
+                  className={`text-xs transition-colors duration-200 ${
+                     isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+               >
                   * Fields marked with an asterisk are required
                </div>
 

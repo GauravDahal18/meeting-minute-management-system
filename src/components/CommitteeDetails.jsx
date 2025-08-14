@@ -212,6 +212,11 @@ const CommitteeDetails = () => {
          selectedRole === "custom" ? customRoleValue : selectedRole;
 
       handleAddMemberToCommittee(member, formattedRole);
+
+      // Reset search bar after adding member
+      setSearchTerm("");
+      setSearchResults([]);
+      setShowSearchResults(false);
    };
 
    const handleBackToCommittees = () => {

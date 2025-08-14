@@ -64,14 +64,20 @@ const MemberDetails = () => {
 
    if (loading) {
       return (
-         <div className={`min-h-screen flex flex-col transition-colors duration-200 ${
-            isDarkMode ? "bg-gray-900" : "bg-gray-50"
-         }`}>
+         <div
+            className={`min-h-screen flex flex-col transition-colors duration-200 ${
+               isDarkMode ? "bg-gray-900" : "bg-gray-50"
+            }`}
+         >
             <div className="flex-1 p-6">
                <div className="max-w-4xl mx-auto">
-                  <div className={`text-center transition-colors duration-200 ${
-                     isDarkMode ? "text-gray-300" : "text-gray-600"
-                  }`}>Loading member details...</div>
+                  <div
+                     className={`text-center transition-colors duration-200 ${
+                        isDarkMode ? "text-gray-300" : "text-gray-600"
+                     }`}
+                  >
+                     Loading member details...
+                  </div>
                </div>
             </div>
          </div>
@@ -80,15 +86,21 @@ const MemberDetails = () => {
 
    if (error) {
       return (
-         <div className={`min-h-screen flex flex-col transition-colors duration-200 ${
-            isDarkMode ? "bg-gray-900" : "bg-gray-50"
-         }`}>
+         <div
+            className={`min-h-screen flex flex-col transition-colors duration-200 ${
+               isDarkMode ? "bg-gray-900" : "bg-gray-50"
+            }`}
+         >
             <div className="flex-1 p-6">
                <div className="max-w-4xl mx-auto">
                   <div className="text-center">
-                     <div className={`mb-4 transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-300" : "text-gray-600"
-                     }`}>Error loading member: {error}</div>
+                     <div
+                        className={`mb-4 transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-300" : "text-gray-600"
+                        }`}
+                     >
+                        Error loading member: {error}
+                     </div>
                      <button
                         onClick={handleBackToCommittees}
                         className={`px-4 py-2 border rounded-md hover:shadow-lg mr-2 transition-colors duration-200 ${
@@ -117,9 +129,11 @@ const MemberDetails = () => {
    }
 
    return (
-      <div className={`min-h-screen flex flex-col transition-colors duration-200 ${
-         isDarkMode ? "bg-gray-900" : "bg-gray-50"
-      }`}>
+      <div
+         className={`min-h-screen flex flex-col transition-colors duration-200 ${
+            isDarkMode ? "bg-gray-900" : "bg-gray-50"
+         }`}
+      >
          <div className="flex-1 p-6">
             <div className="max-w-6xl mx-auto">
                <div className="flex justify-between items-center mb-6">
@@ -135,24 +149,38 @@ const MemberDetails = () => {
                {member ? (
                   <div className="space-y-6">
                      {/* Member Header */}
-                     <div className={`rounded-lg shadow-sm border p-6 transition-colors duration-200 ${
-                        isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-                     }`}>
+                     <div
+                        className={`rounded-lg shadow-sm border p-6 transition-colors duration-200 ${
+                           isDarkMode
+                              ? "bg-gray-800 border-gray-700"
+                              : "bg-white border-gray-200"
+                        }`}
+                     >
                         <div className="flex items-center gap-4 mb-4">
-                           <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                              isDarkMode ? "bg-blue-900/40" : "bg-blue-100"
-                           }`}>
+                           <div
+                              className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                                 isDarkMode ? "bg-blue-900/40" : "bg-blue-100"
+                              }`}
+                           >
                               <User size={32} className="text-blue-600" />
                            </div>
                            <div>
-                              <h1 className={`text-3xl font-bold transition-colors duration-200 ${
-                                 isDarkMode ? "text-gray-200" : "text-gray-800"
-                              }`}>
+                              <h1
+                                 className={`text-3xl font-bold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-200"
+                                       : "text-gray-800"
+                                 }`}
+                              >
                                  {member.firstName} {member.lastName}
                               </h1>
-                              <p className={`text-lg transition-colors duration-200 ${
-                                 isDarkMode ? "text-gray-400" : "text-gray-600"
-                              }`}>
+                              <p
+                                 className={`text-lg transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-400"
+                                       : "text-gray-600"
+                                 }`}
+                              >
                                  {member.post}
                               </p>
                            </div>
@@ -170,47 +198,83 @@ const MemberDetails = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                            <div className="flex items-center gap-3">
-                              <Building size={20} className={`transition-colors duration-200 ${
-                                 isDarkMode ? "text-gray-400" : "text-gray-500"
-                              }`} />
+                              <Building
+                                 size={20}
+                                 className={`transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-400"
+                                       : "text-gray-500"
+                                 }`}
+                              />
                               <div>
-                                 <p className={`text-sm transition-colors duration-200 ${
-                                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                                 }`}>
+                                 <p
+                                    className={`text-sm transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-gray-400"
+                                          : "text-gray-500"
+                                    }`}
+                                 >
                                     Institution
                                  </p>
-                                 <p className={`font-medium transition-colors duration-200 ${
-                                    isDarkMode ? "text-gray-200" : "text-gray-900"
-                                 }`}>
+                                 <p
+                                    className={`font-medium transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-gray-200"
+                                          : "text-gray-900"
+                                    }`}
+                                 >
                                     {member.institution}
                                  </p>
                               </div>
                            </div>
 
                            <div className="flex items-center gap-3">
-                              <Award size={20} className={`transition-colors duration-200 ${
-                                 isDarkMode ? "text-gray-400" : "text-gray-500"
-                              }`} />
+                              <Award
+                                 size={20}
+                                 className={`transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-400"
+                                       : "text-gray-500"
+                                 }`}
+                              />
                               <div>
-                                 <p className={`text-sm transition-colors duration-200 ${
-                                    isDarkMode ? "text-gray-400" : "text-gray-500"
-                                 }`}>Post</p>
-                                 <p className={`font-medium transition-colors duration-200 ${
-                                    isDarkMode ? "text-gray-200" : "text-gray-900"
-                                 }`}>{member.post}</p>
+                                 <p
+                                    className={`text-sm transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-gray-400"
+                                          : "text-gray-500"
+                                    }`}
+                                 >
+                                    Post
+                                 </p>
+                                 <p
+                                    className={`font-medium transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-gray-200"
+                                          : "text-gray-900"
+                                    }`}
+                                 >
+                                    {member.post}
+                                 </p>
                               </div>
                            </div>
                         </div>
                      </div>
 
-                     <div className={`rounded-lg shadow-sm border p-6 transition-colors duration-200 ${
-                        isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-                     }`}>
+                     <div
+                        className={`rounded-lg shadow-sm border p-6 transition-colors duration-200 ${
+                           isDarkMode
+                              ? "bg-gray-800 border-gray-700"
+                              : "bg-white border-gray-200"
+                        }`}
+                     >
                         <div className="flex items-center gap-3 mb-6">
                            <Users size={24} className="text-blue-600" />
-                           <h2 className={`text-2xl font-semibold transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-200" : "text-gray-800"
-                           }`}>
+                           <h2
+                              className={`text-2xl font-semibold transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-200" : "text-gray-800"
+                              }`}
+                           >
                               Committees & Meetings
                            </h2>
                         </div>
@@ -218,23 +282,37 @@ const MemberDetails = () => {
                         {member.committeeWithMeetings &&
                         member.committeeWithMeetings.length > 0 ? (
                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                              <div className={`border rounded-lg transition-colors duration-200 ${
-                                 isDarkMode ? "border-gray-600" : "border-gray-200"
-                              }`}>
-                                 <div className={`p-4 border-b transition-colors duration-200 ${
-                                    isDarkMode 
-                                       ? "bg-gray-700 border-gray-600" 
-                                       : "bg-gray-50 border-gray-200"
-                                 }`}>
-                                    <h3 className={`text-lg font-semibold transition-colors duration-200 ${
-                                       isDarkMode ? "text-gray-200" : "text-gray-800"
-                                    }`}>
+                              <div
+                                 className={`border rounded-lg transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600"
+                                       : "border-gray-200"
+                                 }`}
+                              >
+                                 <div
+                                    className={`p-4 border-b transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "bg-gray-700 border-gray-600"
+                                          : "bg-gray-50 border-gray-200"
+                                    }`}
+                                 >
+                                    <h3
+                                       className={`text-lg font-semibold transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-200"
+                                             : "text-gray-800"
+                                       }`}
+                                    >
                                        Committees (
                                        {member.committeeWithMeetings.length})
                                     </h3>
-                                    <p className={`text-sm mt-1 transition-colors duration-200 ${
-                                       isDarkMode ? "text-gray-400" : "text-gray-600"
-                                    }`}></p>
+                                    <p
+                                       className={`text-sm mt-1 transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-400"
+                                             : "text-gray-600"
+                                       }`}
+                                    ></p>
                                  </div>
                                  <div className="p-2 space-y-2 max-h-96 overflow-y-auto">
                                     {member.committeeWithMeetings.map(
@@ -251,8 +329,8 @@ const MemberDetails = () => {
                                                       ? "bg-blue-900/30 border-blue-700 shadow-sm"
                                                       : "bg-blue-50 border-blue-200 shadow-sm"
                                                    : isDarkMode
-                                                      ? "bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-gray-500"
-                                                      : "bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                                                   ? "bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-gray-500"
+                                                   : "bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                                              }`}
                                              onClick={() =>
                                                 handleCommitteeSelect(
@@ -262,18 +340,26 @@ const MemberDetails = () => {
                                           >
                                              <div className="flex justify-between items-start">
                                                 <div className="flex-1">
-                                                   <h4 className={`font-semibold mb-1 transition-colors duration-200 ${
-                                                      isDarkMode ? "text-gray-200" : "text-gray-800"
-                                                   }`}>
+                                                   <h4
+                                                      className={`font-semibold mb-1 transition-colors duration-200 ${
+                                                         isDarkMode
+                                                            ? "text-gray-200"
+                                                            : "text-gray-800"
+                                                      }`}
+                                                   >
                                                       {
                                                          committeeData
                                                             .committeeInfo
                                                             .committeeName
                                                       }
                                                    </h4>
-                                                   <p className={`text-sm mb-2 line-clamp-2 transition-colors duration-200 ${
-                                                      isDarkMode ? "text-gray-400" : "text-gray-600"
-                                                   }`}>
+                                                   <p
+                                                      className={`text-sm mb-2 line-clamp-2 transition-colors duration-200 ${
+                                                         isDarkMode
+                                                            ? "text-gray-400"
+                                                            : "text-gray-600"
+                                                      }`}
+                                                   >
                                                       {
                                                          committeeData
                                                             .committeeInfo
@@ -281,20 +367,26 @@ const MemberDetails = () => {
                                                       }
                                                    </p>
                                                    <div className="flex items-center gap-2">
-                                                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                                         isDarkMode
-                                                            ? "bg-blue-900/50 text-blue-300"
-                                                            : "bg-blue-100 text-blue-800"
-                                                      }`}>
+                                                      <span
+                                                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                                            isDarkMode
+                                                               ? "bg-blue-900/50 text-blue-300"
+                                                               : "bg-blue-100 text-blue-800"
+                                                         }`}
+                                                      >
                                                          {
                                                             committeeData
                                                                .committeeInfo
                                                                .role
                                                          }
                                                       </span>
-                                                      <span className={`text-xs transition-colors duration-200 ${
-                                                         isDarkMode ? "text-gray-400" : "text-gray-500"
-                                                      }`}>
+                                                      <span
+                                                         className={`text-xs transition-colors duration-200 ${
+                                                            isDarkMode
+                                                               ? "text-gray-400"
+                                                               : "text-gray-500"
+                                                         }`}
+                                                      >
                                                          {
                                                             committeeData
                                                                .meetingInfos
@@ -317,22 +409,36 @@ const MemberDetails = () => {
                                  </div>
                               </div>
 
-                              <div className={`border rounded-lg transition-colors duration-200 ${
-                                 isDarkMode ? "border-gray-600" : "border-gray-200"
-                              }`}>
-                                 <div className={`p-4 border-b transition-colors duration-200 ${
-                                    isDarkMode 
-                                       ? "bg-gray-700 border-gray-600" 
-                                       : "bg-gray-50 border-gray-200"
-                                 }`}>
-                                    <h3 className={`text-lg font-semibold transition-colors duration-200 ${
-                                       isDarkMode ? "text-gray-200" : "text-gray-800"
-                                    }`}>
+                              <div
+                                 className={`border rounded-lg transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600"
+                                       : "border-gray-200"
+                                 }`}
+                              >
+                                 <div
+                                    className={`p-4 border-b transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "bg-gray-700 border-gray-600"
+                                          : "bg-gray-50 border-gray-200"
+                                    }`}
+                                 >
+                                    <h3
+                                       className={`text-lg font-semibold transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-200"
+                                             : "text-gray-800"
+                                       }`}
+                                    >
                                        Meeting(s)
                                     </h3>
-                                    <p className={`text-sm mt-1 transition-colors duration-200 ${
-                                       isDarkMode ? "text-gray-400" : "text-gray-600"
-                                    }`}>
+                                    <p
+                                       className={`text-sm mt-1 transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-400"
+                                             : "text-gray-600"
+                                       }`}
+                                    >
                                        {selectedCommittee
                                           ? `${selectedCommittee.meetingInfos.length} meeting(s) attended`
                                           : ""}
@@ -355,16 +461,24 @@ const MemberDetails = () => {
                                                    >
                                                       <div className="flex justify-between items-start">
                                                          <div className="flex-1">
-                                                            <h5 className={`font-medium mb-1 transition-colors duration-200 ${
-                                                               isDarkMode ? "text-gray-200" : "text-gray-800"
-                                                            }`}>
+                                                            <h5
+                                                               className={`font-medium mb-1 transition-colors duration-200 ${
+                                                                  isDarkMode
+                                                                     ? "text-gray-200"
+                                                                     : "text-gray-800"
+                                                               }`}
+                                                            >
                                                                {
                                                                   meeting.meetingTitle
                                                                }
                                                             </h5>
-                                                            <p className={`text-sm mb-3 transition-colors duration-200 ${
-                                                               isDarkMode ? "text-gray-400" : "text-gray-600"
-                                                            }`}>
+                                                            <p
+                                                               className={`text-sm mb-3 transition-colors duration-200 ${
+                                                                  isDarkMode
+                                                                     ? "text-gray-400"
+                                                                     : "text-gray-600"
+                                                               }`}
+                                                            >
                                                                {
                                                                   meeting.meetingDescription
                                                                }
@@ -374,12 +488,18 @@ const MemberDetails = () => {
                                                                   <Calendar
                                                                      size={14}
                                                                      className={`transition-colors duration-200 ${
-                                                                        isDarkMode ? "text-gray-500" : "text-gray-400"
+                                                                        isDarkMode
+                                                                           ? "text-gray-500"
+                                                                           : "text-gray-400"
                                                                      }`}
                                                                   />
-                                                                  <span className={`text-xs transition-colors duration-200 ${
-                                                                     isDarkMode ? "text-gray-400" : "text-gray-500"
-                                                                  }`}>
+                                                                  <span
+                                                                     className={`text-xs transition-colors duration-200 ${
+                                                                        isDarkMode
+                                                                           ? "text-gray-400"
+                                                                           : "text-gray-500"
+                                                                     }`}
+                                                                  >
                                                                      ID:{" "}
                                                                      {
                                                                         meeting.id
@@ -416,17 +536,27 @@ const MemberDetails = () => {
                                              <Calendar
                                                 size={48}
                                                 className={`mx-auto mb-4 transition-colors duration-200 ${
-                                                   isDarkMode ? "text-gray-600" : "text-gray-300"
+                                                   isDarkMode
+                                                      ? "text-gray-600"
+                                                      : "text-gray-300"
                                                 }`}
                                              />
-                                             <p className={`transition-colors duration-200 ${
-                                                isDarkMode ? "text-gray-400" : "text-gray-500"
-                                             }`}>
+                                             <p
+                                                className={`transition-colors duration-200 ${
+                                                   isDarkMode
+                                                      ? "text-gray-400"
+                                                      : "text-gray-500"
+                                                }`}
+                                             >
                                                 No meetings found
                                              </p>
-                                             <p className={`text-sm transition-colors duration-200 ${
-                                                isDarkMode ? "text-gray-500" : "text-gray-400"
-                                             }`}>
+                                             <p
+                                                className={`text-sm transition-colors duration-200 ${
+                                                   isDarkMode
+                                                      ? "text-gray-500"
+                                                      : "text-gray-400"
+                                                }`}
+                                             >
                                                 No meetings attended in this
                                                 committee yet.
                                              </p>
@@ -437,17 +567,27 @@ const MemberDetails = () => {
                                           <Users
                                              size={48}
                                              className={`mx-auto mb-4 transition-colors duration-200 ${
-                                                isDarkMode ? "text-gray-600" : "text-gray-300"
+                                                isDarkMode
+                                                   ? "text-gray-600"
+                                                   : "text-gray-300"
                                              }`}
                                           />
-                                          <p className={`transition-colors duration-200 ${
-                                             isDarkMode ? "text-gray-400" : "text-gray-500"
-                                          }`}>
+                                          <p
+                                             className={`transition-colors duration-200 ${
+                                                isDarkMode
+                                                   ? "text-gray-400"
+                                                   : "text-gray-500"
+                                             }`}
+                                          >
                                              Select a Committee
                                           </p>
-                                          <p className={`text-sm transition-colors duration-200 ${
-                                             isDarkMode ? "text-gray-500" : "text-gray-400"
-                                          }`}>
+                                          <p
+                                             className={`text-sm transition-colors duration-200 ${
+                                                isDarkMode
+                                                   ? "text-gray-500"
+                                                   : "text-gray-400"
+                                             }`}
+                                          >
                                              Click on a committee from the left
                                              panel to view attended meetings.
                                           </p>
@@ -461,17 +601,27 @@ const MemberDetails = () => {
                               <Users
                                  size={48}
                                  className={`mx-auto mb-4 transition-colors duration-200 ${
-                                    isDarkMode ? "text-gray-600" : "text-gray-300"
+                                    isDarkMode
+                                       ? "text-gray-600"
+                                       : "text-gray-300"
                                  }`}
                               />
-                              <p className={`text-lg transition-colors duration-200 ${
-                                 isDarkMode ? "text-gray-400" : "text-gray-500"
-                              }`}>
+                              <p
+                                 className={`text-lg transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-400"
+                                       : "text-gray-500"
+                                 }`}
+                              >
                                  No committees found
                               </p>
-                              <p className={`text-sm transition-colors duration-200 ${
-                                 isDarkMode ? "text-gray-500" : "text-gray-400"
-                              }`}>
+                              <p
+                                 className={`text-sm transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-500"
+                                       : "text-gray-400"
+                                 }`}
+                              >
                                  This member is not associated with any
                                  committees yet.
                               </p>
@@ -481,9 +631,13 @@ const MemberDetails = () => {
                   </div>
                ) : (
                   <div className="text-center py-8">
-                     <p className={`mb-4 transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-400" : "text-gray-500"
-                     }`}>No member data found</p>
+                     <p
+                        className={`mb-4 transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-400" : "text-gray-500"
+                        }`}
+                     >
+                        No member data found
+                     </p>
                      <button
                         onClick={handleBackToCommittees}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

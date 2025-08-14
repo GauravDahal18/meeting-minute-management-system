@@ -138,7 +138,11 @@ const UpdateMember = () => {
    if (loading) return null;
 
    return (
-      <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} flex flex-col transition-colors duration-200`}>
+      <div
+         className={`min-h-screen ${
+            isDarkMode ? "bg-gray-900" : "bg-gray-50"
+         } flex flex-col transition-colors duration-200`}
+      >
          <div className="flex-1 p-6">
             <div className="max-w-2xl mx-auto">
                <button
@@ -148,15 +152,29 @@ const UpdateMember = () => {
                   <ArrowLeft size={16} /> Back
                </button>
 
-               <div className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} rounded-xl shadow-lg border p-6 transition-colors duration-200`}>
-                  <h2 className={`text-2xl font-bold mb-6 text-center ${isDarkMode ? 'text-gray-200' : 'text-gray-800'} transition-colors duration-200`}>
+               <div
+                  className={`${
+                     isDarkMode
+                        ? "bg-gray-800 border-gray-700"
+                        : "bg-white border-gray-200"
+                  } rounded-xl shadow-lg border p-6 transition-colors duration-200`}
+               >
+                  <h2
+                     className={`text-2xl font-bold mb-6 text-center ${
+                        isDarkMode ? "text-gray-200" : "text-gray-800"
+                     } transition-colors duration-200`}
+                  >
                      Update Member
                   </h2>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                      <div className="grid grid-cols-2 gap-4">
                         <div>
-                           <label className={`block mb-1 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-200`}>
+                           <label
+                              className={`block mb-1 font-semibold ${
+                                 isDarkMode ? "text-gray-300" : "text-gray-700"
+                              } transition-colors duration-200`}
+                           >
                               First Name (English)
                            </label>
                            <input
@@ -164,15 +182,19 @@ const UpdateMember = () => {
                               value={firstName}
                               onChange={(e) => setFirstName(e.target.value)}
                               className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                                 isDarkMode 
-                                    ? 'border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400' 
-                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                                 isDarkMode
+                                    ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                    : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                               }`}
                               placeholder="First name"
                            />
                         </div>
                         <div>
-                           <label className={`block mb-1 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-200`}>
+                           <label
+                              className={`block mb-1 font-semibold ${
+                                 isDarkMode ? "text-gray-300" : "text-gray-700"
+                              } transition-colors duration-200`}
+                           >
                               Last Name (English)
                            </label>
                            <input
@@ -180,9 +202,9 @@ const UpdateMember = () => {
                               value={lastName}
                               onChange={(e) => setLastName(e.target.value)}
                               className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                                 isDarkMode 
-                                    ? 'border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400' 
-                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                                 isDarkMode
+                                    ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                    : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                               }`}
                               placeholder="Last name"
                            />
@@ -191,7 +213,11 @@ const UpdateMember = () => {
 
                      <div className="grid grid-cols-2 gap-4">
                         <div>
-                           <label className={`block mb-1 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-200`}>
+                           <label
+                              className={`block mb-1 font-semibold ${
+                                 isDarkMode ? "text-gray-300" : "text-gray-700"
+                              } transition-colors duration-200`}
+                           >
                               First Name (Nepali)
                            </label>
                            <input
@@ -201,15 +227,19 @@ const UpdateMember = () => {
                                  setFirstNameNepali(e.target.value)
                               }
                               className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                                 isDarkMode 
-                                    ? 'border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400' 
-                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                                 isDarkMode
+                                    ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                    : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                               }`}
                               placeholder="राम"
                            />
                         </div>
                         <div>
-                           <label className={`block mb-1 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-200`}>
+                           <label
+                              className={`block mb-1 font-semibold ${
+                                 isDarkMode ? "text-gray-300" : "text-gray-700"
+                              } transition-colors duration-200`}
+                           >
                               Last Name (Nepali)
                            </label>
                            <input
@@ -219,9 +249,9 @@ const UpdateMember = () => {
                                  setLastNameNepali(e.target.value)
                               }
                               className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                                 isDarkMode 
-                                    ? 'border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400' 
-                                    : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                                 isDarkMode
+                                    ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                    : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                               }`}
                               placeholder="श्रेष्ठ"
                            />
@@ -229,7 +259,11 @@ const UpdateMember = () => {
                      </div>
 
                      <div>
-                        <label className={`block mb-1 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-200`}>
+                        <label
+                           className={`block mb-1 font-semibold ${
+                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                           } transition-colors duration-200`}
+                        >
                            Email
                         </label>
                         <input
@@ -237,16 +271,20 @@ const UpdateMember = () => {
                            value={email}
                            onChange={(e) => setEmail(e.target.value)}
                            className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode 
-                                 ? 'border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400' 
-                                 : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                 : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                            }`}
                            placeholder="ram.sharma@example.com"
                         />
                      </div>
 
                      <div>
-                        <label className={`block mb-1 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-200`}>
+                        <label
+                           className={`block mb-1 font-semibold ${
+                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                           } transition-colors duration-200`}
+                        >
                            Institution
                         </label>
                         <input
@@ -254,16 +292,20 @@ const UpdateMember = () => {
                            value={institution}
                            onChange={(e) => setInstitution(e.target.value)}
                            className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode 
-                                 ? 'border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400' 
-                                 : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                 : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                            }`}
                            placeholder="Pulchowk Campus, IOE"
                         />
                      </div>
 
                      <div>
-                        <label className={`block mb-1 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'} transition-colors duration-200`}>
+                        <label
+                           className={`block mb-1 font-semibold ${
+                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                           } transition-colors duration-200`}
+                        >
                            Post (Nepali)
                         </label>
                         <input
@@ -271,9 +313,9 @@ const UpdateMember = () => {
                            value={post}
                            onChange={(e) => setPost(e.target.value)}
                            className={`w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode 
-                                 ? 'border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400' 
-                                 : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                              isDarkMode
+                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                 : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                            }`}
                            placeholder="डाक्टर, प्रोफेसर"
                         />
@@ -284,9 +326,9 @@ const UpdateMember = () => {
                            type="button"
                            onClick={() => navigate(-1)}
                            className={`px-4 py-2 border rounded transition-colors duration-200 ${
-                              isDarkMode 
-                                 ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                                 : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                              isDarkMode
+                                 ? "border-gray-600 text-gray-300 hover:bg-gray-700"
+                                 : "border-gray-300 text-gray-700 hover:bg-gray-100"
                            }`}
                         >
                            Cancel

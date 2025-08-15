@@ -5,13 +5,11 @@
 ## Team Members
 
 -  Gaurav Dahal (079bct039)
--  Gyaneshar Sha (079bct040)
+-  Gyaneshar Sah (079bct040)
 -  Kapil Upreti (079bct042)
 -  Kushal Shrestha (079bct043)
 
-## Repository Information
-
-**Backend Repository:** The backend for this system is available at [meeting-minute-management-system](https://github.com/kushvlshresthv/meeting-minute-management-system)
+> **NOTE:** The backend for this system is available at [meeting-minute-management-system](https://github.com/kushvlshresthv/meeting-minute-management-system)
 
 ## Problem Statement
 
@@ -52,6 +50,8 @@ This project addresses the following institutional challenges:
 -  Update committee, member, and meeting details after creation
 -  Create meeting invitees through new or existing member profiles
 -  Same member profile can be used in multiple committees
+
+> **NOTE:** The frontend supports both dark mode and light mode for enhanced user experience
 
 ## Technology Stack
 

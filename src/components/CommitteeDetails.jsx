@@ -266,7 +266,7 @@ const CommitteeDetails = () => {
                toast.success(
                   `${newMemberData.mainBody?.firstName || "Member"} ${
                      newMemberData.mainBody?.lastName || ""
-                  } created successfully`
+                  } created successfully and added to the committee`
                );
             }
          } catch (error) {
@@ -463,8 +463,31 @@ const CommitteeDetails = () => {
       }
    };
 
-   // No need to filter the members list - we always want to show all committee members
-   const filteredMembers = members;
+   // Sort members by role priority (Coordinator first, then by COMMITTEE_ROLES order)
+   const filteredMembers = [...members].sort((a, b) => {
+      // Coordinator always comes first - highest priority
+      if (a.role === "Coordinator" && b.role !== "Coordinator") return -1;
+      if (b.role === "Coordinator" && a.role !== "Coordinator") return 1;
+
+      // If both are Coordinators, maintain their original order
+      if (a.role === "Coordinator" && b.role === "Coordinator") return 0;
+
+      // For all other roles, use the order from COMMITTEE_ROLES
+      const aIndex = COMMITTEE_ROLES.indexOf(a.role);
+      const bIndex = COMMITTEE_ROLES.indexOf(b.role);
+
+      // If both roles are in COMMITTEE_ROLES, sort by their index
+      if (aIndex !== -1 && bIndex !== -1) {
+         return aIndex - bIndex;
+      }
+
+      // If only one role is in COMMITTEE_ROLES, it comes first
+      if (aIndex !== -1 && bIndex === -1) return -1;
+      if (bIndex !== -1 && aIndex === -1) return 1;
+
+      // If neither role is in COMMITTEE_ROLES, sort alphabetically
+      return a.role.localeCompare(b.role);
+   });
 
    if (loading) {
       return (
@@ -868,7 +891,7 @@ const CommitteeDetails = () => {
                                        : "border-gray-200"
                                  }`}
                               >
-                                 {members.map((member, index) => (
+                                 {filteredMembers.map((member, index) => (
                                     <div
                                        key={member.memberId}
                                        className={`flex justify-between items-center p-2 rounded transition-colors duration-200 ${
@@ -896,7 +919,11 @@ const CommitteeDetails = () => {
                                              </span>
                                              <span
                                                 className={`text-xs ml-2 transition-colors duration-200 ${
-                                                   isDarkMode
+                                                   member.role === "Coordinator"
+                                                      ? isDarkMode
+                                                         ? "text-orange-400 font-semibold"
+                                                         : "text-orange-600 font-semibold"
+                                                      : isDarkMode
                                                       ? "text-gray-400"
                                                       : "text-gray-500"
                                                 }`}
@@ -914,6 +941,22 @@ const CommitteeDetails = () => {
                                              {member.institution}
                                           </div>
                                        </div>
+                                       <button
+                                          onClick={(e) => {
+                                             e.stopPropagation();
+                                             navigate(
+                                                `/member/${member.memberId}/edit`
+                                             );
+                                          }}
+                                          className={`p-1.5 rounded-lg transition-all duration-200 hover:scale-105 ml-2 ${
+                                             isDarkMode
+                                                ? "bg-blue-900/40 text-blue-300 hover:bg-blue-800/60 hover:text-blue-200"
+                                                : "bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-700"
+                                          }`}
+                                          title="Edit member"
+                                       >
+                                          <Edit size={14} />
+                                       </button>
                                     </div>
                                  ))}
                                  {members.length === 0 && (

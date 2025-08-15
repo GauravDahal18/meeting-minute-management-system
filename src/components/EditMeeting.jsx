@@ -119,6 +119,8 @@ const EditMeeting = () => {
                console.log("Full API response:", data);
                console.log("heldTime value:", data.mainBody?.heldTime);
                console.log("heldDate value:", data.mainBody?.heldDate);
+               console.log("Agendas from backend:", data.mainBody?.agendas);
+               console.log("Decisions from backend:", data.mainBody?.decisions);
 
                setMeeting({
                   meetingId: meetingId,
@@ -168,6 +170,10 @@ const EditMeeting = () => {
    const handleSave = async () => {
       try {
          setIsLoading(true);
+         console.log("Sending meeting data:", JSON.stringify(meeting, null, 2));
+         console.log("Agendas being sent:", meeting.agendas);
+         console.log("Decisions being sent:", meeting.decisions);
+
          const response = await fetch(`${BASE_URL}/api/updateMeetingDetails`, {
             method: "POST",
             credentials: "include",
@@ -195,30 +201,53 @@ const EditMeeting = () => {
    const handleAddAgenda = () => {
       setMeeting((prev) => ({
          ...prev,
-         agendas: [...prev.agendas, { agenda: "" }],
+         agendas: [...prev.agendas, { agenda: "" }], // New agenda without ID will be treated as new by backend
       }));
    };
 
    const handleRemoveAgenda = (index) => {
-      setMeeting((prev) => ({
-         ...prev,
-         agendas: prev.agendas.filter((_, i) => i !== index),
-      }));
+      console.log(`Removing agenda at index ${index}`);
+      console.log(`Total agendas before removal: ${meeting.agendas.length}`);
+      console.log(
+         `This is ${
+            meeting.agendas.length === 1
+               ? "the LAST agenda"
+               : "not the last agenda"
+         }`
+      );
+
+      setMeeting((prev) => {
+         const removedAgenda = prev.agendas[index];
+         console.log("Removing agenda:", removedAgenda);
+         const updatedAgendas = prev.agendas.filter((_, i) => i !== index);
+         console.log("Remaining agendas after removal:", updatedAgendas);
+         console.log(`Agendas count after removal: ${updatedAgendas.length}`);
+
+         return {
+            ...prev,
+            agendas: updatedAgendas,
+         };
+      });
    };
 
    const handleAgendaChange = (index, value) => {
-      setMeeting((prev) => ({
-         ...prev,
-         agendas: prev.agendas.map((agenda, i) =>
+      console.log(`Changing agenda at index ${index} to: "${value}"`);
+      setMeeting((prev) => {
+         const updatedAgendas = prev.agendas.map((agenda, i) =>
             i === index ? { ...agenda, agenda: value } : agenda
-         ),
-      }));
+         );
+         console.log("Updated agendas:", updatedAgendas);
+         return {
+            ...prev,
+            agendas: updatedAgendas,
+         };
+      });
    };
 
    const handleAddDecision = () => {
       setMeeting((prev) => ({
          ...prev,
-         decisions: [...prev.decisions, { decision: "" }],
+         decisions: [...prev.decisions, { decision: "" }], // New decision without ID will be treated as new by backend
       }));
    };
 
@@ -446,7 +475,11 @@ const EditMeeting = () => {
                         </h3>
                         <div className="space-y-3">
                            {meeting.agendas.map((agenda, index) => (
-                              <div key={index} className="flex gap-3">
+                              <div
+                                 key={`agenda-${index}-${agenda.id || "new"}`}
+                                 className="flex gap-3"
+                              >
+                                 {/* More robust key */}
                                  <input
                                     type="text"
                                     value={agenda.agenda}
@@ -464,6 +497,11 @@ const EditMeeting = () => {
                                     type="button"
                                     onClick={() => handleRemoveAgenda(index)}
                                     className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
+                                    title={`Delete agenda ${index + 1}${
+                                       meeting.agendas.length === 1
+                                          ? " (last agenda)"
+                                          : ""
+                                    }`}
                                  >
                                     <Trash2 size={14} />
                                  </button>

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { toast } from "react-toastify";
 import { useTheme } from "../context/ThemeContext.jsx";
 
@@ -12,6 +12,7 @@ const UpdateMember = () => {
 
    const [loading, setLoading] = useState(true);
    const [initial, setInitial] = useState(null);
+   const [showUpdateConfirmation, setShowUpdateConfirmation] = useState(false);
 
    const [firstName, setFirstName] = useState("");
    const [lastName, setLastName] = useState("");
@@ -112,6 +113,15 @@ const UpdateMember = () => {
          return;
       }
 
+      // Show confirmation dialog
+      setShowUpdateConfirmation(true);
+   };
+
+   const confirmUpdate = async () => {
+      if (!initial) return;
+
+      const payload = buildPayload();
+
       try {
          const response = await axios.post(
             "http://localhost:8080/api/updateMemberDetails",
@@ -123,7 +133,8 @@ const UpdateMember = () => {
          );
          if (response.status === 200 || response.status === 201) {
             toast.success("Member updated successfully");
-            navigate(`/member/${memberId}`);
+            setShowUpdateConfirmation(false);
+            navigate(-1);
          } else {
             toast.error("Failed to update member");
          }
@@ -132,7 +143,13 @@ const UpdateMember = () => {
          toast.error(
             error.response?.data?.message || "An error occurred during update"
          );
+      } finally {
+         setShowUpdateConfirmation(false);
       }
+   };
+
+   const cancelUpdate = () => {
+      setShowUpdateConfirmation(false);
    };
 
    if (loading) return null;
@@ -344,6 +361,63 @@ const UpdateMember = () => {
                </div>
             </div>
          </div>
+
+         {showUpdateConfirmation && (
+            <React.Fragment>
+               <div className="fixed inset-0 backdrop-blur-sm bg-black/20 z-40"></div>
+
+               <div className="fixed inset-0 flex items-center justify-center z-50">
+                  <div
+                     className={`border-2 border-orange-200 rounded-lg p-6 shadow-lg max-w-lg w-full transition-colors duration-200 ${
+                        isDarkMode
+                           ? "bg-gray-800 border-orange-800"
+                           : "bg-white border-orange-200"
+                     }`}
+                  >
+                     <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0">
+                           <AlertTriangle className="h-7 w-7 text-orange-600" />
+                        </div>
+                        <div className="flex-1">
+                           <h3
+                              className={`text-lg font-medium mb-2 transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-200" : "text-gray-900"
+                              }`}
+                           >
+                              Update Member
+                           </h3>
+                           <p
+                              className={`text-sm mb-4 transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-400" : "text-gray-600"
+                              }`}
+                           >
+                              This change will apply to all committees the
+                              member is part of.
+                           </p>
+                           <div className="flex gap-3">
+                              <button
+                                 onClick={cancelUpdate}
+                                 className={`px-4 py-2 rounded-lg text-sm transition-colors font-medium ${
+                                    isDarkMode
+                                       ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                                       : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                                 }`}
+                              >
+                                 Cancel
+                              </button>
+                              <button
+                                 onClick={confirmUpdate}
+                                 className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors font-medium"
+                              >
+                                 Update
+                              </button>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </React.Fragment>
+         )}
       </div>
    );
 };

@@ -178,7 +178,11 @@ const CreateCommitteeDialog = () => {
          toast.error("Please enter a committee name");
          return;
       }
-      // Description is optional
+
+      if (!committeeDescription.trim()) {
+         toast.error("Please enter a committee description/aim");
+         return;
+      }
 
       // Handle maximum number of meetings - optional field with default 0
       let maxMeetNum = 0; // Default value
@@ -827,7 +831,8 @@ const CreateCommitteeDialog = () => {
                                        : "text-gray-700"
                                  }`}
                               >
-                                 Description
+                                 Description/Aim{" "}
+                                 <span className="text-red-500">*</span>
                               </label>
                               <textarea
                                  className={`w-full border p-2 rounded min-h-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
@@ -835,11 +840,12 @@ const CreateCommitteeDialog = () => {
                                        ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                                        : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                                  }`}
-                                 placeholder="Committee Description"
+                                 placeholder="Description is for the minutes"
                                  value={committeeDescription}
                                  onChange={(e) =>
                                     setCommitteeDescription(e.target.value)
                                  }
+                                 required
                               />
                            </div>
 

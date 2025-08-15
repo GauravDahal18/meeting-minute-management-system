@@ -96,6 +96,17 @@ const UpdateCommittee = () => {
       e.preventDefault();
       if (!initial) return;
 
+      // Basic validations
+      if (!name.trim()) {
+         toast.error("Please enter a committee name");
+         return;
+      }
+
+      if (!description.trim()) {
+         toast.error("Please enter a committee description/aim");
+         return;
+      }
+
       const payload = buildPayload();
 
       // If only id present and nothing changed, warn and exit
@@ -172,7 +183,7 @@ const UpdateCommittee = () => {
                               isDarkMode ? "text-gray-300" : "text-gray-700"
                            }`}
                         >
-                           Name
+                           Name <span className="text-red-500">*</span>
                         </label>
                         <input
                            className={`w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
@@ -183,6 +194,7 @@ const UpdateCommittee = () => {
                            placeholder="Committee name"
                            value={name}
                            onChange={(e) => setName(e.target.value)}
+                           required
                         />
                      </div>
 
@@ -192,7 +204,8 @@ const UpdateCommittee = () => {
                               isDarkMode ? "text-gray-300" : "text-gray-700"
                            }`}
                         >
-                           Description
+                           Description/Aim{" "}
+                           <span className="text-red-500">*</span>
                         </label>
                         <textarea
                            className={`w-full border p-2 rounded min-h-[90px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
@@ -200,9 +213,10 @@ const UpdateCommittee = () => {
                                  ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                                  : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
                            }`}
-                           placeholder="Committee description"
+                           placeholder="Description is for the minutes"
                            value={description}
                            onChange={(e) => setDescription(e.target.value)}
+                           required
                         />
                      </div>
 

@@ -479,10 +479,15 @@ const CreateMeetingDialog = () => {
                                           }`}
                                        >
                                           <span
-                                             className={`transition-colors duration-200 ${
+                                             onClick={() =>
+                                                navigate(
+                                                   `/member/${invitee.id}`
+                                                )
+                                             }
+                                             className={`cursor-pointer hover:underline transition-colors duration-200 ${
                                                 isDarkMode
-                                                   ? "text-gray-300"
-                                                   : "text-gray-700"
+                                                   ? "text-gray-300 hover:text-gray-100"
+                                                   : "text-gray-700 hover:text-gray-900"
                                              }`}
                                           >
                                              {invitee.name}
@@ -565,10 +570,13 @@ const CreateMeetingDialog = () => {
                                                 className="flex justify-between items-center py-1 px-2"
                                              >
                                                 <span
-                                                   className={`font-normal text-sm transition-colors duration-200 ${
+                                                   onClick={() =>
+                                                      navigate(`/member/${id}`)
+                                                   }
+                                                   className={`font-normal text-sm cursor-pointer hover:underline transition-colors duration-200 ${
                                                       isDarkMode
-                                                         ? "text-gray-300"
-                                                         : "text-gray-700"
+                                                         ? "text-gray-300 hover:text-gray-100"
+                                                         : "text-gray-700 hover:text-gray-900"
                                                    }`}
                                                 >
                                                    {inviteeName}
@@ -615,10 +623,15 @@ const CreateMeetingDialog = () => {
                                        >
                                           <div className="flex justify-between items-center flex-1">
                                              <span
-                                                className={`font-normal text-sm transition-colors duration-200 ${
+                                                onClick={() =>
+                                                   navigate(
+                                                      `/member/${member.id}`
+                                                   )
+                                                }
+                                                className={`font-normal text-sm cursor-pointer hover:underline transition-colors duration-200 ${
                                                    isDarkMode
-                                                      ? "text-gray-400"
-                                                      : "text-gray-500"
+                                                      ? "text-gray-400 hover:text-gray-200"
+                                                      : "text-gray-500 hover:text-gray-700"
                                                 }`}
                                              >
                                                 {member.name}

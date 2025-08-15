@@ -81,6 +81,19 @@ const CommitteeDashboard = () => {
       setShowSortOptions(false);
    };
 
+   const sortCommitteesByStatus = () => {
+      setCommittees((prev) =>
+         [...prev].sort((a, b) => {
+            // ACTIVE comes first, then INACTIVE
+            if (a.status === "ACTIVE" && b.status !== "ACTIVE") return -1;
+            if (b.status === "ACTIVE" && a.status !== "ACTIVE") return 1;
+            // If both have same status, sort by name as secondary
+            return a.committeeName.localeCompare(b.committeeName);
+         })
+      );
+      setShowSortOptions(false);
+   };
+
    const toggleSortOptions = () => setShowSortOptions((s) => !s);
 
    const handleCreateCommittee = () => navigate("/home/createCommittee");
@@ -219,13 +232,23 @@ const CommitteeDashboard = () => {
                               </button>
                               <button
                                  onClick={sortCommitteesByDate}
-                                 className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm last:rounded-b-lg border-t ${
+                                 className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm border-t ${
                                     isDarkMode
                                        ? "hover:bg-gray-700 text-gray-200 border-gray-600"
                                        : "hover:bg-gray-50 text-gray-700 border-gray-100"
                                  }`}
                               >
                                  Sort by Created Date
+                              </button>
+                              <button
+                                 onClick={sortCommitteesByStatus}
+                                 className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm last:rounded-b-lg border-t ${
+                                    isDarkMode
+                                       ? "hover:bg-gray-700 text-gray-200 border-gray-600"
+                                       : "hover:bg-gray-50 text-gray-700 border-gray-100"
+                                 }`}
+                              >
+                                 Sort by Status
                               </button>
                            </div>
                         )}

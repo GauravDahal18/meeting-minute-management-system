@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { ArrowLeft, Plus, Trash2, Search, Edit, UserPlus } from "lucide-react";
 import { BASE_URL } from "../utils/constants.js";
 import { useTheme } from "../context/ThemeContext.jsx";
+import CreateInviteeDialog from './CreateInviteeDialog';
 
 const EditMeeting = () => {
    const { committeeId, meetingId } = useParams();
@@ -33,6 +34,7 @@ const EditMeeting = () => {
    const [addedInviteeIds, setAddedInviteeIds] = useState([]);
    const [searchTerm, setSearchTerm] = useState("");
    const [isSavingInvitees, setIsSavingInvitees] = useState(false);
+   const [isCreateInviteeDialogOpen, setIsCreateInviteeDialogOpen] = useState(false);
 
    // Helper function to format date to YYYY-MM-DD
    const formatDateForInput = (dateString) => {
@@ -183,47 +185,48 @@ const EditMeeting = () => {
       }
    }, [meetingId, committeeId, location.state, navigate]);
 
+   // Fetch members function (moved outside useEffect to be reusable)
+   const fetchMembers = async () => {
+      try {
+         // Fetch all members
+         const allMembersResponse = await fetch(
+            `${BASE_URL}/api/getAllMembers`,
+            {
+               method: "GET",
+               credentials: "include",
+            }
+         );
+         if (allMembersResponse.ok) {
+            const allMembersData = await allMembersResponse.json();
+            setAllMembers(allMembersData.mainBody || []);
+         }
+
+         // Fetch committee members
+         const committeeResponse = await fetch(
+            `${BASE_URL}/api/getCommitteeDetails?committeeId=${committeeId}`,
+            {
+               method: "GET",
+               credentials: "include",
+            }
+         );
+         if (committeeResponse.ok) {
+            const committeeData = await committeeResponse.json();
+            const members = committeeData?.mainBody?.members || [];
+            setAvailableMembers(
+               members.map((m) => ({
+                  id: m.id ?? m.memberId ?? m.userId ?? Math.random(),
+                  name: `${m.firstName} ${m.lastName}`,
+                  role: m.role || "",
+               }))
+            );
+         }
+      } catch (error) {
+         console.error("Failed to load members:", error);
+      }
+   };
+
    // Fetch members for invitee management
    useEffect(() => {
-      const fetchMembers = async () => {
-         try {
-            // Fetch all members
-            const allMembersResponse = await fetch(
-               `${BASE_URL}/api/getAllMembers`,
-               {
-                  method: "GET",
-                  credentials: "include",
-               }
-            );
-            if (allMembersResponse.ok) {
-               const allMembersData = await allMembersResponse.json();
-               setAllMembers(allMembersData.mainBody || []);
-            }
-
-            // Fetch committee members
-            const committeeResponse = await fetch(
-               `${BASE_URL}/api/getCommitteeDetails?committeeId=${committeeId}`,
-               {
-                  method: "GET",
-                  credentials: "include",
-               }
-            );
-            if (committeeResponse.ok) {
-               const committeeData = await committeeResponse.json();
-               const members = committeeData?.mainBody?.members || [];
-               setAvailableMembers(
-                  members.map((m) => ({
-                     id: m.id ?? m.memberId ?? m.userId ?? Math.random(),
-                     name: `${m.firstName} ${m.lastName}`,
-                     role: m.role || "",
-                  }))
-               );
-            }
-         } catch (error) {
-            console.error("Failed to load members:", error);
-         }
-      };
-
       fetchMembers();
    }, [committeeId]);
 
@@ -357,6 +360,13 @@ const EditMeeting = () => {
          console.error("Error removing invitee:", error);
          toast.error("An error occurred while removing invitee");
       }
+   };
+
+   const handleInviteeCreated = () => {
+      // Refresh member lists when a new invitee is created
+      fetchMembers();
+      setIsCreateInviteeDialogOpen(false);
+      toast.success("Invitee created successfully!");
    };
 
    const handleSave = async () => {
@@ -542,6 +552,14 @@ const EditMeeting = () => {
                               >
                                  Select Invitees ({filteredInvitees.length})
                               </h3>
+                              <button
+                                 type="button"
+                                 onClick={() => setIsCreateInviteeDialogOpen(true)}
+                                 className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                              >
+                                 <UserPlus className="h-3.5 w-3.5" />
+                                 Create Invitee
+                              </button>
                            </div>
 
                            {/* Search Box */}
@@ -1190,6 +1208,14 @@ const EditMeeting = () => {
                </div>
             </div>
          </div>
+
+         {/* Create Invitee Dialog */}
+         <CreateInviteeDialog
+            isOpen={isCreateInviteeDialogOpen}
+            onClose={() => setIsCreateInviteeDialogOpen(false)}
+            onInviteeCreated={handleInviteeCreated}
+            committeeId={committeeId}
+         />
       </div>
    );
 };

@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { X } from "lucide-react";
 import axios from "axios";
 import { useTheme } from "../context/ThemeContext.jsx";
+import { BASE_URL } from "../utils/constants.js";
 
 const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
    const { isDarkMode } = useTheme();
@@ -54,7 +55,7 @@ const CreateInviteeDialog = ({ isOpen, onClose, onInviteeCreated }) => {
 
       try {
          const response = await axios.post(
-            "http://localhost:8080/api/createInvitee",
+            `${BASE_URL}/api/createInvitee`,
             payload,
             {
                headers: { "Content-Type": "application/json" },

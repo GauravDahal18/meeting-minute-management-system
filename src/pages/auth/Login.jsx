@@ -8,8 +8,8 @@ import Header from "../../components/Header/Header.jsx";
 import DarkModeToggle from "../../components/DarkModeToggle.jsx";
 
 function Login() {
-   const [username, setUsername] = useState("username");
-   const [password, setPassword] = useState("password");
+   const [username, setUsername] = useState("");
+   const [password, setPassword] = useState("");
    const [loading, setLoading] = useState(false);
    const [formErrors, setFormErrors] = useState({ username: "", password: "" });
    const [error, setError] = useState("");

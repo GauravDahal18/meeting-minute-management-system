@@ -180,7 +180,7 @@ const UpdateCommittee = () => {
                      <div>
                         <label
                            className={`block mb-1 font-semibold transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                              isDarkMode ? "text-green-400" : "text-green-600"
                            }`}
                         >
                            Name <span className="text-red-500">*</span>
@@ -201,7 +201,7 @@ const UpdateCommittee = () => {
                      <div>
                         <label
                            className={`block mb-1 font-semibold transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                              isDarkMode ? "text-green-400" : "text-green-600"
                            }`}
                         >
                            Description/Aim{" "}

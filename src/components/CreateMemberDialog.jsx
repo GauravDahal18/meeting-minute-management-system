@@ -212,7 +212,7 @@ const CreateMemberDialog = ({
                      <div>
                         <label
                            className={`block mb-1 font-semibold transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                              isDarkMode ? "text-green-400" : "text-green-600"
                            }`}
                         >
                            First Name (Nepali) *
@@ -239,7 +239,7 @@ const CreateMemberDialog = ({
                      <div>
                         <label
                            className={`block mb-1 font-semibold transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-300" : "text-gray-700"
+                              isDarkMode ? "text-green-400" : "text-green-600"
                            }`}
                         >
                            Last Name (Nepali) *
@@ -268,7 +268,7 @@ const CreateMemberDialog = ({
                   <div className="mb-4">
                      <label
                         className={`block mb-1 font-semibold transition-colors duration-200 ${
-                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                           isDarkMode ? "text-green-400" : "text-green-600"
                         }`}
                      >
                         Post (Nepali) *
@@ -296,7 +296,7 @@ const CreateMemberDialog = ({
                   <div>
                      <label
                         className={`block mb-1 font-semibold transition-colors duration-200 ${
-                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                           isDarkMode ? "text-green-400" : "text-green-600"
                         }`}
                      >
                         Role *

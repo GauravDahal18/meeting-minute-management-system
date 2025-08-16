@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { X, Plus, ArrowLeft, Search, Trash2, UserPlus } from "lucide-react";
+import {
+   X,
+   Plus,
+   ArrowLeft,
+   Search,
+   Trash2,
+   UserPlus,
+   Edit,
+} from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -17,37 +25,15 @@ const CreateMeetingDialog = () => {
    const { isAuthenticated, isAuthLoading } = useAuth();
    const { isDarkMode } = useTheme();
 
-   // const [meetingDate, setMeetingDate] = useState(
-   //   format(new Date(), "yyyy-MM-dd")
-   // );
-   // const [heldTime, setHeldTime] = useState("14:30:00");
-   // const [meetingPlace, setMeetingPlace] = useState("");
-   // const [title, setTitle] = useState("");
-   // const [description, setDescription] = useState("");
-   // const [decisions, setDecisions] = useState([""]);
-   // const [agenda, setAgenda] = useState([""]);
-
    const [meetingDate, setMeetingDate] = useState(
       format(new Date(), "yyyy-MM-dd")
    );
    const [heldTime, setHeldTime] = useState("14:30:00");
-   const [meetingPlace, setMeetingPlace] = useState("Pulchowk Campus");
-   const [title, setTitle] = useState("Annual Planning Meeting");
-   const [description, setDescription] = useState(
-      "This meeting will discuss next year’s programs and budget plans."
-   );
-   const [decisions, setDecisions] = useState([
-      "आगामी आर्थिक वर्षको प्रस्तावित बजेट योजनालाई आवश्यक संशोधनसहित स्वीकृत गर्ने।",
-      "टिमको क्षमता र विविधता बढाउन नयाँ सदस्य भर्ती प्रक्रिया सुरु गर्ने।",
-      "अगामी बैठकअघि प्रस्तावित परियोजनाहरू मूल्यांकन र स्वीकृत गर्न समिति गठन गर्ने।",
-      "सञ्चालन दक्षता सुधार गर्न आधुनिक प्रविधि र उपकरणको प्रयोग सुरु गर्ने निर्णय गर्ने।",
-   ]);
-   const [agenda, setAgenda] = useState([
-      "आगामी वर्षको वार्षिक कार्ययोजना प्रस्तुत र छलफल गर्ने।",
-      "हालको बजेटको समीक्षा र नयाँ परियोजनाका लागि स्रोतको सुनिश्चितता गर्ने।",
-      "समुदायसँगको पहुँच सुधार गर्न नयाँ कार्यक्रम प्रस्ताव प्रस्तुत गर्ने।",
-      "गत वर्षको प्रदर्शन मूल्यांकन र सुधारका क्षेत्रहरू पहिचान गर्ने।",
-   ]);
+   const [meetingPlace, setMeetingPlace] = useState("");
+   const [title, setTitle] = useState("");
+   const [description, setDescription] = useState("");
+   const [decisions, setDecisions] = useState([""]);
+   const [agenda, setAgenda] = useState([""]);
 
    const [allCommittees, setAllCommittees] = useState([]);
    const [availableMembers, setAvailableMembers] = useState([]);
@@ -260,12 +246,7 @@ const CreateMeetingDialog = () => {
       console.log("Session storage:", Object.keys(sessionStorage));
       console.log("Local storage:", Object.keys(localStorage));
 
-      if (
-         !committeeId ||
-         !title.trim() ||
-         !description.trim() ||
-         !meetingPlace.trim()
-      ) {
+      if (!committeeId || !title.trim() || !meetingPlace.trim()) {
          toast.error("Please fill all required fields.");
          return;
       }
@@ -276,7 +257,7 @@ const CreateMeetingDialog = () => {
 
       const payload = {
          title: title.trim(),
-         description: description.trim(),
+         description: description.trim() || "",
          heldDate: meetingDate,
          heldTime,
          heldPlace: meetingPlace.trim(),
@@ -581,14 +562,34 @@ const CreateMeetingDialog = () => {
                                                 >
                                                    {inviteeName}
                                                 </span>
-                                                <button
-                                                   onClick={() =>
-                                                      removeInvitee(id)
-                                                   }
-                                                   className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
-                                                >
-                                                   <Trash2 size={14} />
-                                                </button>
+                                                <div className="flex items-center gap-1">
+                                                   <button
+                                                      onClick={() => {
+                                                         const confirmEdit =
+                                                            window.confirm(
+                                                               "Are you sure you want to edit this member? Your progress in this form will be lost."
+                                                            );
+                                                         if (confirmEdit) {
+                                                            navigate(
+                                                               `/member/${id}/edit`
+                                                            );
+                                                         }
+                                                      }}
+                                                      className="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
+                                                      title="Edit member"
+                                                   >
+                                                      <Edit size={14} />
+                                                   </button>
+                                                   <button
+                                                      onClick={() =>
+                                                         removeInvitee(id)
+                                                      }
+                                                      className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
+                                                      title="Remove from meeting"
+                                                   >
+                                                      <Trash2 size={14} />
+                                                   </button>
+                                                </div>
                                              </li>
                                           );
                                        })}
@@ -737,7 +738,7 @@ const CreateMeetingDialog = () => {
                                        : "text-gray-700"
                                  }`}
                               >
-                                 Description *
+                                 Description
                               </label>
                               <textarea
                                  placeholder="e.g., Review of project milestones and next steps"
@@ -750,7 +751,6 @@ const CreateMeetingDialog = () => {
                                        ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
                                        : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
                                  }`}
-                                 required
                                  rows={3}
                               />
                            </div>
@@ -760,8 +760,8 @@ const CreateMeetingDialog = () => {
                                  <label
                                     className={`block mb-2 font-semibold transition-colors duration-200 ${
                                        isDarkMode
-                                          ? "text-gray-300"
-                                          : "text-gray-700"
+                                          ? "text-green-400"
+                                          : "text-green-600"
                                     }`}
                                  >
                                     Date *
@@ -785,8 +785,8 @@ const CreateMeetingDialog = () => {
                                  <label
                                     className={`block mb-2 font-semibold transition-colors duration-200 ${
                                        isDarkMode
-                                          ? "text-gray-300"
-                                          : "text-gray-700"
+                                          ? "text-green-400"
+                                          : "text-green-600"
                                     }`}
                                  >
                                     Time *
@@ -811,8 +811,8 @@ const CreateMeetingDialog = () => {
                               <label
                                  className={`block mb-2 font-semibold transition-colors duration-200 ${
                                     isDarkMode
-                                       ? "text-gray-300"
-                                       : "text-gray-700"
+                                       ? "text-green-400"
+                                       : "text-green-600"
                                  }`}
                               >
                                  Meeting Place *
@@ -838,8 +838,8 @@ const CreateMeetingDialog = () => {
                               <label
                                  className={`block mb-2 font-semibold transition-colors duration-200 ${
                                     isDarkMode
-                                       ? "text-gray-300"
-                                       : "text-gray-700"
+                                       ? "text-green-400"
+                                       : "text-green-600"
                                  }`}
                               >
                                  Agenda Items
@@ -890,8 +890,8 @@ const CreateMeetingDialog = () => {
                               <label
                                  className={`block mb-2 font-semibold transition-colors duration-200 ${
                                     isDarkMode
-                                       ? "text-gray-300"
-                                       : "text-gray-700"
+                                       ? "text-green-400"
+                                       : "text-green-600"
                                  }`}
                               >
                                  Decisions Made

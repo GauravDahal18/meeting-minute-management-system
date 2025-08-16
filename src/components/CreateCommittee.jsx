@@ -13,19 +13,11 @@ const statusOptions = ["ACTIVE", "INACTIVE"];
 
 const CreateCommitteeDialog = () => {
    const { isDarkMode } = useTheme();
-   // const [committeeName, setCommitteeName] = useState("");
-   // const [committeeDescription, setCommitteeDescription] = useState("");
-   // const [status, setStatus] = useState(statusOptions[0]);
-   // const [maximumNumberOfMeetings, setMaximumNumberOfMeetings] = useState("");
+   const [committeeName, setCommitteeName] = useState("");
+   const [committeeDescription, setCommitteeDescription] = useState("");
+   const [status, setStatus] = useState(statusOptions[0]);
+   const [maximumNumberOfMeetings, setMaximumNumberOfMeetings] = useState("");
 
-   const [committeeName, setCommitteeName] = useState(
-      "Central Planning Committee"
-   );
-   const [committeeDescription, setCommitteeDescription] = useState(
-      "Responsible for overseeing strategic development and coordination of all subcommittees."
-   );
-   const [status, setStatus] = useState(statusOptions[0]); // e.g., "Active"
-   const [maximumNumberOfMeetings, setMaximumNumberOfMeetings] = useState("0");
    const [searchTerm, setSearchTerm] = useState("");
    const [committeeMembership, setCommitteeMembership] = useState([]);
    const [roleError, setRoleError] = useState("");
@@ -802,8 +794,8 @@ const CreateCommitteeDialog = () => {
                               <label
                                  className={`block mb-2 font-semibold transition-colors duration-200 ${
                                     isDarkMode
-                                       ? "text-gray-300"
-                                       : "text-gray-700"
+                                       ? "text-green-400"
+                                       : "text-green-600"
                                  }`}
                               >
                                  Committee Name{" "}
@@ -827,8 +819,8 @@ const CreateCommitteeDialog = () => {
                               <label
                                  className={`block mb-2 font-semibold transition-colors duration-200 ${
                                     isDarkMode
-                                       ? "text-gray-300"
-                                       : "text-gray-700"
+                                       ? "text-green-400"
+                                       : "text-green-600"
                                  }`}
                               >
                                  Description/Aim{" "}
@@ -853,8 +845,8 @@ const CreateCommitteeDialog = () => {
                               <label
                                  className={`block mb-2 font-semibold transition-colors duration-200 ${
                                     isDarkMode
-                                       ? "text-gray-300"
-                                       : "text-gray-700"
+                                       ? "text-green-400"
+                                       : "text-green-600"
                                  }`}
                               >
                                  Select Coordinator{" "}

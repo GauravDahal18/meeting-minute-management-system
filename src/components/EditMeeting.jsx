@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, Search, Edit, UserPlus } from "lucide-react";
 import { BASE_URL } from "../utils/constants.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
@@ -24,6 +24,15 @@ const EditMeeting = () => {
 
    const [isLoading, setIsLoading] = useState(false);
    const [committee, setCommittee] = useState(null);
+
+   // Invitee management state
+   const [allMembers, setAllMembers] = useState([]);
+   const [availableMembers, setAvailableMembers] = useState([]);
+   const [invitees, setInvitees] = useState([]);
+   const [existingInvitees, setExistingInvitees] = useState([]);
+   const [addedInviteeIds, setAddedInviteeIds] = useState([]);
+   const [searchTerm, setSearchTerm] = useState("");
+   const [isSavingInvitees, setIsSavingInvitees] = useState(false);
 
    // Helper function to format date to YYYY-MM-DD
    const formatDateForInput = (dateString) => {
@@ -133,6 +142,9 @@ const EditMeeting = () => {
                   agendas: data.mainBody?.agendas || [],
                });
 
+               // Set existing invitees from the API response
+               setExistingInvitees(data.mainBody?.invitees || []);
+
                console.log(data);
             } else {
                toast.error("Failed to fetch meeting details");
@@ -150,6 +162,7 @@ const EditMeeting = () => {
       // Get data from navigation state or fetch from API
       if (location.state?.meeting) {
          const meetingData = location.state.meeting;
+
          setMeeting({
             meetingId: meetingId,
             title: meetingData.title || "",
@@ -160,12 +173,191 @@ const EditMeeting = () => {
             decisions: meetingData.decisions || [],
             agendas: meetingData.agendas || [],
          });
+
+         // Set existing invitees from navigation state
+         setExistingInvitees(meetingData.invitees || []);
          setCommittee(location.state.committee);
       } else {
          // Fetch meeting data if not provided in state
          fetchMeetingData();
       }
    }, [meetingId, committeeId, location.state, navigate]);
+
+   // Fetch members for invitee management
+   useEffect(() => {
+      const fetchMembers = async () => {
+         try {
+            // Fetch all members
+            const allMembersResponse = await fetch(
+               `${BASE_URL}/api/getAllMembers`,
+               {
+                  method: "GET",
+                  credentials: "include",
+               }
+            );
+            if (allMembersResponse.ok) {
+               const allMembersData = await allMembersResponse.json();
+               setAllMembers(allMembersData.mainBody || []);
+            }
+
+            // Fetch committee members
+            const committeeResponse = await fetch(
+               `${BASE_URL}/api/getCommitteeDetails?committeeId=${committeeId}`,
+               {
+                  method: "GET",
+                  credentials: "include",
+               }
+            );
+            if (committeeResponse.ok) {
+               const committeeData = await committeeResponse.json();
+               const members = committeeData?.mainBody?.members || [];
+               setAvailableMembers(
+                  members.map((m) => ({
+                     id: m.id ?? m.memberId ?? m.userId ?? Math.random(),
+                     name: `${m.firstName} ${m.lastName}`,
+                     role: m.role || "",
+                  }))
+               );
+            }
+         } catch (error) {
+            console.error("Failed to load members:", error);
+         }
+      };
+
+      fetchMembers();
+   }, [committeeId]);
+
+   // Calculate invitees (all members minus committee members minus existing invitees)
+   useEffect(() => {
+      if (allMembers.length > 0 && availableMembers.length > 0) {
+         const committeeMemberIds = availableMembers.map((m) => m.id);
+         const existingInviteeIds = existingInvitees.map(
+            (m) => m.memberId || m.id || m.userId
+         );
+
+         const availableInvitees = allMembers
+            .filter((member) => {
+               const memberId = member.id ?? member.memberId ?? member.userId;
+               const isCommitteeMember = committeeMemberIds.includes(memberId);
+               const isExistingInvitee = existingInviteeIds.includes(memberId);
+
+               return !isCommitteeMember && !isExistingInvitee;
+            })
+            .map((m) => ({
+               id: m.id ?? m.memberId ?? m.userId ?? Math.random(),
+               name: `${m.firstName} ${m.lastName}`,
+               role: m.role || "",
+            }));
+
+         setInvitees(availableInvitees);
+      }
+   }, [allMembers, availableMembers, existingInvitees]);
+
+   // Filter invitees based on search term
+   const filteredInvitees = invitees.filter((member) =>
+      member.name.toLowerCase().startsWith(searchTerm.toLowerCase())
+   );
+
+   // Invitee management functions
+   const addInvitee = (id) => {
+      if (!addedInviteeIds.includes(id)) {
+         setAddedInviteeIds((prev) => [...prev, id]);
+      }
+      setSearchTerm("");
+   };
+
+   const removeInvitee = (id) => {
+      setAddedInviteeIds((prev) =>
+         prev.filter((inviteeId) => inviteeId !== id)
+      );
+   };
+
+   const handleSaveInvitees = async () => {
+      try {
+         setIsSavingInvitees(true);
+         const response = await fetch(
+            `${BASE_URL}/api/addInviteesToMeeting?committeeId=${committeeId}&meetingId=${meetingId}`,
+            {
+               method: "POST",
+               credentials: "include",
+               headers: {
+                  "Content-Type": "application/json",
+               },
+               body: JSON.stringify(addedInviteeIds),
+            }
+         );
+
+         if (response.ok) {
+            toast.success("Invitees added successfully");
+
+            // Move newly added invitees to existing invitees list
+            const newlyAddedInvitees = addedInviteeIds
+               .map((id) => {
+                  const invitee = invitees.find((m) => m.id === id);
+                  if (invitee) {
+                     return {
+                        memberId: invitee.id,
+                        firstName: invitee.name.split(" ")[0] || "",
+                        lastName:
+                           invitee.name.split(" ").slice(1).join(" ") || "",
+                        name: invitee.name,
+                        role: invitee.role || null,
+                     };
+                  }
+                  return null;
+               })
+               .filter(Boolean);
+
+            // Add to existing invitees
+            setExistingInvitees((prev) => [...prev, ...newlyAddedInvitees]);
+
+            // Clear added invitees after successful save
+            setAddedInviteeIds([]);
+         } else {
+            const errorData = await response.json().catch(() => null);
+            toast.error(errorData?.message || "Failed to add invitees");
+         }
+      } catch (error) {
+         console.error("Error adding invitees:", error);
+         toast.error("An error occurred while adding invitees");
+      } finally {
+         setIsSavingInvitees(false);
+      }
+   };
+
+   const handleRemoveExistingInvitee = async (invitee) => {
+      console.log("handleRemoveExistingInvitee called with:", invitee);
+      try {
+         const memberId = invitee.memberId || invitee.id || invitee.userId;
+         console.log("Removing invitee with memberId:", memberId);
+
+         const response = await fetch(
+            `${BASE_URL}/api/removeInviteeFromMeeting?committeeId=${committeeId}&meetingId=${meetingId}&memberId=${memberId}`,
+            {
+               method: "POST",
+               credentials: "include",
+            }
+         );
+
+         console.log("Remove invitee response:", response.status, response.ok);
+
+         if (response.ok) {
+            toast.success("Invitee removed successfully");
+            // Remove from existing invitees
+            setExistingInvitees((prev) =>
+               prev.filter(
+                  (inv) => (inv.memberId || inv.id || inv.userId) !== memberId
+               )
+            );
+         } else {
+            const errorData = await response.json().catch(() => null);
+            toast.error(errorData?.message || "Failed to remove invitee");
+         }
+      } catch (error) {
+         console.error("Error removing invitee:", error);
+         toast.error("An error occurred while removing invitee");
+      }
+   };
 
    const handleSave = async () => {
       try {
@@ -290,333 +482,712 @@ const EditMeeting = () => {
 
    return (
       <div
-         className={`min-h-screen transition-colors duration-200 ${
+         className={`min-h-screen flex flex-col transition-colors duration-200 ${
             isDarkMode ? "bg-gray-900" : "bg-gray-50"
          }`}
       >
-         <div className="max-w-4xl mx-auto py-8 px-4">
-            {/* Header */}
-            <div className="mb-8">
+         <div className="flex-1 p-6">
+            <div className="max-w-6xl mx-auto">
                <button
                   onClick={() => navigate(-1)}
-                  className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 transition-colors"
+                  className="flex items-center gap-2 mb-6 text-blue-600 hover:text-blue-800 transition-colors"
                >
-                  <ArrowLeft size={20} />
+                  <ArrowLeft size={16} />
                   Back
                </button>
-               <h1
-                  className={`text-3xl font-bold transition-colors duration-200 ${
-                     isDarkMode ? "text-gray-200" : "text-gray-900"
+
+               <div
+                  className={`rounded-xl shadow-lg border p-6 transition-colors duration-200 ${
+                     isDarkMode
+                        ? "bg-gray-800 border-gray-700"
+                        : "bg-white border-gray-200"
                   }`}
                >
-                  Edit Meeting
-               </h1>
-               {committee && (
-                  <p
-                     className={`mt-2 transition-colors duration-200 ${
-                        isDarkMode ? "text-gray-400" : "text-gray-600"
+                  <div
+                     className={`mb-6 border-b pb-4 transition-colors duration-200 ${
+                        isDarkMode ? "border-gray-700" : "border-gray-200"
                      }`}
                   >
-                     Committee: {committee.name}
-                  </p>
-               )}
-            </div>
-
-            {/* Form */}
-            <div
-               className={`rounded-lg shadow-sm p-6 transition-colors duration-200 ${
-                  isDarkMode ? "bg-gray-800" : "bg-white"
-               }`}
-            >
-               <form className="space-y-6">
-                  {/* Basic Information */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div>
-                        <label
-                           className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-300" : "text-gray-700"
-                           }`}
-                        >
-                           Meeting Title *
-                        </label>
-                        <input
-                           type="text"
-                           value={meeting.title}
-                           onChange={(e) =>
-                              setMeeting((prev) => ({
-                                 ...prev,
-                                 title: e.target.value,
-                              }))
-                           }
-                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode
-                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
-                                 : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
-                           }`}
-                           placeholder="Enter meeting title"
-                           required
-                        />
-                     </div>
-
-                     <div>
-                        <label
-                           className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-300" : "text-gray-700"
-                           }`}
-                        >
-                           Held Place
-                        </label>
-                        <input
-                           type="text"
-                           value={meeting.heldPlace}
-                           onChange={(e) =>
-                              setMeeting((prev) => ({
-                                 ...prev,
-                                 heldPlace: e.target.value,
-                              }))
-                           }
-                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode
-                                 ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
-                                 : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
-                           }`}
-                           placeholder="Meeting location"
-                        />
-                     </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div>
-                        <label
-                           className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-300" : "text-gray-700"
-                           }`}
-                        >
-                           Date
-                        </label>
-                        <input
-                           type="date"
-                           value={meeting.heldDate}
-                           onChange={(e) =>
-                              setMeeting((prev) => ({
-                                 ...prev,
-                                 heldDate: e.target.value,
-                              }))
-                           }
-                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode
-                                 ? "border-gray-600 bg-gray-700 text-gray-200"
-                                 : "border-gray-300 bg-white text-gray-900"
-                           }`}
-                        />
-                     </div>
-
-                     <div>
-                        <label
-                           className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-300" : "text-gray-700"
-                           }`}
-                        >
-                           Time
-                        </label>
-                        <input
-                           type="time"
-                           value={meeting.heldTime}
-                           onChange={(e) =>
-                              setMeeting((prev) => ({
-                                 ...prev,
-                                 heldTime: e.target.value,
-                              }))
-                           }
-                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                              isDarkMode
-                                 ? "border-gray-600 bg-gray-700 text-gray-200"
-                                 : "border-gray-300 bg-white text-gray-900"
-                           }`}
-                        />
-                     </div>
-                  </div>
-
-                  <div>
-                     <label
-                        className={`block text-sm font-medium mb-2 transition-colors duration-200 ${
-                           isDarkMode ? "text-gray-300" : "text-gray-700"
+                     <h2
+                        className={`text-2xl font-bold transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-200" : "text-gray-800"
                         }`}
                      >
-                        Description
-                     </label>
-                     <textarea
-                        rows={4}
-                        value={meeting.description}
-                        onChange={(e) =>
-                           setMeeting((prev) => ({
-                              ...prev,
-                              description: e.target.value,
-                           }))
-                        }
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                           isDarkMode
-                              ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
-                              : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+                        Edit Meeting
+                     </h2>
+                     <p
+                        className={`text-sm mt-1 transition-colors duration-200 ${
+                           isDarkMode ? "text-gray-400" : "text-gray-500"
                         }`}
-                        placeholder="Meeting description"
-                     />
+                     >
+                        Edit meeting details and manage invitees
+                     </p>
                   </div>
 
-                  {/* Agendas Section */}
-                  <div>
-                     <div className="mb-4">
-                        <h3
-                           className={`text-lg font-medium mb-2 transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-200" : "text-gray-900"
+                  <form className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:items-start">
+                     {/* Left: Invitees Selection */}
+                     <div className="lg:col-span-1 space-y-4">
+                        <div
+                           className={`border rounded-lg p-4 space-y-4 transition-colors duration-200 ${
+                              isDarkMode ? "border-gray-600" : "border-gray-400"
                            }`}
                         >
-                           Agendas
-                        </h3>
-                        <div className="space-y-3">
-                           {meeting.agendas.map((agenda, index) => (
+                           <div className="flex items-center justify-between gap-4">
+                              <h3
+                                 className={`text-lg font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-200"
+                                       : "text-gray-800"
+                                 }`}
+                              >
+                                 Select Invitees ({filteredInvitees.length})
+                              </h3>
+                           </div>
+
+                           {/* Search Box */}
+                           <div className="relative">
+                              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                 <Search
+                                    className={`h-5 w-5 transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-gray-500"
+                                          : "text-gray-400"
+                                    }`}
+                                 />
+                              </div>
+                              <input
+                                 type="text"
+                                 placeholder="Search invitees..."
+                                 value={searchTerm}
+                                 onChange={(e) => setSearchTerm(e.target.value)}
+                                 className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                       : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
+                                 }`}
+                              />
+                           </div>
+
+                           {/* Invitees List */}
+                           <div
+                              className={`border rounded-lg p-4 max-h-64 overflow-y-auto transition-colors duration-200 ${
+                                 isDarkMode
+                                    ? "border-gray-600"
+                                    : "border-gray-200"
+                              }`}
+                           >
+                              <ul className="space-y-3">
+                                 {filteredInvitees
+                                    .filter(
+                                       (invitee) =>
+                                          !addedInviteeIds.includes(invitee.id)
+                                    )
+                                    .map((invitee) => (
+                                       <li
+                                          key={invitee.id}
+                                          className={`flex justify-between items-center p-3 border rounded-lg transition-colors ${
+                                             isDarkMode
+                                                ? "border-gray-600 hover:bg-gray-700"
+                                                : "border-gray-200 hover:bg-gray-50"
+                                          }`}
+                                       >
+                                          <span
+                                             className={`transition-colors duration-200 ${
+                                                isDarkMode
+                                                   ? "text-gray-300"
+                                                   : "text-gray-700"
+                                             }`}
+                                          >
+                                             {invitee.name}
+                                          </span>
+                                          <button
+                                             type="button"
+                                             onClick={() =>
+                                                addInvitee(invitee.id)
+                                             }
+                                             className={`w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
+                                                isDarkMode
+                                                   ? "bg-blue-900/40 text-blue-300 hover:bg-blue-800/60"
+                                                   : "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                                             }`}
+                                          >
+                                             <span className="text-xl leading-none relative -top-[1px]">
+                                                +
+                                             </span>
+                                          </button>
+                                       </li>
+                                    ))}
+                                 {filteredInvitees.filter(
+                                    (invitee) =>
+                                       !addedInviteeIds.includes(invitee.id)
+                                 ).length === 0 && (
+                                    <li
+                                       className={`text-center py-4 transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-400"
+                                             : "text-gray-500"
+                                       }`}
+                                    >
+                                       {searchTerm
+                                          ? `No invitees found matching "${searchTerm}"`
+                                          : "All available members have been added"}
+                                    </li>
+                                 )}
+                              </ul>
+                           </div>
+
+                           {/* Added Invitees Display */}
+                           {addedInviteeIds.length > 0 && (
+                              <div className="mt-6">
+                                 <div className="flex justify-between items-center border-b pb-2 mb-3">
+                                    <h4
+                                       className={`text-md font-medium transition-colors duration-200 ${
+                                          isDarkMode
+                                             ? "text-gray-300"
+                                             : "text-gray-600"
+                                       }`}
+                                    >
+                                       Added Invitees
+                                    </h4>
+                                    <button
+                                       type="button"
+                                       onClick={handleSaveInvitees}
+                                       disabled={
+                                          isSavingInvitees ||
+                                          addedInviteeIds.length === 0
+                                       }
+                                       className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                                    >
+                                       {isSavingInvitees ? "Saving..." : "Save"}
+                                    </button>
+                                 </div>
+                                 <div
+                                    className={`border rounded-lg p-3 max-h-32 overflow-y-auto transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "border-gray-600"
+                                          : "border-gray-100"
+                                    }`}
+                                 >
+                                    <ul className="space-y-1">
+                                       {addedInviteeIds.map((id) => {
+                                          const invitee = invitees.find(
+                                             (m) => m.id === id
+                                          );
+                                          const inviteeName =
+                                             invitee?.name || "Unknown";
+                                          return (
+                                             <li
+                                                key={id}
+                                                className="flex justify-between items-center py-1 px-2"
+                                             >
+                                                <span
+                                                   className={`font-normal text-sm transition-colors duration-200 ${
+                                                      isDarkMode
+                                                         ? "text-gray-300"
+                                                         : "text-gray-700"
+                                                   }`}
+                                                >
+                                                   {inviteeName}
+                                                </span>
+                                                <div className="flex items-center gap-1">
+                                                   <button
+                                                      onClick={() => {
+                                                         const confirmEdit =
+                                                            window.confirm(
+                                                               "Are you sure you want to edit this member? Your progress in this form will be lost."
+                                                            );
+                                                         if (confirmEdit) {
+                                                            navigate(
+                                                               `/member/${id}/edit`
+                                                            );
+                                                         }
+                                                      }}
+                                                      className="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
+                                                      title="Edit member"
+                                                   >
+                                                      <Edit size={14} />
+                                                   </button>
+                                                   <button
+                                                      onClick={() =>
+                                                         removeInvitee(id)
+                                                      }
+                                                      className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
+                                                      title="Remove from meeting"
+                                                   >
+                                                      <Trash2 size={14} />
+                                                   </button>
+                                                </div>
+                                             </li>
+                                          );
+                                       })}
+                                    </ul>
+                                 </div>
+                              </div>
+                           )}
+
+                           {/* Current Invitees Display */}
+                           <div className="mt-6">
+                              <h4
+                                 className={`text-md font-medium border-b pb-2 mb-3 transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-300 border-gray-600"
+                                       : "text-gray-600 border-gray-200"
+                                 }`}
+                              >
+                                 Current Invitees ({existingInvitees.length})
+                              </h4>
                               <div
-                                 key={`agenda-${index}-${agenda.id || "new"}`}
-                                 className="flex gap-3"
-                              >
-                                 {/* More robust key */}
-                                 <input
-                                    type="text"
-                                    value={agenda.agenda}
-                                    onChange={(e) =>
-                                       handleAgendaChange(index, e.target.value)
-                                    }
-                                    className={`flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                                       isDarkMode
-                                          ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
-                                          : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
-                                    }`}
-                                    placeholder={`Agenda ${index + 1}`}
-                                 />
-                                 <button
-                                    type="button"
-                                    onClick={() => handleRemoveAgenda(index)}
-                                    className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
-                                    title={`Delete agenda ${index + 1}${
-                                       meeting.agendas.length === 1
-                                          ? " (last agenda)"
-                                          : ""
-                                    }`}
-                                 >
-                                    <Trash2 size={14} />
-                                 </button>
-                              </div>
-                           ))}
-                           {meeting.agendas.length === 0 && (
-                              <p
-                                 className={`text-center py-8 rounded-lg transition-colors duration-200 ${
+                                 className={`border rounded-lg p-3 max-h-48 overflow-y-auto transition-colors duration-200 ${
                                     isDarkMode
-                                       ? "text-gray-400 bg-gray-700"
-                                       : "text-gray-500 bg-gray-50"
+                                       ? "border-gray-600 bg-gray-700"
+                                       : "border-gray-100 bg-gray-50"
                                  }`}
                               >
-                                 No agendas added yet. Click "Add agenda item"
-                                 to get started.
-                              </p>
-                           )}
+                                 <ul className="space-y-1">
+                                    {existingInvitees.length > 0 ? (
+                                       existingInvitees.map(
+                                          (invitee, index) => (
+                                             <li
+                                                key={invitee.id || index}
+                                                className="flex justify-between items-center py-1 px-2"
+                                             >
+                                                <div className="flex justify-between items-center flex-1">
+                                                   <span
+                                                      className={`font-normal text-sm transition-colors duration-200 ${
+                                                         isDarkMode
+                                                            ? "text-gray-300"
+                                                            : "text-gray-600"
+                                                      }`}
+                                                   >
+                                                      {invitee.firstName &&
+                                                      invitee.lastName
+                                                         ? `${invitee.firstName} ${invitee.lastName}`
+                                                         : invitee.name ||
+                                                           "Unknown Invitee"}
+                                                   </span>
+                                                   {invitee.role && (
+                                                      <span
+                                                         className={`font-normal text-xs transition-colors duration-200 ${
+                                                            isDarkMode
+                                                               ? "text-gray-500"
+                                                               : "text-gray-400"
+                                                         }`}
+                                                      >
+                                                         {invitee.role}
+                                                      </span>
+                                                   )}
+                                                </div>
+                                                <button
+                                                   type="button"
+                                                   onClick={() =>
+                                                      handleRemoveExistingInvitee(
+                                                         invitee
+                                                      )
+                                                   }
+                                                   className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer ml-2"
+                                                   title="Remove from meeting"
+                                                >
+                                                   <Trash2 size={14} />
+                                                </button>
+                                             </li>
+                                          )
+                                       )
+                                    ) : (
+                                       <li
+                                          className={`text-center py-4 text-sm transition-colors duration-200 ${
+                                             isDarkMode
+                                                ? "text-gray-500"
+                                                : "text-gray-400"
+                                          }`}
+                                       >
+                                          No existing invitees found
+                                       </li>
+                                    )}
+                                 </ul>
+                              </div>
+                           </div>
+
+                           {/* Committee Members Display */}
+                           <div className="mt-6">
+                              <h4
+                                 className={`text-md font-medium border-b pb-2 mb-3 transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-300 border-gray-600"
+                                       : "text-gray-600 border-gray-200"
+                                 }`}
+                              >
+                                 Committee Members ({availableMembers.length})
+                              </h4>
+                              <div
+                                 className={`border rounded-lg p-3 transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700"
+                                       : "border-gray-100 bg-gray-50"
+                                 }`}
+                              >
+                                 <ul className="space-y-1">
+                                    {availableMembers.map((member) => (
+                                       <li
+                                          key={member.id}
+                                          className="flex justify-between items-center py-1 px-2"
+                                       >
+                                          <div className="flex justify-between items-center flex-1">
+                                             <span
+                                                className={`font-normal text-sm transition-colors duration-200 ${
+                                                   isDarkMode
+                                                      ? "text-gray-400"
+                                                      : "text-gray-500"
+                                                }`}
+                                             >
+                                                {member.name}
+                                             </span>
+                                             {member.role && (
+                                                <span
+                                                   className={`font-normal text-xs transition-colors duration-200 ${
+                                                      isDarkMode
+                                                         ? "text-gray-500"
+                                                         : "text-gray-400"
+                                                   }`}
+                                                >
+                                                   {member.role}
+                                                </span>
+                                             )}
+                                          </div>
+                                       </li>
+                                    ))}
+                                    {availableMembers.length === 0 && (
+                                       <li
+                                          className={`text-center py-4 text-sm transition-colors duration-200 ${
+                                             isDarkMode
+                                                ? "text-gray-500"
+                                                : "text-gray-400"
+                                          }`}
+                                       >
+                                          No committee members found
+                                       </li>
+                                    )}
+                                 </ul>
+                              </div>
+                           </div>
                         </div>
-                        <button
-                           type="button"
-                           onClick={handleAddAgenda}
-                           className="flex items-center gap-2 text-sm font-medium text-blue-500 hover:text-blue-700 transition-colors mt-2"
-                        >
-                           <Plus size={16} /> Add agenda item
-                        </button>
                      </div>
-                  </div>
 
-                  {/* Spacer between Agendas and Decisions */}
-                  <div className="my-6"></div>
-
-                  {/* Decisions Section */}
-                  <div>
-                     <div className="mb-4">
-                        <h3
-                           className={`text-lg font-medium mb-2 transition-colors duration-200 ${
-                              isDarkMode ? "text-gray-200" : "text-gray-900"
+                     {/* Right: Meeting Details */}
+                     <div className="lg:col-span-2">
+                        <div
+                           className={`border rounded-lg p-6 space-y-6 transition-colors duration-200 ${
+                              isDarkMode ? "border-gray-600" : "border-gray-400"
                            }`}
                         >
-                           Decisions
-                        </h3>
-                        <div className="space-y-3">
-                           {meeting.decisions.map((decision, index) => (
-                              <div key={index} className="flex gap-3">
-                                 <input
-                                    type="text"
-                                    value={decision.decision}
-                                    onChange={(e) =>
-                                       handleDecisionChange(
-                                          index,
-                                          e.target.value
-                                       )
-                                    }
-                                    className={`flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
-                                       isDarkMode
-                                          ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
-                                          : "border-gray-300 bg-white text-gray-900 placeholder-gray-500"
-                                    }`}
-                                    placeholder={`Decision ${index + 1}`}
-                                 />
-                                 <button
-                                    type="button"
-                                    onClick={() => handleRemoveDecision(index)}
-                                    className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-700 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
-                                 >
-                                    <Trash2 size={14} />
-                                 </button>
-                              </div>
-                           ))}
-                           {meeting.decisions.length === 0 && (
-                              <p
-                                 className={`text-center py-8 rounded-lg transition-colors duration-200 ${
+                           <div>
+                              <label
+                                 className={`block mb-2 font-semibold transition-colors duration-200 ${
                                     isDarkMode
-                                       ? "text-gray-400 bg-gray-700"
-                                       : "text-gray-500 bg-gray-50"
+                                       ? "text-gray-300"
+                                       : "text-gray-700"
                                  }`}
                               >
-                                 No decisions added yet. Click "Add decision" to
-                                 get started.
-                              </p>
-                           )}
-                        </div>
-                        <button
-                           type="button"
-                           onClick={handleAddDecision}
-                           className="flex items-center gap-2 text-sm font-medium text-blue-500 hover:text-blue-700 transition-colors mt-2"
-                        >
-                           <Plus size={16} /> Add decision
-                        </button>
-                     </div>
-                  </div>
+                                 Committee
+                              </label>
+                              <select
+                                 className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700 text-gray-200"
+                                       : "border-gray-300 bg-white text-gray-700"
+                                 }`}
+                                 disabled
+                              >
+                                 <option>
+                                    {committee?.name || "My Own Committee"}
+                                 </option>
+                              </select>
+                           </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-4 justify-end pt-8">
-                     <button
-                        type="button"
-                        onClick={() => navigate(`/committee/${committeeId}`)}
-                        className={`px-6 py-3 rounded-lg transition-colors ${
-                           isDarkMode
-                              ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                              : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                        }`}
-                     >
-                        Cancel
-                     </button>
-                     <button
-                        type="button"
-                        onClick={handleSave}
-                        disabled={isLoading || !meeting.title.trim()}
-                        className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                     >
-                        {isLoading ? "Updating..." : "Update Meeting"}
-                     </button>
-                  </div>
-               </form>
+                           <div>
+                              <label
+                                 className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-300"
+                                       : "text-gray-700"
+                                 }`}
+                              >
+                                 Meeting Title *
+                              </label>
+                              <input
+                                 type="text"
+                                 placeholder="e.g., Monthly Progress Meeting"
+                                 value={meeting.title}
+                                 onChange={(e) =>
+                                    setMeeting((prev) => ({
+                                       ...prev,
+                                       title: e.target.value,
+                                    }))
+                                 }
+                                 className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                       : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
+                                 }`}
+                                 required
+                              />
+                           </div>
+
+                           <div>
+                              <label
+                                 className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-gray-300"
+                                       : "text-gray-700"
+                                 }`}
+                              >
+                                 Description
+                              </label>
+                              <textarea
+                                 placeholder="e.g., Review of project milestones and next steps"
+                                 value={meeting.description}
+                                 onChange={(e) =>
+                                    setMeeting((prev) => ({
+                                       ...prev,
+                                       description: e.target.value,
+                                    }))
+                                 }
+                                 className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                       : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
+                                 }`}
+                                 rows={3}
+                              />
+                           </div>
+
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div>
+                                 <label
+                                    className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-green-400"
+                                          : "text-green-600"
+                                    }`}
+                                 >
+                                    Date *
+                                 </label>
+                                 <input
+                                    type="date"
+                                    required
+                                    value={meeting.heldDate}
+                                    onChange={(e) =>
+                                       setMeeting((prev) => ({
+                                          ...prev,
+                                          heldDate: e.target.value,
+                                       }))
+                                    }
+                                    className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "border-gray-600 bg-gray-700 text-gray-200"
+                                          : "border-gray-300 bg-white text-gray-700"
+                                    }`}
+                                 />
+                              </div>
+
+                              <div>
+                                 <label
+                                    className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "text-green-400"
+                                          : "text-green-600"
+                                    }`}
+                                 >
+                                    Time *
+                                 </label>
+                                 <input
+                                    type="time"
+                                    value={meeting.heldTime}
+                                    onChange={(e) =>
+                                       setMeeting((prev) => ({
+                                          ...prev,
+                                          heldTime: e.target.value,
+                                       }))
+                                    }
+                                    className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                       isDarkMode
+                                          ? "border-gray-600 bg-gray-700 text-gray-200"
+                                          : "border-gray-300 bg-white text-gray-700"
+                                    }`}
+                                    required
+                                 />
+                              </div>
+                           </div>
+
+                           <div>
+                              <label
+                                 className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-green-400"
+                                       : "text-green-600"
+                                 }`}
+                              >
+                                 Meeting Place *
+                              </label>
+                              <input
+                                 type="text"
+                                 placeholder="e.g., Conference Room B"
+                                 value={meeting.heldPlace}
+                                 onChange={(e) =>
+                                    setMeeting((prev) => ({
+                                       ...prev,
+                                       heldPlace: e.target.value,
+                                    }))
+                                 }
+                                 className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                       : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
+                                 }`}
+                                 required
+                              />
+                           </div>
+
+                           {/* Agenda Section */}
+                           <div>
+                              <label
+                                 className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-green-400"
+                                       : "text-green-600"
+                                 }`}
+                              >
+                                 Agenda Items
+                              </label>
+                              <div className="space-y-3">
+                                 {meeting.agendas.map((agenda, idx) => (
+                                    <div key={idx} className="flex gap-2">
+                                       <textarea
+                                          placeholder={`Agenda item ${idx + 1}`}
+                                          value={agenda.agenda}
+                                          onChange={(e) =>
+                                             handleAgendaChange(
+                                                idx,
+                                                e.target.value
+                                             )
+                                          }
+                                          className={`flex-1 rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                             isDarkMode
+                                                ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                                : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
+                                          }`}
+                                          rows={2}
+                                       />
+                                       {meeting.agendas.length > 1 && (
+                                          <button
+                                             type="button"
+                                             onClick={() =>
+                                                handleRemoveAgenda(idx)
+                                             }
+                                             className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
+                                          >
+                                             <Trash2 size={14} />
+                                          </button>
+                                       )}
+                                    </div>
+                                 ))}
+                              </div>
+                              <button
+                                 type="button"
+                                 onClick={handleAddAgenda}
+                                 className={`flex items-center gap-2 text-sm font-medium transition-colors mt-2 ${
+                                    isDarkMode
+                                       ? "text-blue-400 hover:text-blue-300"
+                                       : "text-blue-600 hover:text-blue-800"
+                                 }`}
+                              >
+                                 <Plus size={16} /> Add agenda item
+                              </button>
+                           </div>
+
+                           {/* Decisions Section */}
+                           <div>
+                              <label
+                                 className={`block mb-2 font-semibold transition-colors duration-200 ${
+                                    isDarkMode
+                                       ? "text-green-400"
+                                       : "text-green-600"
+                                 }`}
+                              >
+                                 Decisions Made
+                              </label>
+                              <div className="space-y-3">
+                                 {meeting.decisions.map((decision, idx) => (
+                                    <div key={idx} className="flex gap-2">
+                                       <textarea
+                                          placeholder={`Decision ${idx + 1}`}
+                                          value={decision.decision}
+                                          onChange={(e) =>
+                                             handleDecisionChange(
+                                                idx,
+                                                e.target.value
+                                             )
+                                          }
+                                          className={`flex-1 rounded-lg border px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 ${
+                                             isDarkMode
+                                                ? "border-gray-600 bg-gray-700 text-gray-200 placeholder-gray-400"
+                                                : "border-gray-300 bg-white text-gray-700 placeholder-gray-500"
+                                          }`}
+                                          rows={2}
+                                       />
+                                       {meeting.decisions.length > 1 && (
+                                          <button
+                                             type="button"
+                                             onClick={() =>
+                                                handleRemoveDecision(idx)
+                                             }
+                                             className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
+                                          >
+                                             <Trash2 size={14} />
+                                          </button>
+                                       )}
+                                    </div>
+                                 ))}
+                              </div>
+                              <button
+                                 type="button"
+                                 onClick={handleAddDecision}
+                                 className={`flex items-center gap-2 text-sm font-medium transition-colors mt-2 ${
+                                    isDarkMode
+                                       ? "text-blue-400 hover:text-blue-300"
+                                       : "text-blue-600 hover:text-blue-800"
+                                 }`}
+                              >
+                                 <Plus size={16} /> Add decision
+                              </button>
+                           </div>
+
+                           <div className="flex justify-end gap-3 pt-6">
+                              <button
+                                 type="button"
+                                 onClick={() =>
+                                    navigate(`/committee/${committeeId}`)
+                                 }
+                                 className={`rounded-lg px-4 py-2 text-sm border transition-colors ${
+                                    isDarkMode
+                                       ? "border-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-600"
+                                       : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                                 }`}
+                              >
+                                 Cancel
+                              </button>
+                              <button
+                                 type="button"
+                                 onClick={handleSave}
+                                 disabled={isLoading || !meeting.title.trim()}
+                                 className="rounded-lg px-4 py-2 text-sm text-white transition-colors bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                 {isLoading ? "Updating..." : "Update Meeting"}
+                              </button>
+                           </div>
+                        </div>
+                     </div>
+                  </form>
+               </div>
             </div>
          </div>
       </div>

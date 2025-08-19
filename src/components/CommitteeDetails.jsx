@@ -29,6 +29,9 @@ const CommitteeDetails = () => {
    const [searchLoading, setSearchLoading] = useState(false);
    const [showSearchResults, setShowSearchResults] = useState(false);
    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+   const [showDeleteMemberConfirmation, setShowDeleteMemberConfirmation] =
+      useState(false);
+   const [memberToDelete, setMemberToDelete] = useState(null);
    const [isCreateMemberDialogOpen, setIsCreateMemberDialogOpen] =
       useState(false);
    const [customRoles, setCustomRoles] = useState({});
@@ -275,8 +278,58 @@ const CommitteeDetails = () => {
       })();
    };
 
-   const handleDeleteMember = (memberId) => {
-      console.log("Delete member:", memberId);
+   const handleDeleteMember = (member) => {
+      setMemberToDelete(member);
+      setShowDeleteMemberConfirmation(true);
+   };
+
+   const confirmDeleteMember = async () => {
+      if (!memberToDelete) return;
+
+      try {
+         const response = await fetch(
+            `${BASE_URL}/api/removeCommitteeMembership?committeeId=${committeeId}&memberId=${memberToDelete.memberId}`,
+            {
+               method: "DELETE",
+               credentials: "include",
+            }
+         );
+
+         if (response.ok) {
+            toast.success(
+               `${memberToDelete.firstName} ${memberToDelete.lastName} successfully removed from ${committee.name}`
+            );
+
+            // Refresh committee details
+            const committeeResponse = await fetch(
+               `${BASE_URL}/api/getCommitteeDetails?committeeId=${committeeId}`,
+               {
+                  method: "GET",
+                  credentials: "include",
+               }
+            );
+
+            if (committeeResponse.ok) {
+               const data = await committeeResponse.json();
+               setCommittee(data.mainBody);
+               setMembers(data.mainBody.members || []);
+            }
+         } else {
+            const errorData = await response.json().catch(() => null);
+            toast.error(errorData?.message || "Failed to remove member");
+         }
+      } catch (error) {
+         console.error("Error removing member:", error);
+         toast.error("An error occurred while removing member");
+      }
+
+      setShowDeleteMemberConfirmation(false);
+      setMemberToDelete(null);
+   };
+
+   const cancelDeleteMember = () => {
+      setShowDeleteMemberConfirmation(false);
+      setMemberToDelete(null);
    };
 
    const handleDeleteCommittee = async () => {
@@ -940,22 +993,40 @@ const CommitteeDetails = () => {
                                              {member.institution}
                                           </div>
                                        </div>
-                                       <button
-                                          onClick={(e) => {
-                                             e.stopPropagation();
-                                             navigate(
-                                                `/member/${member.memberId}/edit`
-                                             );
-                                          }}
-                                          className={`p-1.5 rounded-lg transition-all duration-200 hover:scale-105 ml-2 ${
-                                             isDarkMode
-                                                ? "bg-blue-900/40 text-blue-300 hover:bg-blue-800/60 hover:text-blue-200"
-                                                : "bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-700"
-                                          }`}
-                                          title="Edit member"
-                                       >
-                                          <Edit size={14} />
-                                       </button>
+                                       <div className="flex items-center gap-1">
+                                          <button
+                                             onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(
+                                                   `/member/${member.memberId}/edit`
+                                                );
+                                             }}
+                                             className={`p-1.5 rounded-lg transition-all duration-200 hover:scale-105 ${
+                                                isDarkMode
+                                                   ? "bg-blue-900/40 text-blue-300 hover:bg-blue-800/60 hover:text-blue-200"
+                                                   : "bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-700"
+                                             }`}
+                                             title="Edit member"
+                                          >
+                                             <Edit size={14} />
+                                          </button>
+                                          {member.role !== "Coordinator" && (
+                                             <button
+                                                onClick={(e) => {
+                                                   e.stopPropagation();
+                                                   handleDeleteMember(member);
+                                                }}
+                                                className={`p-1.5 rounded-lg transition-all duration-200 hover:scale-105 ${
+                                                   isDarkMode
+                                                      ? "bg-red-900/40 text-red-300 hover:bg-red-800/60 hover:text-red-200"
+                                                      : "bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700"
+                                                }`}
+                                                title="Remove from committee"
+                                             >
+                                                <Trash2 size={14} />
+                                             </button>
+                                          )}
+                                       </div>
                                     </div>
                                  ))}
                                  {members.length === 0 && (
@@ -1182,6 +1253,67 @@ const CommitteeDetails = () => {
                                  className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors font-medium"
                               >
                                  Delete
+                              </button>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </React.Fragment>
+         )}
+
+         {showDeleteMemberConfirmation && memberToDelete && (
+            <React.Fragment>
+               <div className="fixed inset-0 backdrop-blur-sm bg-black/20 z-40"></div>
+
+               <div className="fixed inset-0 flex items-center justify-center z-50">
+                  <div
+                     className={`border-2 border-red-200 rounded-lg p-6 shadow-lg max-w-lg w-full transition-colors duration-200 ${
+                        isDarkMode
+                           ? "bg-gray-800 border-red-800"
+                           : "bg-white border-red-200"
+                     }`}
+                  >
+                     <div className="flex items-start gap-4">
+                        <div className="flex-shrink-0">
+                           <Trash2 className="h-7 w-7 text-red-600" />
+                        </div>
+                        <div className="flex-1">
+                           <h3
+                              className={`text-lg font-medium mb-2 transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-200" : "text-gray-900"
+                              }`}
+                           >
+                              Remove Member
+                           </h3>
+                           <p
+                              className={`text-sm mb-4 transition-colors duration-200 ${
+                                 isDarkMode ? "text-gray-400" : "text-gray-600"
+                              }`}
+                           >
+                              Are you sure you want to remove{" "}
+                              <strong>
+                                 {memberToDelete.firstName}{" "}
+                                 {memberToDelete.lastName}
+                              </strong>{" "}
+                              from <strong>{committee?.name}</strong>?
+                           </p>
+                           <div className="flex gap-3">
+                              <button
+                                 onClick={cancelDeleteMember}
+                                 className={`px-4 py-2 rounded-lg text-sm transition-colors font-medium ${
+                                    isDarkMode
+                                       ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                                       : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                                 }`}
+                              >
+                                 Cancel
+                              </button>
+                              <button
+                                 onClick={confirmDeleteMember}
+                                 className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors font-medium"
+                              >
+                                 Remove
                               </button>
                            </div>
                         </div>

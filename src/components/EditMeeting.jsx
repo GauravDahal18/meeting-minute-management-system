@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { ArrowLeft, Plus, Trash2, Search, Edit, UserPlus } from "lucide-react";
 import { BASE_URL } from "../utils/constants.js";
 import { useTheme } from "../context/ThemeContext.jsx";
-import CreateInviteeDialog from './CreateInviteeDialog';
+import CreateInviteeDialog from "./CreateInviteeDialog";
 
 const EditMeeting = () => {
    const { committeeId, meetingId } = useParams();
@@ -34,7 +34,8 @@ const EditMeeting = () => {
    const [addedInviteeIds, setAddedInviteeIds] = useState([]);
    const [searchTerm, setSearchTerm] = useState("");
    const [isSavingInvitees, setIsSavingInvitees] = useState(false);
-   const [isCreateInviteeDialogOpen, setIsCreateInviteeDialogOpen] = useState(false);
+   const [isCreateInviteeDialogOpen, setIsCreateInviteeDialogOpen] =
+      useState(false);
 
    // Helper function to format date to YYYY-MM-DD
    const formatDateForInput = (dateString) => {
@@ -554,7 +555,9 @@ const EditMeeting = () => {
                               </h3>
                               <button
                                  type="button"
-                                 onClick={() => setIsCreateInviteeDialogOpen(true)}
+                                 onClick={() =>
+                                    setIsCreateInviteeDialogOpen(true)
+                                 }
                                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
                               >
                                  <UserPlus className="h-3.5 w-3.5" />
@@ -795,18 +798,42 @@ const EditMeeting = () => {
                                                       </span>
                                                    )}
                                                 </div>
-                                                <button
-                                                   type="button"
-                                                   onClick={() =>
-                                                      handleRemoveExistingInvitee(
-                                                         invitee
-                                                      )
-                                                   }
-                                                   className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer ml-2"
-                                                   title="Remove from meeting"
-                                                >
-                                                   <Trash2 size={14} />
-                                                </button>
+                                                <div className="flex items-center gap-1">
+                                                   <button
+                                                      type="button"
+                                                      onClick={() => {
+                                                         const confirmEdit =
+                                                            window.confirm(
+                                                               "Are you sure you want to edit this member? Your progress in this form will be lost."
+                                                            );
+                                                         if (confirmEdit) {
+                                                            navigate(
+                                                               `/member/${
+                                                                  invitee.id ||
+                                                                  invitee.memberId ||
+                                                                  invitee.userId
+                                                               }/edit`
+                                                            );
+                                                         }
+                                                      }}
+                                                      className="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors cursor-pointer"
+                                                      title="Edit member"
+                                                   >
+                                                      <Edit size={14} />
+                                                   </button>
+                                                   <button
+                                                      type="button"
+                                                      onClick={() =>
+                                                         handleRemoveExistingInvitee(
+                                                            invitee
+                                                         )
+                                                      }
+                                                      className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors cursor-pointer"
+                                                      title="Remove from meeting"
+                                                   >
+                                                      <Trash2 size={14} />
+                                                   </button>
+                                                </div>
                                              </li>
                                           )
                                        )

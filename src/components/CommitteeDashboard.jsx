@@ -1,14 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Plus, ArrowUpDown, Users, Calendar, Building2 } from "lucide-react";
+import {
+   Plus,
+   ArrowUpDown,
+   Users,
+   Calendar,
+   Building2,
+   UserPlus,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { BASE_URL } from "../utils/constants.js";
 import { useTheme } from "../context/ThemeContext.jsx";
+import CreateInviteeDialog from "./CreateInviteeDialog";
 
 const CommitteeDashboard = () => {
    const [committees, setCommittees] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
    const [showSortOptions, setShowSortOptions] = useState(false);
+   const [isCreateInviteeDialogOpen, setIsCreateInviteeDialogOpen] =
+      useState(false);
    const { isDarkMode } = useTheme();
 
    const navigate = useNavigate();
@@ -99,6 +110,43 @@ const CommitteeDashboard = () => {
    const handleCreateCommittee = () => navigate("/home/createCommittee");
    const handleCommitteeClick = (committee) =>
       navigate(`/committee/${committee.id}`);
+
+   const handleInviteeCreated = (newInvitee) => {
+      // Refresh the committees list to reflect any potential updates
+      const fetchCommittees = async () => {
+         try {
+            const data = await getCommittees();
+            const transformedData = data.map((committee) => ({
+               id: committee.id,
+               committeeName: committee.name,
+               committeeDescription: committee.description,
+               maxNoOfMeetings: committee.maxNoOfMeetings || 0,
+               numberOfMeetings: committee.numberOfMeetings || 0,
+               numberOfMembers: committee.numberOfMembers || 0,
+               status: committee.status,
+               createdDate: new Date(
+                  committee.createdDate[0],
+                  committee.createdDate[1] - 1,
+                  committee.createdDate[2]
+               ),
+            }));
+            setCommittees(transformedData);
+         } catch (error) {
+            console.error("Failed to reload committees:", error);
+         }
+      };
+
+      fetchCommittees();
+      setIsCreateInviteeDialogOpen(false);
+
+      if (newInvitee && newInvitee.mainBody) {
+         const firstName = newInvitee.mainBody.firstName;
+         const lastName = newInvitee.mainBody.lastName;
+         toast.success(`${firstName} ${lastName} created successfully!`);
+      } else {
+         toast.success("Invitee created successfully!");
+      }
+   };
 
    if (loading) {
       return (
@@ -201,58 +249,12 @@ const CommitteeDashboard = () => {
                      >
                         <Plus size={16} /> Create Committee
                      </button>
-                     <div className="relative">
-                        <button
-                           onClick={toggleSortOptions}
-                           className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors font-medium ${
-                              isDarkMode
-                                 ? "border-gray-600 bg-gray-800 hover:bg-gray-700 text-gray-200"
-                                 : "border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
-                           }`}
-                        >
-                           <ArrowUpDown size={16} /> Sort
-                        </button>
-                        {showSortOptions && (
-                           <div
-                              className={`absolute right-0 mt-1 w-56 border rounded-lg shadow-lg z-10 transition-colors duration-200 ${
-                                 isDarkMode
-                                    ? "bg-gray-800 border-gray-700"
-                                    : "bg-white border-gray-200"
-                              }`}
-                           >
-                              <button
-                                 onClick={sortCommitteesByName}
-                                 className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm first:rounded-t-lg ${
-                                    isDarkMode
-                                       ? "hover:bg-gray-700 text-gray-200"
-                                       : "hover:bg-gray-50 text-gray-700"
-                                 }`}
-                              >
-                                 Sort by Name (A-Z)
-                              </button>
-                              <button
-                                 onClick={sortCommitteesByDate}
-                                 className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm border-t ${
-                                    isDarkMode
-                                       ? "hover:bg-gray-700 text-gray-200 border-gray-600"
-                                       : "hover:bg-gray-50 text-gray-700 border-gray-100"
-                                 }`}
-                              >
-                                 Sort by Created Date
-                              </button>
-                              <button
-                                 onClick={sortCommitteesByStatus}
-                                 className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm last:rounded-b-lg border-t ${
-                                    isDarkMode
-                                       ? "hover:bg-gray-700 text-gray-200 border-gray-600"
-                                       : "hover:bg-gray-50 text-gray-700 border-gray-100"
-                                 }`}
-                              >
-                                 Sort by Status
-                              </button>
-                           </div>
-                        )}
-                     </div>
+                     <button
+                        onClick={() => setIsCreateInviteeDialogOpen(true)}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                     >
+                        <UserPlus size={16} /> Create Member
+                     </button>
                   </div>
                </div>
             </div>
@@ -355,7 +357,7 @@ const CommitteeDashboard = () => {
                      : "bg-white border-gray-200"
                }`}
             >
-               <div className="mb-4">
+               <div className="mb-4 flex items-center justify-between">
                   <h2
                      className={`text-lg font-semibold transition-colors duration-200 ${
                         isDarkMode ? "text-gray-200" : "text-gray-800"
@@ -363,6 +365,58 @@ const CommitteeDashboard = () => {
                   >
                      Committees
                   </h2>
+                  <div className="relative">
+                     <button
+                        onClick={toggleSortOptions}
+                        className={`inline-flex items-center gap-2 px-4 py-2 border rounded-lg transition-colors font-medium ${
+                           isDarkMode
+                              ? "border-gray-600 bg-gray-800 hover:bg-gray-700 text-gray-200"
+                              : "border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+                        }`}
+                     >
+                        <ArrowUpDown size={16} /> Sort
+                     </button>
+                     {showSortOptions && (
+                        <div
+                           className={`absolute right-0 mt-1 w-56 border rounded-lg shadow-lg z-10 transition-colors duration-200 ${
+                              isDarkMode
+                                 ? "bg-gray-800 border-gray-700"
+                                 : "bg-white border-gray-200"
+                           }`}
+                        >
+                           <button
+                              onClick={sortCommitteesByName}
+                              className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm first:rounded-t-lg ${
+                                 isDarkMode
+                                    ? "hover:bg-gray-700 text-gray-200"
+                                    : "hover:bg-gray-50 text-gray-700"
+                              }`}
+                           >
+                              Sort by Name (A-Z)
+                           </button>
+                           <button
+                              onClick={sortCommitteesByDate}
+                              className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm border-t ${
+                                 isDarkMode
+                                    ? "hover:bg-gray-700 text-gray-200 border-gray-600"
+                                    : "hover:bg-gray-50 text-gray-700 border-gray-100"
+                              }`}
+                           >
+                              Sort by Created Date
+                           </button>
+                           <button
+                              onClick={sortCommitteesByStatus}
+                              className={`block w-full text-left px-4 py-2 transition-colors font-medium text-sm last:rounded-b-lg border-t ${
+                                 isDarkMode
+                                    ? "hover:bg-gray-700 text-gray-200 border-gray-600"
+                                    : "hover:bg-gray-50 text-gray-700 border-gray-100"
+                              }`}
+                           >
+                              Sort by Status
+                           </button>
+                        </div>
+                     )}
+                  </div>
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
                   {committees.map((committee) => (
@@ -486,6 +540,13 @@ const CommitteeDashboard = () => {
                )}
             </div>
          </div>
+
+         {/* Create Invitee Dialog */}
+         <CreateInviteeDialog
+            isOpen={isCreateInviteeDialogOpen}
+            onClose={() => setIsCreateInviteeDialogOpen(false)}
+            onInviteeCreated={handleInviteeCreated}
+         />
       </div>
    );
 };

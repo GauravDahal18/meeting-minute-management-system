@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install ALL dependencies (including devDependencies) for building
-RUN npm ci
+RUN npm ci --timeout=600000
 
 COPY . .
 RUN npm run build

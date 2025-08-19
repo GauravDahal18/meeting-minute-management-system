@@ -160,7 +160,7 @@ const CommitteeDashboard = () => {
                   isDarkMode ? "text-gray-300" : "text-gray-600"
                }`}
             >
-               Loading committees...
+               {/* Loading committees... */}
             </div>
          </div>
       );

@@ -675,7 +675,7 @@ const CreateCommitteeDialog = () => {
                               : "text-gray-500 bg-gray-50 border-gray-200"
                           }`}
                         >
-                          Loading members...
+                          {/* Loading members... */}
                         </div>
                       ) : null}
 

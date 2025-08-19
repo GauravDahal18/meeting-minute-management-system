@@ -555,7 +555,7 @@ const CommitteeDetails = () => {
                      isDarkMode ? "text-gray-300" : "text-gray-600"
                   }`}
                >
-                  Loading committee details...
+                  {/* Loading committee details... */}
                </div>
             </div>
          </div>

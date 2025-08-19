@@ -1,6 +1,8 @@
+import { BASE_URL } from "./constants.js";
+
 export const getCommittees = async () => {
   try {
-    const response = await fetch("http://localhost:8080/api/getCommittees", {
+    const response = await fetch(`${BASE_URL}/api/getCommittees`, {
       method: "GET",
       credentials: "include",
     });

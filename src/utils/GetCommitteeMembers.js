@@ -1,9 +1,10 @@
 // utils/getCommitteeDetails.js
+import { BASE_URL } from "./constants.js";
 
 export const getCommitteeDetails = async (committeeId) => {
   try {
     const response = await fetch(
-      `http://localhost:8080/api/getCommitteeDetails?committeeId=${committeeId}`,
+      `${BASE_URL}/api/getCommitteeDetails?committeeId=${committeeId}`,
       {
         method: "GET",
         credentials: "include",

@@ -8,6 +8,7 @@ import React, {
   useMemo,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/constants.js";
 
 const AuthContext = createContext(null);
 
@@ -38,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     console.log("checkAuthStatus: Making API call");
     setIsAuthLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/isAuthenticated", {
+      const response = await fetch(`${BASE_URL}/isAuthenticated`, {
         method: "GET",
         credentials: "include",
       });
@@ -76,7 +77,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/logout", {
+      const response = await fetch(`${BASE_URL}/api/logout`, {
         method: "GET",
         credentials: "include",
       });
